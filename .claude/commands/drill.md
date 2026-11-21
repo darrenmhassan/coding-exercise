@@ -24,7 +24,10 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 1. **Present it** as an interviewer would: 2-4 sentences in your own words, framed as a realistic
    Amazon/AWS scenario where it fits naturally (packages, servers, orders, logs, deployments), plus
    the example from `example` translated into the scenario. Never name the problem or hint at the
-   pattern in the wording. End with: "Which pattern, and what in the problem tells you?"
+   pattern in the wording. Give the example as input -> output ONLY: do not explain how the output
+   is reached (no "relabel one package to get AAAA"), since that reveals the approach.
+   End with: "Which pattern, and what in the problem tells you?"
+   No hints of any kind before my first answer unless I explicitly ask for one.
 2. **Wait for my answer.** Never answer for me.
 3. **Log my FIRST answer** straight away: `./practise drill-log --id <id> --guess "<my pattern>"`
    (map my wording to the closest valid name; add `--hinted` if I asked for a hint before

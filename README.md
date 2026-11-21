@@ -95,6 +95,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `progress/drills.jsonl` | drill answers |
 | `attempts/` | my written solutions |
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
+| `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
 Everything except `.practise/` (the in-progress attempt) is meant to be committed, so history
 travels with the repo.
