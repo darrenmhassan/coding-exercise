@@ -523,8 +523,8 @@ def cmd_drill_log(a):
     guess = resolve_pattern(a.guess)
     if not guess:
         sys.exit("Unknown pattern '%s'. Valid: %s" % (a.guess, ", ".join(pattern_names())))
-    ok = log_drill(p, guess, a.hinted, "claude")
-    print(json.dumps({"id": p["id"], "guess": guess, "correct": ok, "patterns": p["patterns"]}))
+    log_drill(p, guess, a.hinted, "claude")
+    print("logged")       # deliberately says nothing about the answer
 
 
 def cmd_drill(a):
