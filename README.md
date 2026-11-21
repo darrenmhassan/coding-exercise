@@ -105,8 +105,6 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
-- `./practise sync` merges the progress logs from every device and cloud session and publishes them
-  (see Syncing below).
 - `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
   `./practise drill`): when, how, focus, answered, correct, score, hints, minutes and the patterns missed.
   Sessions are never merged, and stopped or unfinished ones are left out. `report` includes the table too.
@@ -119,34 +117,24 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
 | `bank/templates/` | one Java reference template per pattern |
 | `.practise/plan.json` | optional dated sessions, local only (copy `plan.example.json`) |
-| `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it |
+| `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it (local only) |
 | `progress/drills.jsonl` | drill answers (tagged with their session) |
 | `progress/drill_sessions.jsonl` | start and end of each drill session |
-| `attempts/` | my written solutions |
+| `attempts/` | my written solutions (local only) |
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 | `.claude/commands/coach.md` | the `/coach` coached-coding prompt |
+| `.claude/commands/stats.md`, `sessions.md` | `/stats` and `/sessions`, reading the local logs |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
-`stats` reads the progress logs in the copy you run it in, so each machine shows its own practice.
-If you do commit the logs from more than one machine, `.gitattributes` merges `progress/*.jsonl`
-with git's union driver, so pulling keeps both sets of lines instead of conflicting.
+## Where your progress lives
 
-## Syncing across devices and cloud sessions
+Everything you record (attempt and drill logs in `progress/`, solutions in `attempts/`) stays in
+this directory on this machine and is git-ignored, so none of it goes to GitHub. Run sessions from
+this directory, in the terminal or in the Claude app with this folder; `/stats`, `/sessions` and
+`./practise stats` / `sessions` read only these local files. To back it up, copy `progress/` and
+`attempts/` somewhere safe.
 
-Every result is pushed to GitHub as soon as it's recorded: each `/drill` or `./practise drill`
-answer, the start and end of each drill session, and each `./practise done`. `/stats` and
-`/sessions` (and `stats --sync`, `sessions --sync`) pull everything in first, so they show all your
-practice wherever it happened.
-
-How it works: `practise sync` takes the union of the lines in `progress/*.jsonl` from your copy,
-`origin/master` and any cloud-session branches (`origin/claude/*`), writes them locally, and pushes
-a commit that changes only those log files onto `origin/master`. It never merges code from another
-branch. If a cloud session isn't allowed to push to `master`, the log goes to its own branch and
-the next sync from anywhere else folds it in. If GitHub is unreachable, the answer is still saved
-locally and goes up with the next sync. Use `--no-sync` on `drill`, `drill-log` or `done` to skip it.
-
-Everything except `.practise/` (the in-progress attempt and your local plan) is meant to be committed, so history
-travels with the repo.
+`.practise/` holds the in-progress attempt and your optional local plan; it is git-ignored too.
 
 ## Ideas for later
 

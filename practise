@@ -6,6 +6,7 @@ State lives in plain files so it is easy to inspect, diff and extend:
   bank/patterns.json     patterns with a weight (interview likelihood) and recognition signals
   .practise/plan.json    optional dated practice sessions (local, not committed; see plan.example.json)
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
+                           progress/ and attempts/ stay on this machine (git-ignored)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
   progress/drill_sessions.jsonl  start/end events of each drill session
   attempts/<date>_<id>/Solution.java   your written solutions
@@ -468,8 +469,6 @@ def cmd_done(a):
            "hints": hints, "notes": notes, "file": os.path.relpath(cur["file"], ROOT), "mock": cur.get("mock", False)}
     append_jsonl(ATTEMPTS_LOG, row)
     os.remove(CURRENT)
-    if not a.no_sync:
-        try_sync()
 
     s = schedule()[p["id"]]
     print()
@@ -583,8 +582,6 @@ def session_rows():
 
 
 def cmd_sessions(a):
-    if a.sync:
-        try_sync()
     rows = session_rows()
     if a.last:
         rows = rows[-a.last:]
@@ -629,8 +626,6 @@ def cmd_drill_log(a):
     if not guess:
         sys.exit("Unknown pattern '%s'. Valid: %s" % (a.guess, ", ".join(pattern_names())))
     log_drill(p, guess, a.hinted, "claude", a.session)
-    if not a.no_sync:
-        try_sync()
     print("logged")       # deliberately says nothing about the answer
 
 
@@ -638,8 +633,6 @@ def cmd_drill_end(a):
     if not any(e["session"] == a.session and e["event"] == "start" for e in read_jsonl(SESSIONS_LOG)):
         sys.exit("No drill session '%s'." % a.session)
     end_session(a.session, "stopped" if a.stopped else "completed")
-    if not a.no_sync:
-        try_sync()
     print("session %s" % ("stopped" if a.stopped else "completed"))
 
 
@@ -668,8 +661,6 @@ def cmd_drill(a):
             quit_early = True
             break
         ok = log_drill(p, got, session=sid)
-        if not a.no_sync:
-            try_sync()
         right += ok
         mark = "yes" if ok else "no, you said %s" % got
         print("  %s -> %s  (%s)" % (mark, " / ".join(p["patterns"]), p["title"]))
@@ -685,8 +676,6 @@ def cmd_drill(a):
             if more and more.lower().startswith("t"):
                 show_pattern(primary)
     end_session(sid, "stopped" if quit_early else "completed")
-    if not a.no_sync:
-        try_sync()
     if chosen:
         print("\nScore: %d/%d" % (right, len(chosen)))
     if not quit_early:
@@ -719,8 +708,6 @@ HEAD = ["pattern", "weight", "tried", "avg", "recog", "drill", "due", "mastery"]
 
 
 def cmd_stats(a):
-    if a.sync:
-        try_sync()
     rows = stats_rows()
     widths = [max(len(r[i]) for r in rows + [HEAD]) for i in range(len(HEAD))]
     line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r))
@@ -887,118 +874,6 @@ def cmd_add(a):
     print("Added %s (%s)." % (title, ", ".join(pats)))
 
 
-# ---------------------------------------------------------------- sync
-
-PROGRESS_FILES = ("attempts.jsonl", "drills.jsonl", "drill_sessions.jsonl")
-
-
-def git(*args, check=True, env=None):
-    e = dict(os.environ, **(env or {}))
-    r = subprocess.run(["git"] + list(args), cwd=ROOT, capture_output=True, text=True, env=e)
-    if check and r.returncode != 0:
-        raise RuntimeError("git %s: %s" % (" ".join(args[:2]), (r.stderr or r.stdout).strip()[:300]))
-    return r.stdout.strip() if check else r
-
-
-def merged_lines(name, refs):
-    """Union of a log's lines: local first, then any new lines from each remote ref."""
-    seen, out = set(), []
-    sources = []
-    path = os.path.join(PROGRESS, name)
-    if os.path.exists(path):
-        with open(path) as f:
-            sources.append(f.read())
-    for ref in refs:
-        r = git("show", "%s:progress/%s" % (ref, name), check=False)
-        if r.returncode == 0:
-            sources.append(r.stdout)
-    for text in sources:
-        for line in text.splitlines():
-            line = line.strip()
-            if line and line not in seen:
-                seen.add(line)
-                out.append(line)
-    if name == "attempts.jsonl":      # the schedule replays attempts in time order
-        out.sort(key=lambda l: json.loads(l).get("started", ""))
-    return out
-
-
-def sync(quiet=False):
-    """Merge progress logs from origin (master and cloud-session branches) into the local copy and
-    publish them to origin/master. Only progress/*.jsonl is touched; no code is merged."""
-    if not os.path.isdir(os.path.join(ROOT, ".git")):
-        raise RuntimeError("not a git checkout")
-    git("fetch", "-q", "origin")
-    branch = git("rev-parse", "--abbrev-ref", "HEAD")
-    refs = ["origin/master"] + [r for r in git("branch", "-r", "--format=%(refname:short)").split()
-                                if r.startswith("origin/claude/") or r == "origin/" + branch]
-    refs = list(dict.fromkeys(r for r in refs if git("rev-parse", "-q", "--verify", r, check=False).returncode == 0))
-    os.makedirs(PROGRESS, exist_ok=True)
-    for name in PROGRESS_FILES:
-        lines = merged_lines(name, refs)
-        if lines:
-            with open(os.path.join(PROGRESS, name), "w") as f:
-                f.write("\n".join(lines) + "\n")
-
-    ident = {}
-    if not git("config", "user.email", check=False).stdout.strip():
-        ident = {"GIT_AUTHOR_NAME": "practise", "GIT_AUTHOR_EMAIL": "practise@localhost",
-                 "GIT_COMMITTER_NAME": "practise", "GIT_COMMITTER_EMAIL": "practise@localhost"}
-    published = False
-    for _ in range(2):                                   # retry once if master moved meanwhile
-        base = git("rev-parse", "origin/master")
-        idx = os.path.join(ROOT, ".git", "practise-sync-index")
-        env = dict(ident, GIT_INDEX_FILE=idx)
-        git("read-tree", base, env=env)
-        for name in PROGRESS_FILES:
-            p = os.path.join(PROGRESS, name)
-            if os.path.exists(p):
-                blob = git("hash-object", "-w", p)
-                git("update-index", "--add", "--cacheinfo", "100644,%s,progress/%s" % (blob, name), env=env)
-        tree = git("write-tree", env=env)
-        os.remove(idx)
-        if tree == git("rev-parse", base + "^{tree}"):
-            published = True
-            break
-        commit = git("commit-tree", tree, "-p", base, "-m", "Practice log", env=ident)
-        r = git("push", "-q", "origin", commit + ":refs/heads/master", check=False)
-        if r.returncode == 0:
-            git("fetch", "-q", "origin", "master")
-            published = True
-            break
-        git("fetch", "-q", "origin")
-
-    # Keep the local branch consistent with what was published.
-    git("add", "progress")
-    if git("diff", "--cached", "--quiet", check=False).returncode != 0:
-        git("commit", "-q", "-m", "Practice log", env=ident)
-    if branch == "master":
-        # Best effort: if local edits block the merge, a later `git pull` catches up.
-        r = git("merge", "-q", "--no-edit", "origin/master", check=False, env=ident)
-        if r.returncode != 0:
-            git("merge", "--abort", check=False)
-    elif not published:
-        git("push", "-q", "origin", "HEAD:" + branch, check=False)   # cloud session: at least its branch
-    if not quiet:
-        print("Synced: %d attempts, %d drill answers from all devices%s." % (
-            len(read_jsonl(ATTEMPTS_LOG)), len(read_jsonl(DRILLS_LOG)),
-            "" if published else " (master not writable here; saved to branch %s)" % branch))
-    return published
-
-
-def try_sync(quiet=True):
-    try:
-        sync(quiet)
-        return True
-    except Exception as e:                     # never lose an answer because the network is down
-        print("(sync failed, saved locally: %s)" % str(e).splitlines()[0][:120])
-        return False
-
-
-def cmd_sync(a):
-    try_sync(quiet=False)
-
-
 # ---------------------------------------------------------------- main
 
 def main(argv=None):
@@ -1031,7 +906,6 @@ def main(argv=None):
     s.add_argument("--hints", type=int)
     s.add_argument("-n", "--notes")
     s.add_argument("-m", "--minutes", type=int, help="override elapsed minutes")
-    s.add_argument("--no-sync", action="store_true")
     s.set_defaults(func=cmd_done)
 
     s = sub.add_parser("abandon", help="drop the current attempt without logging")
@@ -1042,7 +916,6 @@ def main(argv=None):
     s.add_argument("-p", "--pattern")
     s.add_argument("--code", action="store_true", help="always show the template, even when right")
     s.add_argument("--no-code", action="store_true", help="never show templates (fast mode)")
-    s.add_argument("--no-sync", action="store_true", help="don't push each answer to GitHub")
     s.set_defaults(func=cmd_drill)
 
     s = sub.add_parser("drill-pick", help="(for the /drill Claude tutor) pick drill problems as JSON")
@@ -1055,30 +928,23 @@ def main(argv=None):
     s.add_argument("--guess", required=True, help="the user's FIRST answer")
     s.add_argument("--hinted", action="store_true", help="they only got there after a hint")
     s.add_argument("--session", help="session id from drill-pick")
-    s.add_argument("--no-sync", action="store_true")
     s.set_defaults(func=cmd_drill_log)
 
     s = sub.add_parser("drill-end", help="(for the /drill Claude tutor) close a drill session")
     s.add_argument("--session", required=True)
     s.add_argument("--stopped", action="store_true", help="ended before the last problem")
-    s.add_argument("--no-sync", action="store_true")
     s.set_defaults(func=cmd_drill_end)
 
     s = sub.add_parser("sessions", help="one row per completed drill session")
     s.add_argument("--last", type=int, help="only the most recent N")
     s.add_argument("--markdown", action="store_true", help="output a markdown table")
-    s.add_argument("--sync", action="store_true", help="pull in every device's progress first")
     s.set_defaults(func=cmd_sessions)
-
-    s = sub.add_parser("sync", help="merge progress logs from all devices and publish them to origin/master")
-    s.set_defaults(func=cmd_sync)
 
     s = sub.add_parser("template", help="show a pattern's signals and Java template")
     s.add_argument("pattern", nargs="?", help="number or name; omit to pick from the menu")
     s.set_defaults(func=cmd_template)
 
     s = sub.add_parser("stats", help="mastery by pattern")
-    s.add_argument("--sync", action="store_true", help="pull in every device's progress first")
     s.set_defaults(func=cmd_stats)
 
     s = sub.add_parser("report", help="markdown report (e.g. into your Obsidian vault)")
