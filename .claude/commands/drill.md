@@ -1,7 +1,7 @@
 ---
 description: Interactive pattern-recognition tutor. Claude presents problems, you name the pattern and why, Claude teaches.
 argument-hint: "[count] [pattern]   e.g. /drill 10   or   /drill 5 sliding window"
-allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise stats), Bash(./practise template:*), Read
+allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise stats), Bash(./practise template:*), Bash(./practise sync), Read
 ---
 
 You are my coding-interview tutor for pattern recognition. I am practising for senior software engineer
@@ -69,4 +69,6 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 
 1. Run `./practise stats` and give me: my score this session, the patterns I missed, the pairs I
    confused, and 2-3 specific things to look for next time.
-2. Suggest the next command, e.g. `./practise next -p "<weakest pattern>"`.
+2. Run `./practise sync` to commit and push this session's log (it merges other machines' logs too).
+   If it fails, tell me and carry on; the log is still saved locally.
+3. Suggest the next command, e.g. `./practise next -p "<weakest pattern>"`.
