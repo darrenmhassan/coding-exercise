@@ -765,41 +765,6 @@ def cmd_add(a):
     print("Added %s (%s)." % (title, ", ".join(pats)))
 
 
-def git(*args, check=True):
-    r = subprocess.run(["git"] + list(args), cwd=ROOT, capture_output=True, text=True)
-    if check and r.returncode != 0:
-        sys.exit("git %s failed:\n%s%s" % (" ".join(args), r.stdout, r.stderr))
-    return r.stdout.strip()
-
-
-def git_ok(*args):
-    return subprocess.run(["git"] + list(args), cwd=ROOT, capture_output=True).returncode == 0
-
-
-def cmd_sync(a):
-    """Commit local progress, merge progress from origin (and cloud-session branches), push."""
-    branch = git("rev-parse", "--abbrev-ref", "HEAD")
-    paths = [p for p in ("progress", "attempts") if os.path.exists(os.path.join(ROOT, p))]
-    if paths:
-        git("add", *paths)
-        if not git_ok("diff", "--cached", "--quiet"):
-            git("commit", "-q", "-m", "Practice log %s" % now_iso())
-            print("Committed local progress.")
-    git("fetch", "-q", "origin")
-    refs = ["origin/master", "origin/" + branch]
-    if not a.no_branches:
-        refs += git("branch", "-r", "--list", "origin/claude/*").split()
-    for ref in dict.fromkeys(refs):            # ordered, de-duplicated
-        if git_ok("rev-parse", "--verify", "-q", ref) and not git_ok("merge-base", "--is-ancestor", ref, "HEAD"):
-            git("merge", "-q", "--no-edit", ref)   # .gitattributes: union merge for progress/*.jsonl
-            print("Merged " + ref)
-    r = subprocess.run(["git", "push", "-q", "origin", "HEAD:" + branch], cwd=ROOT, capture_output=True, text=True)
-    if r.returncode != 0:
-        sys.exit("Push failed:\n" + r.stderr)
-    print("Synced %s. Log now holds %d attempts and %d drill answers; ./practise stats includes them all." % (
-        branch, len(read_jsonl(ATTEMPTS_LOG)), len(read_jsonl(DRILLS_LOG))))
-
-
 # ---------------------------------------------------------------- main
 
 def main(argv=None):
@@ -880,10 +845,6 @@ def main(argv=None):
     s.add_argument("problem", nargs="?")
     s.add_argument("--show", action="store_true", help="print the prompt instead of copying it")
     s.set_defaults(func=cmd_mock)
-
-    s = sub.add_parser("sync", help="commit your progress, merge progress from origin and cloud branches, push")
-    s.add_argument("--no-branches", action="store_true", help="don't merge origin/claude/* branches")
-    s.set_defaults(func=cmd_sync)
 
     s = sub.add_parser("add", help="add a problem to the bank")
     s.add_argument("--slug"); s.add_argument("--lc"); s.add_argument("--title")

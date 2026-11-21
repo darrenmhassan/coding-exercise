@@ -86,7 +86,6 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
-- `./practise sync` commits, merges and pushes progress (see below).
 
 ## Files
 
@@ -102,18 +101,9 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
-## Syncing progress across machines and cloud sessions
-
-```sh
-./practise sync
-```
-
-Commits your `progress/` and `attempts/`, merges in `origin/master`, your branch on origin and any
-cloud-session branches (`origin/claude/*`), then pushes. `.gitattributes` merges the
-`progress/*.jsonl` logs with git's union driver, so every machine's lines are kept and nothing
-conflicts. `stats` only reads the local copy, so sync before checking it. `/drill` syncs
-automatically at the end. Cloud sessions push to their own branch; the next `sync` on your laptop
-folds them into `master`.
+`stats` reads the progress logs in the copy you run it in, so each machine shows its own practice.
+If you do commit the logs from more than one machine, `.gitattributes` merges `progress/*.jsonl`
+with git's union driver, so pulling keeps both sets of lines instead of conflicting.
 
 Everything except `.practise/` (the in-progress attempt and your local plan) is meant to be committed, so history
 travels with the repo.
