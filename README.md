@@ -105,6 +105,9 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
+- `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
+  `./practise drill`): when, how, focus, answered, correct, score, hints, minutes and the patterns missed.
+  Sessions are never merged, and stopped or unfinished ones are left out. `report` includes the table too.
 
 ## Files
 
@@ -115,7 +118,8 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `bank/templates/` | one Java reference template per pattern |
 | `.practise/plan.json` | optional dated sessions, local only (copy `plan.example.json`) |
 | `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it |
-| `progress/drills.jsonl` | drill answers |
+| `progress/drills.jsonl` | drill answers (tagged with their session) |
+| `progress/drill_sessions.jsonl` | start and end of each drill session |
 | `attempts/` | my written solutions |
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 | `.claude/commands/coach.md` | the `/coach` coached-coding prompt |

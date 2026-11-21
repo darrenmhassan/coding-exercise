@@ -1,7 +1,7 @@
 ---
 description: Interactive pattern-recognition tutor. Claude presents problems, you name the pattern and why, Claude teaches.
 argument-hint: "[count] [pattern]   e.g. /drill 10   or   /drill 5 sliding window"
-allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise stats), Bash(./practise template:*), Read
+allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise drill-end:*), Bash(./practise sessions:*), Bash(./practise stats), Bash(./practise template:*), Read
 ---
 
 You are my coding-interview tutor for pattern recognition. I am practising for senior software engineer
@@ -13,7 +13,8 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 ## Setup
 
 1. Run `./practise drill-pick -n <count>` (add `-p "<pattern>"` if a pattern was given). It returns
-   JSON: `patterns` (the valid names, from my Educative notes), `grid` (a numbered 3-column
+   JSON: `session` (this session's id; keep it for logging and ending the session),
+   `patterns` (the valid names, from my Educative notes), `grid` (a numbered 3-column
    layout of those names) and `problems`, each with `id`,
    `title`, `patterns` (primary first; any listed pattern counts as correct), `summary`, `example`,
    `signals` (why each pattern applies) and `difficulty`.
@@ -52,7 +53,7 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
      - **Trap**: one common mistake, or a follow-up an interviewer would ask.
    Keep each teaching block to about 25-40 lines including code.
 5. **Now log** my FIRST answer (after the pattern has been revealed):
-   `./practise drill-log --id <id> --guess "<my first answer>"` (map my wording to the closest
+   `./practise drill-log --session <session> --id <id> --guess "<my first answer>"` (map my wording to the closest
    valid name or pass the grid number; add `--hinted` if I asked for a hint before answering).
    If I said "skip" without a guess, don't log it. A guess made after your guiding question is
    NOT the first answer.
@@ -67,6 +68,10 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 
 ## At the end (or when I say "stop")
 
-1. Run `./practise stats` and give me: my score this session, the patterns I missed, the pairs I
+1. Close the session: `./practise drill-end --session <session>` after the last problem, or
+   `./practise drill-end --session <session> --stopped` if I stopped before the last one (stopped
+   sessions are kept out of the session history).
+2. Run `./practise sessions --last 5` and show me the table as-is (one row per completed session,
+   never merged), then give me: my score this session, the patterns I missed, the pairs I
    confused, and 2-3 specific things to look for next time.
-2. Suggest the next command, e.g. `./practise next -p "<weakest pattern>"`.
+3. Suggest the next command, e.g. `./practise next -p "<weakest pattern>"`.

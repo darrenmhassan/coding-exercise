@@ -7,6 +7,7 @@ State lives in plain files so it is easy to inspect, diff and extend:
   .practise/plan.json    optional dated practice sessions (local, not committed; see plan.example.json)
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
+  progress/drill_sessions.jsonl  start/end events of each drill session
   attempts/<date>_<id>/Solution.java   your written solutions
   .practise/current.json   the attempt in progress (not committed)
 
@@ -29,6 +30,7 @@ PLAN = os.environ.get("PRACTISE_PLAN") or os.path.join(ROOT, ".practise", "plan.
 PROGRESS = os.path.join(ROOT, "progress")
 ATTEMPTS_LOG = os.path.join(PROGRESS, "attempts.jsonl")
 DRILLS_LOG = os.path.join(PROGRESS, "drills.jsonl")
+SESSIONS_LOG = os.path.join(PROGRESS, "drill_sessions.jsonl")
 ATTEMPTS_DIR = os.path.join(ROOT, "attempts")
 CURRENT = os.path.join(ROOT, ".practise", "current.json")
 TEMPLATES = os.path.join(ROOT, "bank", "templates")
@@ -515,22 +517,106 @@ def pick_drill(n, pattern=None):
     return chosen
 
 
-def log_drill(p, guess, hinted=False, source="cli"):
+def log_drill(p, guess, hinted=False, source="cli", session=None):
     ok = guess in p["patterns"]
-    append_jsonl(DRILLS_LOG, {"id": p["id"], "date": today().isoformat(), "guess": guess,
-                              "answer": p["patterns"][0], "correct": ok, "hinted": hinted, "source": source})
+    row = {"id": p["id"], "date": today().isoformat(), "guess": guess,
+           "answer": p["patterns"][0], "correct": ok, "hinted": hinted, "source": source}
+    if session:
+        row["session"] = session
+    append_jsonl(DRILLS_LOG, row)
     return ok
+
+
+def start_session(source, chosen, pattern=None):
+    sid = dt.datetime.now().strftime("%Y%m%d-%H%M%S-") + "%04x" % random.getrandbits(16)
+    append_jsonl(SESSIONS_LOG, {"session": sid, "event": "start", "at": now_iso(), "source": source,
+                                "planned": len(chosen), "pattern": pattern, "ids": [p["id"] for p in chosen]})
+    return sid
+
+
+def end_session(sid, status):
+    append_jsonl(SESSIONS_LOG, {"session": sid, "event": "end", "at": now_iso(), "status": status})
+
+
+def completed_sessions():
+    """One summary per COMPLETED drill session, oldest first. Each session is kept separate."""
+    starts, ends = {}, {}
+    for e in read_jsonl(SESSIONS_LOG):
+        (starts if e["event"] == "start" else ends)[e["session"]] = e
+    answers = {}
+    for d in read_jsonl(DRILLS_LOG):
+        if d.get("session"):
+            answers.setdefault(d["session"], []).append(d)
+    out = []
+    for sid, st in starts.items():
+        en = ends.get(sid)
+        if not en or en.get("status") != "completed":
+            continue
+        rows = answers.get(sid, [])
+        t0, t1 = dt.datetime.fromisoformat(st["at"]), dt.datetime.fromisoformat(en["at"])
+        missed = [d["answer"] for d in rows if not d["correct"]]
+        out.append({
+            "session": sid, "start": t0, "minutes": max(0, round((t1 - t0).total_seconds() / 60)),
+            "source": st.get("source", "?"), "focus": st.get("pattern") or "all",
+            "planned": st.get("planned", len(rows)), "answered": len(rows),
+            "correct": sum(1 for d in rows if d["correct"]),
+            "hinted": sum(1 for d in rows if d.get("hinted")), "missed": missed,
+        })
+    out.sort(key=lambda x: x["start"])
+    return out
+
+
+SESSION_HEAD = ["#", "date", "time", "via", "focus", "answered", "correct", "score", "hinted", "min", "missed (correct pattern)"]
+
+
+def session_rows():
+    rows = []
+    for i, x in enumerate(completed_sessions(), 1):
+        score = (x["correct"] / x["answered"]) if x["answered"] else None
+        missed = ", ".join(sorted(set(x["missed"]), key=x["missed"].index)) or "-"
+        rows.append([str(i), x["start"].strftime("%Y-%m-%d"), x["start"].strftime("%H:%M"), x["source"],
+                     x["focus"], "%d/%d" % (x["answered"], x["planned"]), str(x["correct"]),
+                     fmt(score, "pct"), str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]), missed])
+    return rows
+
+
+def cmd_sessions(a):
+    rows = session_rows()
+    if a.last:
+        rows = rows[-a.last:]
+    if not rows:
+        print("No completed drill sessions yet.")
+        return
+    if a.markdown:
+        print("| " + " | ".join(SESSION_HEAD) + " |")
+        print("|" + "---|" * len(SESSION_HEAD))
+        for r in rows:
+            print("| " + " | ".join(r) + " |")
+        return
+    widths = [max(len(r[i]) for r in rows + [SESSION_HEAD]) for i in range(len(SESSION_HEAD))]
+    line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r)).rstrip()
+    print()
+    print(line(SESSION_HEAD))
+    print(line(["-" * w for w in widths]))
+    for r in rows:
+        print(line(r))
+    legacy = sum(1 for d in read_jsonl(DRILLS_LOG) if not d.get("session"))
+    print("\nCompleted drill sessions only, one row each (stopped or unfinished sessions are left out).")
+    if legacy:
+        print("%d older drill answers predate session tracking and aren't shown here." % legacy)
 
 
 def cmd_drill_pick(a):
     """JSON for the /drill Claude Code tutor."""
     sigs = {x["name"]: x["signals"] for x in patterns()}
+    chosen = pick_drill(a.n, a.pattern)
+    sid = start_session("claude", chosen, resolve_pattern(a.pattern) if a.pattern else None)
     out = []
-    for p in pick_drill(a.n, a.pattern):
+    for p in chosen:
         q = dict(p)
         q["signals"] = {name: sigs[name] for name in p["patterns"]}
         out.append(q)
-    print(json.dumps({"patterns": pattern_names(), "grid": pattern_grid(""), "problems": out}, indent=1))
+    print(json.dumps({"session": sid, "patterns": pattern_names(), "grid": pattern_grid(""), "problems": out}, indent=1))
 
 
 def cmd_drill_log(a):
@@ -538,13 +624,22 @@ def cmd_drill_log(a):
     guess = resolve_pattern(a.guess)
     if not guess:
         sys.exit("Unknown pattern '%s'. Valid: %s" % (a.guess, ", ".join(pattern_names())))
-    log_drill(p, guess, a.hinted, "claude")
+    log_drill(p, guess, a.hinted, "claude", a.session)
     print("logged")       # deliberately says nothing about the answer
+
+
+def cmd_drill_end(a):
+    if not any(e["session"] == a.session and e["event"] == "start" for e in read_jsonl(SESSIONS_LOG)):
+        sys.exit("No drill session '%s'." % a.session)
+    end_session(a.session, "stopped" if a.stopped else "completed")
+    print("session %s" % ("stopped" if a.stopped else "completed"))
 
 
 def cmd_drill(a):
     sigs = {x["name"]: x["signals"] for x in patterns()}
     chosen = pick_drill(a.n, a.pattern)
+    sid = start_session("cli", chosen, resolve_pattern(a.pattern) if a.pattern else None)
+    quit_early = False
     print("\nName the pattern for each problem. Answer with a number or part of a name; 'q' quits.\n")
     print_pattern_menu()
     right = 0
@@ -562,8 +657,9 @@ def cmd_drill(a):
                 break
             print("  not recognised (try a number)")
         if ans and ans.lower() == "q":
+            quit_early = True
             break
-        ok = log_drill(p, got)
+        ok = log_drill(p, got, session=sid)
         right += ok
         mark = "yes" if ok else "no, you said %s" % got
         print("  %s -> %s  (%s)" % (mark, " / ".join(p["patterns"]), p["title"]))
@@ -578,8 +674,11 @@ def cmd_drill(a):
             more = ask("  enter = next, t = show the template: ", "")
             if more and more.lower().startswith("t"):
                 show_pattern(primary)
+    end_session(sid, "stopped" if quit_early else "completed")
     if chosen:
         print("\nScore: %d/%d" % (right, len(chosen)))
+    if not quit_early:
+        print("Session saved; ./practise sessions shows every completed session.")
 
 
 def fmt(v, kind):
@@ -632,6 +731,10 @@ def cmd_report(a):
     out = ["# Coding practice report", "", "_Generated %s by `practise report`._" % now_iso(), "",
            "| " + " | ".join(HEAD) + " |", "|" + "---|" * len(HEAD)]
     out += ["| " + " | ".join(r) + " |" for r in rows]
+    srows = session_rows()
+    if srows:
+        out += ["", "## Drill sessions (completed)", "", "| " + " | ".join(SESSION_HEAD) + " |", "|" + "---|" * len(SESSION_HEAD)]
+        out += ["| " + " | ".join(r) + " |" for r in srows]
     att = read_jsonl(ATTEMPTS_LOG)
     byid = problems_by_id()
     out += ["", "## Attempts", "", "| date | problem | rating | min | pattern ok | notes |", "|---|---|---|---|---|---|"]
@@ -823,7 +926,18 @@ def main(argv=None):
     s.add_argument("--id", required=True)
     s.add_argument("--guess", required=True, help="the user's FIRST answer")
     s.add_argument("--hinted", action="store_true", help="they only got there after a hint")
+    s.add_argument("--session", help="session id from drill-pick")
     s.set_defaults(func=cmd_drill_log)
+
+    s = sub.add_parser("drill-end", help="(for the /drill Claude tutor) close a drill session")
+    s.add_argument("--session", required=True)
+    s.add_argument("--stopped", action="store_true", help="ended before the last problem")
+    s.set_defaults(func=cmd_drill_end)
+
+    s = sub.add_parser("sessions", help="one row per completed drill session")
+    s.add_argument("--last", type=int, help="only the most recent N")
+    s.add_argument("--markdown", action="store_true", help="output a markdown table")
+    s.set_defaults(func=cmd_sessions)
 
     s = sub.add_parser("template", help="show a pattern's signals and Java template")
     s.add_argument("pattern", nargs="?", help="number or name; omit to pick from the menu")
