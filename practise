@@ -2,9 +2,9 @@
 """practise: a spaced-repetition coding interview trainer organised by problem pattern.
 
 State lives in plain files so it is easy to inspect, diff and extend:
-  bank/problems.json     problem bank (id, LeetCode link, patterns, Amazon-core flag, summary)
+  bank/problems.json     problem bank (id, LeetCode link, patterns, commonly-asked flag, summary, example)
   bank/patterns.json     patterns with a weight (interview likelihood) and recognition signals
-  plan.json              dated practice sessions
+  .practise/plan.json    optional dated practice sessions (local, not committed; see plan.example.json)
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
   attempts/<date>_<id>/Solution.java   your written solutions
@@ -25,7 +25,7 @@ import textwrap
 ROOT = os.path.dirname(os.path.abspath(__file__))
 BANK = os.path.join(ROOT, "bank", "problems.json")
 PATTERNS = os.path.join(ROOT, "bank", "patterns.json")
-PLAN = os.path.join(ROOT, "plan.json")
+PLAN = os.environ.get("PRACTISE_PLAN") or os.path.join(ROOT, ".practise", "plan.json")
 PROGRESS = os.path.join(ROOT, "progress")
 ATTEMPTS_LOG = os.path.join(PROGRESS, "attempts.jsonl")
 DRILLS_LOG = os.path.join(PROGRESS, "drills.jsonl")
@@ -158,7 +158,7 @@ def pattern_stats():
         stats[name] = {
             "weight": pat["weight"],
             "total": len(probs),
-            "core": sum(1 for p in probs if p["amazon_core"]),
+            "core": sum(1 for p in probs if p["common"]),
             "tried": len(tried),
             "avg_rating": (sum(ratings) / len(ratings)) if ratings else None,
             "recognised": (sum(1 for r in recog if r) / len(recog)) if recog else None,
@@ -222,7 +222,7 @@ def pick_next(pattern=None, allow_premium=False, session=None, include_easy=Fals
     for name in pats:
         pool = [p for p in cands if p["patterns"][0] == name] or [p for p in cands if name in p["patterns"]]
         if pool:
-            pool.sort(key=lambda p: (not p["amazon_core"], DIFF_ORDER[p["difficulty"]], p["lc"]))
+            pool.sort(key=lambda p: (not p["common"], DIFF_ORDER[p["difficulty"]], p["lc"]))
             return pool[0], "new: weakest high-value pattern"
     return cands[0], "new"
 
@@ -480,7 +480,7 @@ def cmd_abandon(a):
 
 
 def pick_drill(n, pattern=None):
-    """Weighted sample: likely-at-Amazon patterns and previously missed problems come up more."""
+    """Weighted sample: high-weight patterns and previously missed problems come up more; recently seen ones less."""
     pat = resolve_pattern(pattern) if pattern else None
     if pattern and not pat:
         sys.exit("Unknown pattern '%s'." % pattern)
@@ -489,8 +489,18 @@ def pick_drill(n, pattern=None):
     missed = {}
     for d in read_jsonl(DRILLS_LOG):
         missed[d["id"]] = missed.get(d["id"], 0) + (0 if d["correct"] else 1)
+    last_seen = {}
+    for d in read_jsonl(DRILLS_LOG):
+        last_seen[d["id"]] = parse_date(d["date"])
     pool = list(bank)
-    pw = [max(weights[x] for x in p["patterns"]) + 2 * missed.get(p["id"], 0) for p in pool]
+    pw = []
+    for p in pool:
+        w = max(weights[x] for x in p["patterns"]) + 2 * missed.get(p["id"], 0)
+        seen = last_seen.get(p["id"])
+        if seen is not None:
+            age = (today() - seen).days
+            w *= 0.1 if age < 1 else 0.3 if age < 3 else 1.0   # avoid repeats across restarts
+        pw.append(w)
     rng = random.Random()
     chosen = []
     for _ in range(min(n, len(pool))):
@@ -635,6 +645,9 @@ def cmd_report(a):
 
 
 def cmd_plan(a):
+    if not os.path.exists(PLAN):
+        print("No plan. Copy plan.example.json to .practise/plan.json and edit the dates and problems.")
+        return
     plan = load_json(PLAN, {"sessions": []})
     sched = schedule()
     byid = problems_by_id()
@@ -659,13 +672,13 @@ def cmd_list(a):
     for p in sorted(problems(), key=lambda p: (p["patterns"][0], p["lc"])):
         if pat and pat not in p["patterns"]:
             continue
-        if a.core and not p["amazon_core"]:
+        if a.core and not p["common"]:
             continue
         s = sched.get(p["id"])
         state = ("r%d due %s" % (s["last"]["rating"], s["due"].isoformat())) if s else "new"
         print("%-26s %4d %-52s %-6s %s%s  %s" % (p["patterns"][0], p["lc"], p["title"][:52], p["difficulty"],
-              "A" if p["amazon_core"] else " ", "$" if p["premium"] else " ", state))
-    print("\nA = Amazon-frequent, $ = LeetCode premium")
+              "C" if p["common"] else " ", "$" if p["premium"] else " ", state))
+    print("\nC = commonly asked, $ = LeetCode premium")
 
 
 def cmd_template(a):
@@ -686,17 +699,18 @@ def cmd_patterns(a):
         print(wrap(p["signals"], "      "))
 
 
-MOCK_PROMPT = """You are a senior Amazon (AWS) engineer running the coding round of an SDE3 loop. \
-Interview me on LeetCode {lc} "{title}", but reword it as a realistic AWS/Amazon scenario and do NOT \
-name the problem or the pattern. Rules:
+MOCK_PROMPT = """You are a senior engineer at a large tech company running the coding round of a \
+senior software engineer interview loop. Interview me on LeetCode {lc} "{title}", but reword it as a \
+realistic industry scenario (services, orders, logs, deployments) and do NOT name the problem or the \
+pattern. Rules:
 - Present the problem in 3-5 sentences, deliberately leaving some requirements ambiguous.
 - Answer my clarifying questions as an interviewer would; reveal constraints only when asked.
 - Let me talk through my approach before coding; push back if I jump straight to code.
 - I'll paste my Java code; review it like a whiteboard (no running): find bugs by tracing, ask about edge cases.
 - Ask for time and space complexity, then 1-2 follow-ups (scale it up, make it concurrent, extend the API).
 - Keep to 35 minutes of interaction; tell me when we're at 25 minutes.
-- At the end score me 1-4 on Amazon's coding dimensions: Problem Solving, Data Structures & Algorithms, \
-Logical & Maintainable Code, plus communication, with one concrete thing to improve for each."""
+- At the end score me 1-4 on: Problem Solving, Data Structures & Algorithms, Logical & Maintainable \
+Code, and Communication, with one concrete thing to improve for each."""
 
 
 def cmd_mock(a):
@@ -704,7 +718,7 @@ def cmd_mock(a):
         p = find_problem(a.problem)
     else:
         sched = schedule()
-        pool = [p for p in problems() if p["id"] not in sched and p["amazon_core"] and not p["premium"]]
+        pool = [p for p in problems() if p["id"] not in sched and p["common"] and not p["premium"]]
         if not pool:
             pool = [p for p in problems() if not p["premium"]]
         p = random.choice(pool)
@@ -743,9 +757,9 @@ def cmd_add(a):
         sys.exit("Unrecognised pattern.")
     summary = a.summary or ask("One-line summary in your own words (used by drill): ", "")
     example = a.example or ask("Small example, input -> output (used by drill): ", "")
-    core = a.core if a.core else (ask("Amazon-frequent? y/N: ", "n").lower().startswith("y"))
+    core = a.core if a.core else (ask("Commonly asked? y/N: ", "n").lower().startswith("y"))
     bank.append({"id": slug, "lc": lc, "title": title, "url": "https://leetcode.com/problems/%s/" % slug,
-                 "difficulty": diff.capitalize(), "patterns": pats, "amazon_core": bool(core),
+                 "difficulty": diff.capitalize(), "patterns": pats, "common": bool(core),
                  "premium": bool(a.premium), "summary": summary, "example": example})
     save_json(BANK, bank)
     print("Added %s (%s)." % (title, ", ".join(pats)))
@@ -821,7 +835,7 @@ def main(argv=None):
 
     s = sub.add_parser("list", help="list the problem bank")
     s.add_argument("-p", "--pattern")
-    s.add_argument("--core", action="store_true", help="Amazon-frequent only")
+    s.add_argument("--core", action="store_true", help="commonly asked only")
     s.set_defaults(func=cmd_list)
 
     s = sub.add_parser("patterns", help="list patterns with weights and signals")

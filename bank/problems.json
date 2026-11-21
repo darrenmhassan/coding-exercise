@@ -8,7 +8,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Grid of land/water cells; count the separate land masses connected horizontally or vertically.",
   "example": "grid = [\"110\",\"100\",\"011\"] -> 2 (top-left block and bottom-right block)"
@@ -22,7 +22,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Grid of fresh and rotten fruit; each minute rot spreads to neighbours. How many minutes until none are fresh, or -1?",
   "example": "grid = [[2,1,1],[1,1,0],[0,1,1]] (2 rotten, 1 fresh, 0 empty) -> 4 minutes"
@@ -36,7 +36,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Turn a start word into an end word changing one letter at a time, every step must be a dictionary word. Fewest steps?",
   "example": "begin \"hit\", end \"cog\", words [hot,dot,dog,lot,log,cog] -> 5 (hit>hot>dot>dog>cog)"
@@ -51,7 +51,7 @@
    "Graphs",
    "Hash Maps"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Given a node of a connected undirected graph, return a deep copy of the whole graph.",
   "example": "node 1 of edges 1-2, 2-3, 3-4, 4-1 -> a new node 1 of an identical but separate graph"
@@ -65,7 +65,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Height map bordered by two oceans; find the cells from which water can flow downhill to both.",
   "example": "Pacific touches top/left edges, Atlantic bottom/right; heights [[1,2],[2,1]] -> [[0,1],[1,0]]"
@@ -79,7 +79,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Binary grid; length of the shortest 8-directional clear path from top-left to bottom-right.",
   "example": "grid [[0,0,0],[1,1,0],[1,1,0]] (0 = open) -> 4 (cells (0,0) (0,1) (1,2) (2,2), using a diagonal)"
@@ -93,7 +93,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Weighted directed edges between servers; time for a signal from one server to reach all of them.",
   "example": "edges [[2,1,1],[2,3,1],[3,4,1]] (from,to,time), start 2 -> 2 (node 4 is reached last)"
@@ -108,7 +108,7 @@
    "Graphs",
    "Dynamic Programming"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Flights with prices; cheapest route from A to B using at most K stopovers.",
   "example": "0->1 $100, 1->2 $100, 0->2 $500, k = 1 -> 200 (via 1); with k = 0 -> 500"
@@ -122,7 +122,7 @@
   "patterns": [
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Servers connected by cables; list every cable whose removal disconnects part of the network.",
   "example": "n = 4, edges [[0,1],[1,2],[2,0],[1,3]] -> [[1,3]] (the triangle survives any one cut)"
@@ -137,7 +137,7 @@
    "Topological Sort",
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Courses with prerequisite pairs; can every course be completed?",
   "example": "2 courses, [[1,0]] (1 needs 0) -> true; [[1,0],[0,1]] -> false (circular)"
@@ -152,7 +152,7 @@
    "Topological Sort",
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Courses with prerequisite pairs; return an order in which to take them all, or empty if impossible.",
   "example": "4 courses, [[1,0],[2,0],[3,1],[3,2]] -> [0,1,2,3] (or [0,2,1,3])"
@@ -167,7 +167,7 @@
    "Topological Sort",
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": true,
   "summary": "Words sorted in an unknown alphabet; deduce an ordering of the letters.",
   "example": "[\"wrt\",\"wrf\",\"er\",\"ett\",\"rftt\"] -> \"wertf\" (t before f, w before e, r before t, e before r)"
@@ -181,7 +181,7 @@
   "patterns": [
    "Tree DFS"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Binary tree and two nodes in it; find the deepest node that has both as descendants.",
   "example": "root 3, children 5 and 1; 5's children 6 and 2. LCA(6, 2) = 5, LCA(6, 1) = 3, LCA(5, 2) = 5"
@@ -195,7 +195,7 @@
   "patterns": [
    "Tree DFS"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Decide whether a binary tree satisfies the search-tree ordering property everywhere.",
   "example": "[2,1,3] -> true; [5,1,4,null,null,3,6] -> false (3 sits in 5's right subtree but is smaller than 5)"
@@ -209,7 +209,7 @@
   "patterns": [
    "Tree DFS"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Node values may be negative; find the largest sum of any path between two nodes.",
   "example": "[-10,9,20,null,null,15,7] -> 42 (path 15 -> 20 -> 7)"
@@ -223,7 +223,7 @@
   "patterns": [
    "Tree DFS"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Number of edges on the longest path between any two nodes of a binary tree.",
   "example": "[1,2,3,4,5] -> 3 (path 4 -> 2 -> 1 -> 3 has 3 edges)"
@@ -238,7 +238,7 @@
    "Tree DFS",
    "Custom Data Structures"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Design encode/decode functions that turn a binary tree into a string and back.",
   "example": "tree [1,2,3,null,null,4,5] -> e.g. \"1,2,#,#,3,4,#,#,5,#,#\" -> the same tree back"
@@ -253,7 +253,7 @@
    "Tree DFS",
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Binary tree, a target node and K; return every node exactly K edges from the target.",
   "example": "root 3: children 5,1; 5: 6,2; 2: 7,4; 1: 0,8. target 5, k = 2 -> [7,4,1]"
@@ -268,7 +268,7 @@
    "Tree DFS",
    "Hash Maps"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Rebuild a binary tree given two traversal orders of it.",
   "example": "preorder [3,9,20,15,7], inorder [9,3,15,20,7] -> tree 3 with left 9, right 20 (20's children 15, 7)"
@@ -282,7 +282,7 @@
   "patterns": [
    "Tree BFS"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Return a binary tree's values grouped by depth, top to bottom.",
   "example": "[3,9,20,null,null,15,7] -> [[3],[9,20],[15,7]]"
@@ -296,7 +296,7 @@
   "patterns": [
    "Tree BFS"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Values grouped by depth, alternating left-to-right and right-to-left per level.",
   "example": "[3,9,20,null,null,15,7] -> [[3],[20,9],[15,7]]"
@@ -311,7 +311,7 @@
    "Tree BFS",
    "Tree DFS"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Values you would see looking at a binary tree from its right-hand side.",
   "example": "[1,2,3,null,5,null,4] -> [1,3,4]"
@@ -326,7 +326,7 @@
    "Tree BFS",
    "Hash Maps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Group tree nodes by column (left to right), ordering ties by row then value.",
   "example": "[3,9,20,null,null,15,7] -> [[9],[3,15],[20],[7]] (columns -1, 0, 1, 2)"
@@ -340,7 +340,7 @@
   "patterns": [
    "Top K Elements"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Return the K values that occur most often in an integer array.",
   "example": "nums [1,1,1,2,2,3], k = 2 -> [1,2]"
@@ -354,7 +354,7 @@
   "patterns": [
    "Top K Elements"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Return the K most frequent words, ties broken alphabetically.",
   "example": "[\"i\",\"love\",\"leetcode\",\"i\",\"love\",\"coding\"], k = 2 -> [\"i\",\"love\"] (both twice; \"i\" < \"love\")"
@@ -368,7 +368,7 @@
   "patterns": [
    "Top K Elements"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "List of 2D points; return the K nearest to (0,0).",
   "example": "points [[3,3],[5,-1],[-2,4]], k = 2 -> [[3,3],[-2,4]] (squared distances 18, 26, 20)"
@@ -383,7 +383,7 @@
    "Top K Elements",
    "Greedy"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Rearrange a string so no two equal characters are adjacent, or report it can't be done.",
   "example": "\"aab\" -> \"aba\"; \"aaab\" -> \"\" (too many a's to separate)"
@@ -397,7 +397,7 @@
   "patterns": [
    "Top K Elements"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Find the Kth largest value in an unsorted array.",
   "example": "nums [3,2,1,5,6,4], k = 2 -> 5"
@@ -411,7 +411,7 @@
   "patterns": [
    "Heaps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Class that accepts numbers one at a time and can report the current median.",
   "example": "add 1, add 2 -> median 1.5; add 3 -> median 2"
@@ -426,7 +426,7 @@
    "Heaps",
    "Greedy"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "CPU tasks labelled by letter with a cooldown between identical tasks; minimum total time slots.",
   "example": "tasks [A,A,A,B,B,B], cooldown n = 2 -> 8 (A B idle A B idle A B)"
@@ -441,7 +441,7 @@
    "Heaps",
    "Merge Intervals"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": true,
   "summary": "Meeting time intervals; minimum number of rooms needed.",
   "example": "[[0,30],[5,10],[15,20]] -> 2 (the 0-30 meeting overlaps both others, which don't overlap each other)"
@@ -456,7 +456,7 @@
    "Heaps",
    "Merge Intervals"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Trips with passenger counts and pickup/drop-off points; can a car of given capacity do them all?",
   "example": "trips [[2,1,5],[3,3,7]] (people, from, to), capacity 4 -> false (5 people aboard between 3 and 5); capacity 5 -> true"
@@ -471,7 +471,7 @@
    "K-way Merge",
    "Heaps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Combine K sorted linked lists into one sorted list.",
   "example": "[1,4,5], [1,3,4], [2,6] -> [1,1,2,3,4,4,5,6]"
@@ -486,7 +486,7 @@
    "K-way Merge",
    "Modified Binary Search"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Matrix with sorted rows and columns; find the Kth smallest value.",
   "example": "[[1,5,9],[10,11,13],[12,13,15]], k = 8 -> 13"
@@ -500,7 +500,7 @@
   "patterns": [
    "Merge Intervals"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Collapse a list of intervals so none overlap.",
   "example": "[[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]"
@@ -514,7 +514,7 @@
   "patterns": [
    "Merge Intervals"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Sorted non-overlapping intervals; insert a new one, merging where needed.",
   "example": "[[1,3],[6,9]] insert [2,5] -> [[1,5],[6,9]]"
@@ -529,7 +529,7 @@
    "Merge Intervals",
    "Greedy"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Fewest intervals to remove so the rest don't overlap.",
   "example": "[[1,2],[2,3],[3,4],[1,3]] -> 1 (drop [1,3]; touching ends like [1,2],[2,3] don't count as overlap)"
@@ -544,7 +544,7 @@
    "Merge Intervals",
    "K-way Merge"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": true,
   "summary": "Each employee's sorted busy intervals; find the finite free time common to all.",
   "example": "employee A busy [1,2],[5,6]; B busy [1,3]; C busy [4,10] -> [[3,4]]"
@@ -558,7 +558,7 @@
   "patterns": [
    "Sliding Window"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Length of the longest run of a string with no repeated character.",
   "example": "\"abcabcbb\" -> 3 (\"abc\"); \"pwwkew\" -> 3 (\"wke\")"
@@ -573,7 +573,7 @@
    "Sliding Window",
    "Knowing What to Track"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Shortest substring of S containing every character of T (with multiplicity).",
   "example": "S = \"ADOBECODEBANC\", T = \"ABC\" -> \"BANC\""
@@ -587,7 +587,7 @@
   "patterns": [
    "Sliding Window"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Replace up to K characters; longest substring of one repeated letter achievable.",
   "example": "\"AABABBA\", k = 1 -> 4 (change one letter to get \"AAAA\" or \"BBBB\")"
@@ -601,7 +601,7 @@
   "patterns": [
    "Sliding Window"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Maximum of every contiguous window of size K.",
   "example": "nums [1,3,-1,-3,5,3,6,7], k = 3 -> [3,3,5,5,6,7]"
@@ -616,7 +616,7 @@
    "Sliding Window",
    "Knowing What to Track"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Start indices in S of every substring that is a rearrangement of P.",
   "example": "S = \"cbaebabacd\", P = \"abc\" -> [0,6] (\"cba\" and \"bac\")"
@@ -630,7 +630,7 @@
   "patterns": [
    "Two Pointers"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "All unique triples in an array that add to zero.",
   "example": "[-1,0,1,2,-1,-4] -> [[-1,-1,2],[-1,0,1]]"
@@ -645,7 +645,7 @@
    "Two Pointers",
    "Greedy"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Vertical lines of various heights; pick two that hold the most water.",
   "example": "heights [1,8,6,2,5,4,8,3,7] -> 49 (lines 8 and 7, 7 apart: min(8,7) x 7)"
@@ -660,7 +660,7 @@
    "Two Pointers",
    "Stacks"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Elevation bars; total rain water trapped between them.",
   "example": "[0,1,0,2,1,0,1,3,2,1,2,1] -> 6"
@@ -674,7 +674,7 @@
   "patterns": [
    "Fast and Slow Pointers"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Return the node where a linked list's cycle begins, if any.",
   "example": "3 -> 2 -> 0 -> -4 -> (back to 2) -> the node with value 2"
@@ -688,7 +688,7 @@
   "patterns": [
    "Fast and Slow Pointers"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Repeatedly sum the squares of digits; does it reach 1 or loop forever?",
   "example": "19 -> true (1+81 = 82, 64+4 = 68, 36+64 = 100, 1); 2 -> false (falls into a loop)"
@@ -702,7 +702,7 @@
   "patterns": [
    "In-place LL Manipulation"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Reverse the nodes of a linked list between positions left and right.",
   "example": "1->2->3->4->5, left 2, right 4 -> 1->4->3->2->5"
@@ -717,7 +717,7 @@
    "In-place LL Manipulation",
    "Fast and Slow Pointers"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Reorder L0,L1..Ln into L0,Ln,L1,Ln-1... in place.",
   "example": "1->2->3->4->5 -> 1->5->2->4->3"
@@ -732,7 +732,7 @@
    "In-place LL Manipulation",
    "Hash Maps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Deep copy a linked list whose nodes also point to an arbitrary other node.",
   "example": "nodes A->B->C where A.random = C, B.random = A -> new A'->B'->C' with A'.random = C', B'.random = A'"
@@ -746,7 +746,7 @@
   "patterns": [
    "Modified Binary Search"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Sorted array rotated at an unknown pivot; find a target in O(log n).",
   "example": "[4,5,6,7,0,1,2], target 0 -> 4; target 3 -> -1"
@@ -760,7 +760,7 @@
   "patterns": [
    "Modified Binary Search"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Find any index whose value is greater than both neighbours, in O(log n).",
   "example": "[1,2,1,3,5,6,4] -> 1 or 5 (2 and 6 are both bigger than their neighbours)"
@@ -774,7 +774,7 @@
   "patterns": [
    "Modified Binary Search"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Piles of items and H hours; minimum per-hour rate to finish them all in time.",
   "example": "piles [3,6,7,11], h = 8 hours -> 4 per hour (1+2+2+3 = 8 hours; 3 per hour needs 10)"
@@ -788,7 +788,7 @@
   "patterns": [
    "Modified Binary Search"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Package weights shipped in order; smallest ship capacity that delivers everything within D days.",
   "example": "weights [1,2,3,4,5,6,7,8,9,10], days 5 -> 15 ([1-5] [6,7] [8] [9] [10])"
@@ -803,7 +803,7 @@
    "Custom Data Structures",
    "Hash Maps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Design a fixed-capacity key-value cache that evicts the least recently used entry; O(1) get/put.",
   "example": "capacity 2: put(1), put(2), get(1) -> found; put(3) evicts 2 (least recently used); get(2) -> -1"
@@ -818,7 +818,7 @@
    "Custom Data Structures",
    "Stacks"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Stack that also returns its current minimum in O(1).",
   "example": "push -2, push 0, push -3: getMin -> -3; pop; top -> 0, getMin -> -2"
@@ -833,7 +833,7 @@
    "Custom Data Structures",
    "Modified Binary Search"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Key-value store where each set has a timestamp; get returns the value as of a given time.",
   "example": "set(\"foo\",\"bar\",t=1), set(\"foo\",\"bar2\",t=4): get(\"foo\",3) -> \"bar\", get(\"foo\",5) -> \"bar2\", get(\"foo\",0) -> \"\""
@@ -847,7 +847,7 @@
   "patterns": [
    "Custom Data Structures"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": true,
   "summary": "Count hits received in the past 5 minutes, given increasing timestamps.",
   "example": "hits at 1, 2, 3, 300: getHits(300) -> 4; getHits(301) -> 3 (hit at 1 is now over 300 seconds old)"
@@ -862,7 +862,7 @@
    "Custom Data Structures",
    "Trie"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": true,
   "summary": "In-memory file system supporting ls, mkdir, add content and read content by path.",
   "example": "mkdir(\"/a/b/c\"), addContent(\"/a/b/c/d\",\"hello\"): ls(\"/\") -> [\"a\"], readContent(\"/a/b/c/d\") -> \"hello\""
@@ -877,7 +877,7 @@
    "Custom Data Structures",
    "Hash Maps"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Cache evicting the least frequently used key (ties: least recent); O(1) ops.",
   "example": "capacity 2: put(1), put(2), get(1) (1 used twice), put(3) evicts 2 (used least often)"
@@ -891,7 +891,7 @@
   "patterns": [
    "Trie"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Implement insert, search and startsWith for a set of words.",
   "example": "insert(\"apple\"): search(\"apple\") -> true, search(\"app\") -> false, startsWith(\"app\") -> true"
@@ -906,7 +906,7 @@
    "Trie",
    "Sort and Search"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "As each character of a search word is typed, suggest up to 3 lexicographically smallest matching products.",
   "example": "products [mobile,mouse,moneypot,monitor,mousepad], word \"mouse\" -> after \"m\": [mobile,moneypot,monitor]; after \"mou\": [mouse,mousepad]"
@@ -921,7 +921,7 @@
    "Trie",
    "Backtracking"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Letter grid and a word list; find every word that can be traced through adjacent cells.",
   "example": "board rows \"oaan\" / \"etae\" / \"ihkr\" / \"iflv\", words [oath, pea, eat, rain] -> [\"eat\",\"oath\"]"
@@ -935,7 +935,7 @@
   "patterns": [
    "Hash Maps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Indices of the two numbers that add up to a target.",
   "example": "nums [2,7,11,15], target 9 -> [0,1]"
@@ -950,7 +950,7 @@
    "Hash Maps",
    "Knowing What to Track"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Group words that are rearrangements of each other.",
   "example": "[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"] -> [[eat,tea,ate],[tan,nat],[bat]]"
@@ -964,7 +964,7 @@
   "patterns": [
    "Hash Maps"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Length of the longest run of consecutive integers in an unsorted array, in O(n).",
   "example": "[100,4,200,1,3,2] -> 4 (1,2,3,4)"
@@ -979,7 +979,7 @@
    "Knowing What to Track",
    "Hash Maps"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Count contiguous subarrays (values may be negative) summing to K.",
   "example": "nums [1,1,1], k = 2 -> 2; nums [1,-1,0], k = 0 -> 3 ([1,-1], [0], [1,-1,0])"
@@ -993,7 +993,7 @@
   "patterns": [
    "Sort and Search"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Log lines with identifiers; order letter-logs by content then id, keep digit-logs in original order after them.",
   "example": "[\"d1 8 1\", \"l1 art can\", \"d2 3 6\", \"l2 own kit\", \"l3 art zero\"] -> [\"l1 art can\",\"l3 art zero\",\"l2 own kit\",\"d1 8 1\",\"d2 3 6\"]"
@@ -1007,7 +1007,7 @@
   "patterns": [
    "Stacks"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Decide whether a string of brackets is properly nested and closed.",
   "example": "\"([]{})\" -> true; \"(]\" -> false; \"([)]\" -> false"
@@ -1021,7 +1021,7 @@
   "patterns": [
    "Stacks"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "For each day, how many days until a warmer temperature.",
   "example": "[73,74,75,71,69,72,76,73] -> [1,1,4,2,1,1,0,0]"
@@ -1035,7 +1035,7 @@
   "patterns": [
    "Stacks"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Evaluate a string expression with + - * / and non-negative integers, no parentheses.",
   "example": "\" 3+5 / 2 \" -> 5 (5/2 truncates to 2); \"3+2*2\" -> 7"
@@ -1049,7 +1049,7 @@
   "patterns": [
    "Stacks"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Expand an encoding like 3[a2[c]] into the full string.",
   "example": "\"3[a2[c]]\" -> \"accaccacc\"; \"2[abc]3[cd]ef\" -> \"abcabccdcdcdef\""
@@ -1063,7 +1063,7 @@
   "patterns": [
    "Dynamic Programming"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Can a string be split into a sequence of dictionary words?",
   "example": "\"leetcode\", dict [leet, code] -> true; \"catsandog\", dict [cats,dog,sand,and,cat] -> false"
@@ -1077,7 +1077,7 @@
   "patterns": [
    "Dynamic Programming"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Fewest coins of given denominations that make an amount.",
   "example": "coins [1,2,5], amount 11 -> 3 (5+5+1); coins [2], amount 3 -> -1"
@@ -1092,7 +1092,7 @@
    "Dynamic Programming",
    "Modified Binary Search"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Length of the longest strictly increasing subsequence.",
   "example": "[10,9,2,5,3,7,101,18] -> 4 (2,3,7,101)"
@@ -1106,7 +1106,7 @@
   "patterns": [
    "Dynamic Programming"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Max total from a row of values without taking two adjacent ones.",
   "example": "[2,7,9,3,1] -> 12 (2 + 9 + 1)"
@@ -1121,7 +1121,7 @@
    "Dynamic Programming",
    "Matrices"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Binary matrix; area of the largest square made only of 1s.",
   "example": "[[\"1\",\"0\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\"],[\"0\",\"1\",\"1\",\"1\"]] -> 4 (a 2x2 square of 1s on the right)"
@@ -1136,7 +1136,7 @@
    "Dynamic Programming",
    "Two Pointers"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Longest substring that reads the same forwards and backwards.",
   "example": "\"babad\" -> \"bab\" (or \"aba\"); \"cbbd\" -> \"bb\""
@@ -1151,7 +1151,7 @@
    "Backtracking",
    "Matrices"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Can a word be traced through horizontally/vertically adjacent cells of a letter grid without reuse?",
   "example": "board rows \"ABCE\" / \"SFCS\" / \"ADEE\": \"ABCCED\" -> true, \"ABCB\" -> false (would reuse the B)"
@@ -1165,7 +1165,7 @@
   "patterns": [
    "Backtracking"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "All combinations of candidates (reusable) that sum to a target.",
   "example": "candidates [2,3,6,7], target 7 -> [[2,2,3],[7]]"
@@ -1179,7 +1179,7 @@
   "patterns": [
    "Backtracking"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "All well-formed strings of n pairs of brackets.",
   "example": "n = 3 -> [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]"
@@ -1193,7 +1193,7 @@
   "patterns": [
    "Subsets"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Return every subset of a set of distinct integers.",
   "example": "[1,2,3] -> [[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]"
@@ -1208,7 +1208,7 @@
    "Subsets",
    "Backtracking"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Every letter string a sequence of phone keypad digits could spell.",
   "example": "\"23\" -> [ad,ae,af,bd,be,bf,cd,ce,cf] (2 = abc, 3 = def)"
@@ -1223,7 +1223,7 @@
    "Subsets",
    "Backtracking"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Every ordering of a list of distinct integers.",
   "example": "[1,2,3] -> [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]"
@@ -1237,7 +1237,7 @@
   "patterns": [
    "Greedy"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Each value is the max jump length from there; can you reach the last index?",
   "example": "[2,3,1,1,4] -> true; [3,2,1,0,4] -> false (every route lands on the 0)"
@@ -1251,7 +1251,7 @@
   "patterns": [
    "Greedy"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Circular route of fuel stops and costs; which start lets you complete the loop?",
   "example": "gas [1,2,3,4,5], cost [3,4,5,1,2] -> 3 (start at index 3 and the tank never goes negative)"
@@ -1266,7 +1266,7 @@
    "Union Find",
    "Graphs"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Adjacency matrix of cities; count the directly-or-indirectly connected groups.",
   "example": "[[1,1,0],[1,1,0],[0,0,1]] -> 2 (cities 0 and 1 connected, city 2 alone)"
@@ -1281,7 +1281,7 @@
    "Union Find",
    "Graphs"
   ],
-  "amazon_core": true,
+  "common": true,
   "premium": false,
   "summary": "Accounts as name plus emails; merge accounts sharing any email.",
   "example": "[John: a@x, b@x], [John: b@x, c@x], [Mary: m@x] -> [John: a@x, b@x, c@x], [Mary: m@x]"
@@ -1295,7 +1295,7 @@
   "patterns": [
    "Union Find"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "A tree plus one extra edge; return the edge that creates the cycle.",
   "example": "edges [[1,2],[1,3],[2,3]] -> [2,3] (the last edge that closes the cycle)"
@@ -1309,7 +1309,7 @@
   "patterns": [
    "Matrices"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Rotate an n x n matrix 90 degrees clockwise in place.",
   "example": "[[1,2,3],[4,5,6],[7,8,9]] -> [[7,4,1],[8,5,2],[9,6,3]]"
@@ -1323,7 +1323,7 @@
   "patterns": [
    "Matrices"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Return all matrix elements in clockwise spiral order.",
   "example": "[[1,2,3],[4,5,6],[7,8,9]] -> [1,2,3,6,9,8,7,4,5]"
@@ -1337,7 +1337,7 @@
   "patterns": [
    "Matrices"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Wherever a cell is 0, zero its whole row and column, in place.",
   "example": "[[1,1,1],[1,0,1],[1,1,1]] -> [[1,0,1],[0,0,0],[1,0,1]]"
@@ -1351,7 +1351,7 @@
   "patterns": [
    "Cyclic Sort"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Smallest missing positive integer in an unsorted array, O(n) time and O(1) space.",
   "example": "[3,4,-1,1] -> 2; [1,2,0] -> 3; [7,8,9] -> 1"
@@ -1365,7 +1365,7 @@
   "patterns": [
    "Cyclic Sort"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Array of n values in 1..n; return the values that never appear.",
   "example": "[4,3,2,7,8,2,3,1] (n = 8) -> [5,6]"
@@ -1380,7 +1380,7 @@
    "Sort and Search",
    "Dynamic Programming"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Envelopes (w,h); most that nest strictly inside one another.",
   "example": "[[5,4],[6,4],[6,7],[2,3]] -> 3 ([2,3] in [5,4] in [6,7])"
@@ -1394,7 +1394,7 @@
   "patterns": [
    "Bitwise Manipulation"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Every value appears twice except one; find it in O(1) space.",
   "example": "[4,1,2,1,2] -> 4"
@@ -1408,7 +1408,7 @@
   "patterns": [
    "Math and Geometry"
   ],
-  "amazon_core": false,
+  "common": false,
   "premium": false,
   "summary": "Compute x raised to an integer power efficiently.",
   "example": "x = 2, n = 10 -> 1024; x = 2, n = -2 -> 0.25"
