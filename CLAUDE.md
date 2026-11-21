@@ -9,4 +9,6 @@ Darren's coding-interview practice repo. Solutions are written in Java; the tool
   from `progress/attempts.jsonl`, so never rewrite or reorder those files.
 - `/drill` (`.claude/commands/drill.md`) is the interactive pattern-recognition tutor; it uses
   `./practise drill-pick` and `./practise drill-log`.
+- `/coach` (`.claude/commands/coach.md`) is a coached coding round; it uses `./practise next --json`,
+  `start`, `done` and `drill-log`.
 - When adding a problem, include an own-words `summary` and a small `example` (input -> output).

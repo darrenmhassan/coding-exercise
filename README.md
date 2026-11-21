@@ -49,6 +49,25 @@ answer with `./practise drill-log`, so `stats` and future picks include tutor se
 high-weight patterns and ones you've missed, and away from ones you drilled in the last few days,
 so restarting gives you a different set.
 
+## Coached coding: `/coach` in Claude Code
+
+```sh
+/coach              # next problem from the schedule (plan > due > weakest pattern)
+/coach graphs       # a problem from one pattern
+/coach lru-cache    # a specific problem
+```
+
+One interview-style round, about 30-45 minutes. Claude presents the problem as a scenario, you name
+the pattern, then clarify requirements and outline the approach before coding. You code in
+`attempts/<date>_<id>/Solution.java` (or paste into the chat) with a 30-minute timer, and say
+"hint" for a hint ladder: a guiding question, then the structure, then a line or two of code,
+never the whole solution unless you say "give up". When you're done, Claude reviews it
+whiteboard-style (you trace the example; it points at failing inputs rather than fixing them), then
+verifies it with a small `Main.java` harness, asks a follow-up, proposes a rating and logs it with
+`./practise done`, so it feeds the spaced-repetition schedule like any other attempt.
+
+Use `/drill` for fast recognition reps and `/coach` for full problems.
+
 ## Pattern templates
 
 `bank/templates/<pattern>.java` holds a short reference implementation for each pattern (the
@@ -99,6 +118,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `progress/drills.jsonl` | drill answers |
 | `attempts/` | my written solutions |
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
+| `.claude/commands/coach.md` | the `/coach` coached-coding prompt |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
 `stats` reads the progress logs in the copy you run it in, so each machine shows its own practice.

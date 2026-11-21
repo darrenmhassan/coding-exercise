@@ -399,6 +399,11 @@ def cmd_next(a):
     p, reason = pick_next(pat, a.premium, session, a.easy)
     if not p:
         sys.exit(reason)
+    if a.json:
+        sigs = {x["name"]: x["signals"] for x in patterns()}
+        q = dict(p, reason=reason, signals={n: sigs[n] for n in p["patterns"]})
+        print(json.dumps({"grid": pattern_grid(""), "problem": q}, indent=1))
+        return
     if a.peek:
         print("%s  (%s)  %s" % (p["title"], reason, p["url"]))
         return
@@ -778,6 +783,7 @@ def main(argv=None):
     s.add_argument("--premium", action="store_true", help="allow LeetCode premium problems")
     s.add_argument("--easy", action="store_true", help="allow Easy problems for new picks")
     s.add_argument("--peek", action="store_true", help="show the pick without starting it")
+    s.add_argument("--json", action="store_true", help="(for /coach) print the pick as JSON without starting it")
     s.add_argument("--no-open", action="store_true", help="don't open the editor")
     s.set_defaults(func=cmd_next)
 
