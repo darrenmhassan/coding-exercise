@@ -105,6 +105,8 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
+- `./practise sync` merges the progress logs from every device and cloud session and publishes them
+  (see Syncing below).
 - `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
   `./practise drill`): when, how, focus, answered, correct, score, hints, minutes and the patterns missed.
   Sessions are never merged, and stopped or unfinished ones are left out. `report` includes the table too.
@@ -128,6 +130,20 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 `stats` reads the progress logs in the copy you run it in, so each machine shows its own practice.
 If you do commit the logs from more than one machine, `.gitattributes` merges `progress/*.jsonl`
 with git's union driver, so pulling keeps both sets of lines instead of conflicting.
+
+## Syncing across devices and cloud sessions
+
+Every result is pushed to GitHub as soon as it's recorded: each `/drill` or `./practise drill`
+answer, the start and end of each drill session, and each `./practise done`. `/stats` and
+`/sessions` (and `stats --sync`, `sessions --sync`) pull everything in first, so they show all your
+practice wherever it happened.
+
+How it works: `practise sync` takes the union of the lines in `progress/*.jsonl` from your copy,
+`origin/master` and any cloud-session branches (`origin/claude/*`), writes them locally, and pushes
+a commit that changes only those log files onto `origin/master`. It never merges code from another
+branch. If a cloud session isn't allowed to push to `master`, the log goes to its own branch and
+the next sync from anywhere else folds it in. If GitHub is unreachable, the answer is still saved
+locally and goes up with the next sync. Use `--no-sync` on `drill`, `drill-log` or `done` to skip it.
 
 Everything except `.practise/` (the in-progress attempt and your local plan) is meant to be committed, so history
 travels with the repo.
