@@ -40,12 +40,14 @@ cd ~/home/coding-exercise && claude
 /drill 5 graphs   # focus on one pattern
 ```
 
-Claude presents each problem as an Amazon-style scenario with an example, asks which pattern and
+Claude presents each problem as a realistic industry scenario with an example, asks which pattern and
 why, gives a guiding question if you're wrong, then explains the signals, the key insight, a Java
 sketch of the solution, complexity and a common trap. It picks problems with
 `./practise drill-pick` (weighted towards likely and previously missed patterns) and logs your first
 answer with `./practise drill-log`, so `stats` and future picks include tutor sessions.
-`./practise drill` remains as the quick offline version.
+`./practise drill` remains as the quick offline version. Both pick problems at random, weighted towards
+high-weight patterns and ones you've missed, and away from ones you drilled in the last few days,
+so restarting gives you a different set.
 
 ## Pattern templates
 
@@ -61,12 +63,14 @@ Edit them freely; the file name is the pattern name in lower case with dashes.
 
 ## How `next` chooses
 
-1. **Today's plan session** (`plan.json`): its problems in order, then its stretch problems.
+1. **Today's plan session**, if you have a plan: its problems in order, then its stretch problems.
+   Plans are optional and local: copy `plan.example.json` to `.practise/plan.json` (git-ignored) and
+   set your own dates, or point `PRACTISE_PLAN` at a file elsewhere.
 2. **Due reviews**: problems whose spaced-repetition date has arrived, most overdue first.
    Intervals: first attempt 1/2/4/7 days for ratings 1-4, then roughly x1 / x1.2 / x2.5 / x3.5.
 3. **New problem from the highest-need pattern**, where need = weight x (1 - mastery).
-   Weight (1-5) is how likely the pattern is at Amazon; mastery blends latest ratings, coverage
-   (3 problems tried counts as full coverage) and drill accuracy. Amazon-frequent Mediums first.
+   Weight (1-5) is how often the pattern comes up in interviews; mastery blends latest ratings, coverage
+   (3 problems tried counts as full coverage) and drill accuracy. Commonly asked Mediums first.
 
 Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premium), `--easy`,
 `--timebox 35`, `--peek` (show without starting).
@@ -74,8 +78,8 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 ## Other commands
 
 - `./practise mock [problem]` copies a mock-interviewer prompt to the clipboard for a Claude chat
-  (reworded Amazon scenario, clarifying questions, follow-ups, scoring on Amazon's coding
-  dimensions) and starts a 35-minute timer.
+  (reworded industry scenario, clarifying questions, follow-ups, scoring on problem solving,
+  DS&A, logical & maintainable code and communication) and starts a 35-minute timer.
 - `./practise start <slug|number>` starts a specific problem.
 - `./practise list [--pattern X] [--core]` shows the bank and your state per problem.
 - `./practise patterns` lists patterns, weights and recognition signals.
@@ -87,17 +91,20 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 
 | path | what |
 |---|---|
-| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), Amazon-frequent flag, premium flag, one-line summary and a small input -> output example, both used by `drill` |
+| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), commonly-asked flag, premium flag, one-line summary and a small input -> output example, both used by `drill` |
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
 | `bank/templates/` | one Java reference template per pattern |
-| `plan.json` | dated sessions (edit or replace for the next interview) |
+| `.practise/plan.json` | optional dated sessions, local only (copy `plan.example.json`) |
 | `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it |
 | `progress/drills.jsonl` | drill answers |
 | `attempts/` | my written solutions |
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
-Everything except `.practise/` (the in-progress attempt) is meant to be committed, so history
+`.gitattributes` merges the `progress/*.jsonl` logs with git's union driver, so practising on two
+machines and pulling doesn't conflict (both sets of lines are kept).
+
+Everything except `.practise/` (the in-progress attempt and your local plan) is meant to be committed, so history
 travels with the repo.
 
 ## Ideas for later

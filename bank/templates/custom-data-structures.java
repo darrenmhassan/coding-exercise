@@ -22,4 +22,4 @@ class LRUCache {
     private void remove(Node n) { n.prev.next = n.next; n.next.prev = n.prev; }
     private void addFront(Node n) { n.next = head.next; n.prev = head; head.next.prev = n; head.next = n; }
 }
-// SDE3 signal: state the invariants, name things well, mention thread safety as a follow-up.
+// Senior-level signal: state the invariants, name things well, mention thread safety as a follow-up.

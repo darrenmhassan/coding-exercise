@@ -1,0 +1,44 @@
+{
+ "name": "Example plan: copy to .practise/plan.json (not committed) and set your own dates",
+ "sessions": [
+  {
+   "id": "day1",
+   "date": "2030-01-01",
+   "minutes": 120,
+   "focus": "Grids, Top K, intervals",
+   "steps": [
+    "15 min: /drill 6 in Claude Code (or ./practise drill -n 15)",
+    "Timed problems below, talking aloud, written without running; verify on LeetCode",
+    "10 min: ./practise stats"
+   ],
+   "problems": ["number-of-islands", "rotting-oranges", "top-k-frequent-words", "merge-intervals"],
+   "stretch": ["k-closest-points-to-origin", "word-ladder"]
+  },
+  {
+   "id": "day2",
+   "date": "2030-01-02",
+   "minutes": 165,
+   "focus": "Trees, dependencies, sliding window, a design-a-class problem",
+   "steps": [
+    "15 min: /drill 6 in Claude Code",
+    "Timed problems below",
+    "./practise next for anything due, then ./practise stats"
+   ],
+   "problems": ["lowest-common-ancestor-of-a-binary-tree", "binary-tree-zigzag-level-order-traversal", "course-schedule-ii", "longest-substring-without-repeating-characters", "lru-cache"],
+   "stretch": ["find-median-from-data-stream", "search-suggestions-system"]
+  },
+  {
+   "id": "day3",
+   "date": "2030-01-03",
+   "minutes": 150,
+   "focus": "Consolidate, one full mock, then stop",
+   "steps": [
+    "15 min: /drill 8 in Claude Code",
+    "50 min: ./practise mock on a problem you haven't seen",
+    "Problems below, then ./practise next for due / weakest items"
+   ],
+   "problems": ["word-break", "reorganize-string"],
+   "stretch": ["merge-k-sorted-lists", "time-based-key-value-store"]
+  }
+ ]
+}
