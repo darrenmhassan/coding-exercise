@@ -1,2 +1,3 @@
 {"answer": "Matrices", "correct": false, "date": "2026-11-21", "guess": "Two Pointers", "hinted": false, "id": "rotate-image", "source": "claude"}
 {"answer": "Modified Binary Search", "correct": true, "date": "2026-11-21", "guess": "Modified Binary Search", "hinted": false, "id": "search-in-rotated-sorted-array", "source": "claude"}
+{"answer": "Backtracking", "correct": true, "date": "2026-11-21", "guess": "Backtracking", "hinted": false, "id": "word-search", "source": "claude"}
