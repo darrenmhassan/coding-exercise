@@ -31,6 +31,7 @@ ATTEMPTS_LOG = os.path.join(PROGRESS, "attempts.jsonl")
 DRILLS_LOG = os.path.join(PROGRESS, "drills.jsonl")
 ATTEMPTS_DIR = os.path.join(ROOT, "attempts")
 CURRENT = os.path.join(ROOT, ".practise", "current.json")
+TEMPLATES = os.path.join(ROOT, "bank", "templates")
 
 DEFAULT_TIMEBOX = 25
 RATINGS = {
@@ -262,6 +263,27 @@ def resolve_pattern(text, names=None):
     return words[0] if len(words) == 1 else None
 
 
+def template_path(name):
+    slug = "".join(ch if ch.isalnum() else "-" for ch in name.lower()).strip("-")
+    while "--" in slug:
+        slug = slug.replace("--", "-")
+    return os.path.join(TEMPLATES, slug + ".java")
+
+
+def show_pattern(name, signals=True, code=True, indent="    "):
+    """Print a pattern's recognition signals and its Java template."""
+    pat = next((p for p in patterns() if p["name"] == name), None)
+    if pat and signals:
+        print(wrap("%s - when to use: %s" % (name, pat["signals"]), indent))
+    path = template_path(name)
+    if code and os.path.exists(path):
+        print()
+        with open(path) as f:
+            for line in f.read().rstrip().splitlines():
+                print(indent + "| " + line)
+        print()
+
+
 def print_pattern_menu():
     names = pattern_names()
     cols = 3
@@ -438,9 +460,10 @@ def cmd_done(a):
     print()
     print("  Pattern(s): %s  %s" % (", ".join(p["patterns"]), "- you got it" if pattern_ok else "- you used " + used))
     if not pattern_ok:
-        for pat in patterns():
-            if pat["name"] in p["patterns"]:
-                print(wrap("%s: %s" % (pat["name"], pat["signals"]), "    "))
+        print()
+        show_pattern(p["patterns"][0])
+    else:
+        print("  (./practise template %s shows the reference template)" % ("\"%s\"" % used if " " in used else used))
     print("  Next review: %s (in %d days)" % (s["due"].isoformat(), s["interval"]))
 
 
@@ -488,8 +511,17 @@ def cmd_drill(a):
                                   "answer": p["patterns"][0], "correct": ok})
         mark = "yes" if ok else "no, you said %s" % got
         print("  %s -> %s  (%s)" % (mark, " / ".join(p["patterns"]), p["title"]))
+        primary = p["patterns"][0] if not ok or got not in p["patterns"] else got
         if not ok:
-            print(wrap(sigs[p["patterns"][0]], "    "))
+            if got:
+                print(wrap("You said %s: %s" % (got, sigs.get(got, "")), "    "))
+            show_pattern(primary, code=not a.no_code)
+        elif a.code:
+            show_pattern(primary)
+        elif not a.no_code:
+            more = ask("  enter = next, t = show the template: ", "")
+            if more and more.lower().startswith("t"):
+                show_pattern(primary)
     if chosen:
         print("\nScore: %d/%d" % (right, len(chosen)))
 
@@ -593,6 +625,18 @@ def cmd_list(a):
         print("%-26s %4d %-52s %-6s %s%s  %s" % (p["patterns"][0], p["lc"], p["title"][:52], p["difficulty"],
               "A" if p["amazon_core"] else " ", "$" if p["premium"] else " ", state))
     print("\nA = Amazon-frequent, $ = LeetCode premium")
+
+
+def cmd_template(a):
+    ref = a.pattern
+    if not ref:
+        print_pattern_menu()
+        ref = ask("  pattern: ")
+    name = resolve_pattern(ref)
+    if not name:
+        sys.exit("Unknown pattern '%s'." % ref)
+    print()
+    show_pattern(name, indent="  ")
 
 
 def cmd_patterns(a):
@@ -704,7 +748,13 @@ def main(argv=None):
     s = sub.add_parser("drill", help="rapid pattern-recognition quiz")
     s.add_argument("-n", type=int, default=10)
     s.add_argument("-p", "--pattern")
+    s.add_argument("--code", action="store_true", help="always show the template, even when right")
+    s.add_argument("--no-code", action="store_true", help="never show templates (fast mode)")
     s.set_defaults(func=cmd_drill)
+
+    s = sub.add_parser("template", help="show a pattern's signals and Java template")
+    s.add_argument("pattern", nargs="?", help="number or name; omit to pick from the menu")
+    s.set_defaults(func=cmd_template)
 
     s = sub.add_parser("stats", help="mastery by pattern")
     s.set_defaults(func=cmd_stats)
