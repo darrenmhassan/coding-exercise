@@ -9,3 +9,5 @@
 {"answer": "Top K Elements", "correct": true, "date": "2026-11-21", "guess": "Top K Elements", "hinted": false, "id": "top-k-frequent-words", "source": "claude"}
 {"answer": "Dynamic Programming", "correct": false, "date": "2026-11-21", "guess": "Greedy", "hinted": false, "id": "coin-change", "source": "claude"}
 {"answer": "Matrices", "correct": false, "date": "2026-11-21", "guess": "Two Pointers", "hinted": false, "id": "rotate-image", "source": "claude"}
+{"answer": "Modified Binary Search", "correct": true, "date": "2026-11-21", "guess": "Modified Binary Search", "hinted": false, "id": "search-in-rotated-sorted-array", "source": "claude"}
+{"answer": "Backtracking", "correct": true, "date": "2026-11-21", "guess": "Backtracking", "hinted": false, "id": "word-search", "source": "claude"}
