@@ -1,0 +1,142 @@
+[
+ {
+  "name": "Two Pointers",
+  "weight": 3,
+  "signals": "Linear structure (array/LL/string), process pairs at two positions, often sorted input."
+ },
+ {
+  "name": "Fast and Slow Pointers",
+  "weight": 1,
+  "signals": "Linear structure; cycle detection, middle element, intersection of two lists."
+ },
+ {
+  "name": "Sliding Window",
+  "weight": 4,
+  "signals": "Contiguous subarray/substring; repeated computation on a moving window; longest/shortest with a constraint."
+ },
+ {
+  "name": "Merge Intervals",
+  "weight": 4,
+  "signals": "Input is intervals (meetings, bookings); overlaps, gaps, conflicts. Sort by start, compare with previous."
+ },
+ {
+  "name": "In-place LL Manipulation",
+  "weight": 2,
+  "signals": "Restructure a linked list without changing node data, O(1) space. prev/curr/next."
+ },
+ {
+  "name": "Heaps",
+  "weight": 4,
+  "signals": "Stream of data, repeated min/max, median, custom priority selection."
+ },
+ {
+  "name": "K-way Merge",
+  "weight": 3,
+  "signals": "Merge K sorted lists/arrays/matrix rows; Kth smallest across sorted collections. Min heap of heads."
+ },
+ {
+  "name": "Top K Elements",
+  "weight": 4,
+  "signals": "Subset of largest/smallest/most frequent from unsorted data. Heap of size K."
+ },
+ {
+  "name": "Modified Binary Search",
+  "weight": 3,
+  "signals": "Sorted or partially sorted (rotated) data; first/last occurrence; search on the answer space."
+ },
+ {
+  "name": "Subsets",
+  "weight": 2,
+  "signals": "Generate combinations, permutations or the power set."
+ },
+ {
+  "name": "Greedy",
+  "weight": 2,
+  "signals": "Optimisation where a locally optimal choice is globally optimal; usually after sorting."
+ },
+ {
+  "name": "Backtracking",
+  "weight": 3,
+  "signals": "Explore every choice to find all/any feasible solution; prune dead ends; grid word search."
+ },
+ {
+  "name": "Dynamic Programming",
+  "weight": 3,
+  "signals": "Overlapping subproblems + optimal substructure; count ways / min / max."
+ },
+ {
+  "name": "Cyclic Sort",
+  "weight": 1,
+  "signals": "Integers in a small known range (1..n); find missing or duplicate values in place."
+ },
+ {
+  "name": "Topological Sort",
+  "weight": 3,
+  "signals": "Dependencies / prerequisites forming a partial order; produce a valid order or detect a cycle."
+ },
+ {
+  "name": "Sort and Search",
+  "weight": 2,
+  "signals": "Sort first, then binary search / two pointers on ordered relationships."
+ },
+ {
+  "name": "Matrices",
+  "weight": 2,
+  "signals": "2D array manipulation: rotate, spiral, in-place marking."
+ },
+ {
+  "name": "Stacks",
+  "weight": 3,
+  "signals": "Nested structures (brackets), reverse-order processing, expression evaluation, next greater element."
+ },
+ {
+  "name": "Graphs",
+  "weight": 5,
+  "signals": "Network of related objects or a grid; connectivity, shortest path (BFS / Dijkstra), flood fill."
+ },
+ {
+  "name": "Tree DFS",
+  "weight": 5,
+  "signals": "Binary tree, answer built along root-to-leaf paths or from children (post-order); LCA, path sums."
+ },
+ {
+  "name": "Tree BFS",
+  "weight": 4,
+  "signals": "Binary tree level-by-level; level order, views, nearest to the root."
+ },
+ {
+  "name": "Trie",
+  "weight": 3,
+  "signals": "Prefix matching, autocomplete, dictionary of words."
+ },
+ {
+  "name": "Hash Maps",
+  "weight": 4,
+  "signals": "Repeated O(1) lookups, pairwise relations, grouping by key."
+ },
+ {
+  "name": "Knowing What to Track",
+  "weight": 3,
+  "signals": "Frequency counting then using the counts; fixed alphabet; prefix sums with a map."
+ },
+ {
+  "name": "Union Find",
+  "weight": 2,
+  "signals": "Group elements by a property; merge sets; connectivity / cycle in undirected edges."
+ },
+ {
+  "name": "Custom Data Structures",
+  "weight": 4,
+  "signals": "Design a class combining structures (map + list etc.) with O(1) ops: LRU, min stack."
+ },
+ {
+  "name": "Bitwise Manipulation",
+  "weight": 1,
+  "signals": "Bit-level tricks: XOR to cancel pairs, masks."
+ },
+ {
+  "name": "Math and Geometry",
+  "weight": 1,
+  "signals": "Number theory or geometric reasoning."
+ }
+]

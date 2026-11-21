@@ -1,0 +1,6 @@
+node_modules/
+.practise/
+.DS_Store
+.idea/
+*.class
+out/
