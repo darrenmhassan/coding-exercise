@@ -31,6 +31,18 @@ done, paste it into LeetCode. Rate honestly:
 
 The pattern isn't shown when a problem starts, only after `done`, so recognition is practised too.
 
+## Pattern templates
+
+`bank/templates/<pattern>.java` holds a short reference implementation for each pattern (the
+canonical loop shape, with comments on the key invariant and common variants). They're shown:
+
+- in `drill` when you name the wrong pattern (after the "when to use" signals for both your answer
+  and the right one); when you're right, press `t` to see it. `--code` always shows it, `--no-code` never;
+- in `done` when the pattern you used doesn't match the bank;
+- on demand with `./practise template graphs` (or no argument to pick from the menu).
+
+Edit them freely; the file name is the pattern name in lower case with dashes.
+
 ## How `next` chooses
 
 1. **Today's plan session** (`plan.json`): its problems in order, then its stretch problems.
@@ -61,6 +73,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 |---|---|
 | `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), Amazon-frequent flag, premium flag, one-line summary used by `drill` |
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
+| `bank/templates/` | one Java reference template per pattern |
 | `plan.json` | dated sessions (edit or replace for the next interview) |
 | `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it |
 | `progress/drills.jsonl` | drill answers |
