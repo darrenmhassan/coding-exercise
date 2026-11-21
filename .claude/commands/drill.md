@@ -33,9 +33,9 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
    `drill-log --guess` (it accepts either).
    No hints of any kind before my first answer unless I explicitly ask for one.
 2. **Wait for my answer.** Never answer for me.
-3. **Log my FIRST answer** straight away: `./practise drill-log --id <id> --guess "<my pattern>"`
-   (map my wording to the closest valid name; add `--hinted` if I asked for a hint before
-   answering). If I said "skip" without a guess, don't log it.
+3. **Remember my FIRST answer**, but do NOT log it yet: logging writes `progress/drills.jsonl`, and
+   the terminal shows that diff, which would reveal whether I was right. Never run any command
+   between my answer and the moment you reveal the pattern.
 4. **Teach**, briefly and concretely:
    - If I was right: confirm, then check my reasoning. If my "why" was vague or wrong, say which
      signal I should have cited. If there's a second valid pattern, mention it in a line.
@@ -51,7 +51,12 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
      - **Complexity**: time and space, one line.
      - **Trap**: one common mistake, or a follow-up an Amazon interviewer would ask.
    Keep each teaching block to about 25-40 lines including code.
-5. Move to the next problem when I say "next" (or start answering it).
+5. **Now log** my FIRST answer (after the pattern has been revealed):
+   `./practise drill-log --id <id> --guess "<my first answer>"` (map my wording to the closest
+   valid name or pass the grid number; add `--hinted` if I asked for a hint before answering).
+   If I said "skip" without a guess, don't log it. A guess made after your guiding question is
+   NOT the first answer.
+6. Move to the next problem when I say "next" (or start answering it).
 
 ## Adapt as we go
 
