@@ -1,0 +1,1318 @@
+[
+ {
+  "id": "number-of-islands",
+  "lc": 200,
+  "title": "Number of Islands",
+  "url": "https://leetcode.com/problems/number-of-islands/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Grid of land/water cells; count the separate land masses connected horizontally or vertically."
+ },
+ {
+  "id": "rotting-oranges",
+  "lc": 994,
+  "title": "Rotting Oranges",
+  "url": "https://leetcode.com/problems/rotting-oranges/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Grid of fresh and rotten fruit; each minute rot spreads to neighbours. How many minutes until none are fresh, or -1?"
+ },
+ {
+  "id": "word-ladder",
+  "lc": 127,
+  "title": "Word Ladder",
+  "url": "https://leetcode.com/problems/word-ladder/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Turn a start word into an end word changing one letter at a time, every step must be a dictionary word. Fewest steps?"
+ },
+ {
+  "id": "clone-graph",
+  "lc": 133,
+  "title": "Clone Graph",
+  "url": "https://leetcode.com/problems/clone-graph/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs",
+   "Hash Maps"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Given a node of a connected undirected graph, return a deep copy of the whole graph."
+ },
+ {
+  "id": "pacific-atlantic-water-flow",
+  "lc": 417,
+  "title": "Pacific Atlantic Water Flow",
+  "url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Height map bordered by two oceans; find the cells from which water can flow downhill to both."
+ },
+ {
+  "id": "shortest-path-in-binary-matrix",
+  "lc": 1091,
+  "title": "Shortest Path in Binary Matrix",
+  "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Binary grid; length of the shortest 8-directional clear path from top-left to bottom-right."
+ },
+ {
+  "id": "network-delay-time",
+  "lc": 743,
+  "title": "Network Delay Time",
+  "url": "https://leetcode.com/problems/network-delay-time/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Weighted directed edges between servers; time for a signal from one server to reach all of them."
+ },
+ {
+  "id": "cheapest-flights-within-k-stops",
+  "lc": 787,
+  "title": "Cheapest Flights within K Stops",
+  "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Graphs",
+   "Dynamic Programming"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Flights with prices; cheapest route from A to B using at most K stopovers."
+ },
+ {
+  "id": "critical-connections-in-a-network",
+  "lc": 1192,
+  "title": "Critical Connections in a Network",
+  "url": "https://leetcode.com/problems/critical-connections-in-a-network/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Servers connected by cables; list every cable whose removal disconnects part of the network."
+ },
+ {
+  "id": "course-schedule",
+  "lc": 207,
+  "title": "Course Schedule",
+  "url": "https://leetcode.com/problems/course-schedule/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Topological Sort",
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Courses with prerequisite pairs; can every course be completed?"
+ },
+ {
+  "id": "course-schedule-ii",
+  "lc": 210,
+  "title": "Course Schedule II",
+  "url": "https://leetcode.com/problems/course-schedule-ii/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Topological Sort",
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Courses with prerequisite pairs; return an order in which to take them all, or empty if impossible."
+ },
+ {
+  "id": "alien-dictionary",
+  "lc": 269,
+  "title": "Alien Dictionary",
+  "url": "https://leetcode.com/problems/alien-dictionary/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Topological Sort",
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": true,
+  "summary": "Words sorted in an unknown alphabet; deduce an ordering of the letters."
+ },
+ {
+  "id": "lowest-common-ancestor-of-a-binary-tree",
+  "lc": 236,
+  "title": "Lowest Common Ancestor of a Binary Tree",
+  "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree DFS"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Binary tree and two nodes in it; find the deepest node that has both as descendants."
+ },
+ {
+  "id": "validate-binary-search-tree",
+  "lc": 98,
+  "title": "Validate Binary Search Tree",
+  "url": "https://leetcode.com/problems/validate-binary-search-tree/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree DFS"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Decide whether a binary tree satisfies the search-tree ordering property everywhere."
+ },
+ {
+  "id": "binary-tree-maximum-path-sum",
+  "lc": 124,
+  "title": "Binary Tree Maximum Path Sum",
+  "url": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Tree DFS"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Node values may be negative; find the largest sum of any path between two nodes."
+ },
+ {
+  "id": "diameter-of-binary-tree",
+  "lc": 543,
+  "title": "Diameter of Binary Tree",
+  "url": "https://leetcode.com/problems/diameter-of-binary-tree/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Tree DFS"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Number of edges on the longest path between any two nodes of a binary tree."
+ },
+ {
+  "id": "serialize-and-deserialize-binary-tree",
+  "lc": 297,
+  "title": "Serialize and Deserialize Binary Tree",
+  "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Tree DFS",
+   "Custom Data Structures"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Design encode/decode functions that turn a binary tree into a string and back."
+ },
+ {
+  "id": "all-nodes-distance-k-in-binary-tree",
+  "lc": 863,
+  "title": "All Nodes Distance K in Binary Tree",
+  "url": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree DFS",
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Binary tree, a target node and K; return every node exactly K edges from the target."
+ },
+ {
+  "id": "construct-binary-tree-from-preorder-and-inorder-traversal",
+  "lc": 105,
+  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+  "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree DFS",
+   "Hash Maps"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Rebuild a binary tree given two traversal orders of it."
+ },
+ {
+  "id": "binary-tree-level-order-traversal",
+  "lc": 102,
+  "title": "Binary Tree Level Order Traversal",
+  "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree BFS"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Return a binary tree's values grouped by depth, top to bottom."
+ },
+ {
+  "id": "binary-tree-zigzag-level-order-traversal",
+  "lc": 103,
+  "title": "Binary Tree Zigzag Level Order Traversal",
+  "url": "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree BFS"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Values grouped by depth, alternating left-to-right and right-to-left per level."
+ },
+ {
+  "id": "binary-tree-right-side-view",
+  "lc": 199,
+  "title": "Binary Tree Right Side View",
+  "url": "https://leetcode.com/problems/binary-tree-right-side-view/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Tree BFS",
+   "Tree DFS"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Values you would see looking at a binary tree from its right-hand side."
+ },
+ {
+  "id": "vertical-order-traversal-of-a-binary-tree",
+  "lc": 987,
+  "title": "Vertical Order Traversal of a Binary Tree",
+  "url": "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Tree BFS",
+   "Hash Maps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Group tree nodes by column (left to right), ordering ties by row then value."
+ },
+ {
+  "id": "top-k-frequent-elements",
+  "lc": 347,
+  "title": "Top K Frequent Elements",
+  "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Top K Elements"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Return the K values that occur most often in an integer array."
+ },
+ {
+  "id": "top-k-frequent-words",
+  "lc": 692,
+  "title": "Top K Frequent Words",
+  "url": "https://leetcode.com/problems/top-k-frequent-words/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Top K Elements"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Return the K most frequent words, ties broken alphabetically."
+ },
+ {
+  "id": "k-closest-points-to-origin",
+  "lc": 973,
+  "title": "K Closest Points to Origin",
+  "url": "https://leetcode.com/problems/k-closest-points-to-origin/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Top K Elements"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "List of 2D points; return the K nearest to (0,0)."
+ },
+ {
+  "id": "reorganize-string",
+  "lc": 767,
+  "title": "Reorganize String",
+  "url": "https://leetcode.com/problems/reorganize-string/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Top K Elements",
+   "Greedy"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Rearrange a string so no two equal characters are adjacent, or report it can't be done."
+ },
+ {
+  "id": "kth-largest-element-in-an-array",
+  "lc": 215,
+  "title": "Kth Largest Element in an Array",
+  "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Top K Elements"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Find the Kth largest value in an unsorted array."
+ },
+ {
+  "id": "find-median-from-data-stream",
+  "lc": 295,
+  "title": "Find Median from Data Stream",
+  "url": "https://leetcode.com/problems/find-median-from-data-stream/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Heaps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Class that accepts numbers one at a time and can report the current median."
+ },
+ {
+  "id": "task-scheduler",
+  "lc": 621,
+  "title": "Task Scheduler",
+  "url": "https://leetcode.com/problems/task-scheduler/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Heaps",
+   "Greedy"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "CPU tasks labelled by letter with a cooldown between identical tasks; minimum total time slots."
+ },
+ {
+  "id": "meeting-rooms-ii",
+  "lc": 253,
+  "title": "Meeting Rooms II",
+  "url": "https://leetcode.com/problems/meeting-rooms-ii/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Heaps",
+   "Merge Intervals"
+  ],
+  "amazon_core": true,
+  "premium": true,
+  "summary": "Meeting time intervals; minimum number of rooms needed."
+ },
+ {
+  "id": "car-pooling",
+  "lc": 1094,
+  "title": "Car Pooling",
+  "url": "https://leetcode.com/problems/car-pooling/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Heaps",
+   "Merge Intervals"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Trips with passenger counts and pickup/drop-off points; can a car of given capacity do them all?"
+ },
+ {
+  "id": "merge-k-sorted-lists",
+  "lc": 23,
+  "title": "Merge K Sorted Lists",
+  "url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+  "difficulty": "Hard",
+  "patterns": [
+   "K-way Merge",
+   "Heaps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Combine K sorted linked lists into one sorted list."
+ },
+ {
+  "id": "kth-smallest-element-in-a-sorted-matrix",
+  "lc": 378,
+  "title": "Kth Smallest Element in a Sorted Matrix",
+  "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
+  "difficulty": "Medium",
+  "patterns": [
+   "K-way Merge",
+   "Modified Binary Search"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Matrix with sorted rows and columns; find the Kth smallest value."
+ },
+ {
+  "id": "merge-intervals",
+  "lc": 56,
+  "title": "Merge Intervals",
+  "url": "https://leetcode.com/problems/merge-intervals/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Merge Intervals"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Collapse a list of intervals so none overlap."
+ },
+ {
+  "id": "insert-interval",
+  "lc": 57,
+  "title": "Insert Interval",
+  "url": "https://leetcode.com/problems/insert-interval/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Merge Intervals"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Sorted non-overlapping intervals; insert a new one, merging where needed."
+ },
+ {
+  "id": "non-overlapping-intervals",
+  "lc": 435,
+  "title": "Non Overlapping Intervals",
+  "url": "https://leetcode.com/problems/non-overlapping-intervals/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Merge Intervals",
+   "Greedy"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Fewest intervals to remove so the rest don't overlap."
+ },
+ {
+  "id": "employee-free-time",
+  "lc": 759,
+  "title": "Employee Free Time",
+  "url": "https://leetcode.com/problems/employee-free-time/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Merge Intervals",
+   "K-way Merge"
+  ],
+  "amazon_core": false,
+  "premium": true,
+  "summary": "Each employee's sorted busy intervals; find the finite free time common to all."
+ },
+ {
+  "id": "longest-substring-without-repeating-characters",
+  "lc": 3,
+  "title": "Longest Substring Without Repeating Characters",
+  "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Sliding Window"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Length of the longest run of a string with no repeated character."
+ },
+ {
+  "id": "minimum-window-substring",
+  "lc": 76,
+  "title": "Minimum Window Substring",
+  "url": "https://leetcode.com/problems/minimum-window-substring/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Sliding Window",
+   "Knowing What to Track"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Shortest substring of S containing every character of T (with multiplicity)."
+ },
+ {
+  "id": "longest-repeating-character-replacement",
+  "lc": 424,
+  "title": "Longest Repeating Character Replacement",
+  "url": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Sliding Window"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Replace up to K characters; longest substring of one repeated letter achievable."
+ },
+ {
+  "id": "sliding-window-maximum",
+  "lc": 239,
+  "title": "Sliding Window Maximum",
+  "url": "https://leetcode.com/problems/sliding-window-maximum/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Sliding Window"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Maximum of every contiguous window of size K."
+ },
+ {
+  "id": "find-all-anagrams-in-a-string",
+  "lc": 438,
+  "title": "Find All Anagrams in a String",
+  "url": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Sliding Window",
+   "Knowing What to Track"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Start indices in S of every substring that is a rearrangement of P."
+ },
+ {
+  "id": "3sum",
+  "lc": 15,
+  "title": "3Sum",
+  "url": "https://leetcode.com/problems/3sum/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Two Pointers"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "All unique triples in an array that add to zero."
+ },
+ {
+  "id": "container-with-most-water",
+  "lc": 11,
+  "title": "Container with Most Water",
+  "url": "https://leetcode.com/problems/container-with-most-water/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Two Pointers",
+   "Greedy"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Vertical lines of various heights; pick two that hold the most water."
+ },
+ {
+  "id": "trapping-rain-water",
+  "lc": 42,
+  "title": "Trapping Rain Water",
+  "url": "https://leetcode.com/problems/trapping-rain-water/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Two Pointers",
+   "Stacks"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Elevation bars; total rain water trapped between them."
+ },
+ {
+  "id": "linked-list-cycle-ii",
+  "lc": 142,
+  "title": "Linked List Cycle II",
+  "url": "https://leetcode.com/problems/linked-list-cycle-ii/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Fast and Slow Pointers"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Return the node where a linked list's cycle begins, if any."
+ },
+ {
+  "id": "happy-number",
+  "lc": 202,
+  "title": "Happy Number",
+  "url": "https://leetcode.com/problems/happy-number/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Fast and Slow Pointers"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Repeatedly sum the squares of digits; does it reach 1 or loop forever?"
+ },
+ {
+  "id": "reverse-linked-list-ii",
+  "lc": 92,
+  "title": "Reverse Linked List II",
+  "url": "https://leetcode.com/problems/reverse-linked-list-ii/",
+  "difficulty": "Medium",
+  "patterns": [
+   "In-place LL Manipulation"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Reverse the nodes of a linked list between positions left and right."
+ },
+ {
+  "id": "reorder-list",
+  "lc": 143,
+  "title": "Reorder List",
+  "url": "https://leetcode.com/problems/reorder-list/",
+  "difficulty": "Medium",
+  "patterns": [
+   "In-place LL Manipulation",
+   "Fast and Slow Pointers"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Reorder L0,L1..Ln into L0,Ln,L1,Ln-1... in place."
+ },
+ {
+  "id": "copy-list-with-random-pointer",
+  "lc": 138,
+  "title": "Copy List with Random Pointer",
+  "url": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+  "difficulty": "Medium",
+  "patterns": [
+   "In-place LL Manipulation",
+   "Hash Maps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Deep copy a linked list whose nodes also point to an arbitrary other node."
+ },
+ {
+  "id": "search-in-rotated-sorted-array",
+  "lc": 33,
+  "title": "Search in Rotated Sorted Array",
+  "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Modified Binary Search"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Sorted array rotated at an unknown pivot; find a target in O(log n)."
+ },
+ {
+  "id": "find-peak-element",
+  "lc": 162,
+  "title": "Find Peak Element",
+  "url": "https://leetcode.com/problems/find-peak-element/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Modified Binary Search"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Find any index whose value is greater than both neighbours, in O(log n)."
+ },
+ {
+  "id": "koko-eating-bananas",
+  "lc": 875,
+  "title": "Koko Eating Bananas",
+  "url": "https://leetcode.com/problems/koko-eating-bananas/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Modified Binary Search"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Piles of items and H hours; minimum per-hour rate to finish them all in time."
+ },
+ {
+  "id": "capacity-to-ship-packages-within-d-days",
+  "lc": 1011,
+  "title": "Capacity to Ship Packages within D Days",
+  "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Modified Binary Search"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Package weights shipped in order; smallest ship capacity that delivers everything within D days."
+ },
+ {
+  "id": "lru-cache",
+  "lc": 146,
+  "title": "LRU Cache",
+  "url": "https://leetcode.com/problems/lru-cache/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Custom Data Structures",
+   "Hash Maps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Design a fixed-capacity key-value cache that evicts the least recently used entry; O(1) get/put."
+ },
+ {
+  "id": "min-stack",
+  "lc": 155,
+  "title": "Min Stack",
+  "url": "https://leetcode.com/problems/min-stack/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Custom Data Structures",
+   "Stacks"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Stack that also returns its current minimum in O(1)."
+ },
+ {
+  "id": "time-based-key-value-store",
+  "lc": 981,
+  "title": "Time Based Key Value Store",
+  "url": "https://leetcode.com/problems/time-based-key-value-store/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Custom Data Structures",
+   "Modified Binary Search"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Key-value store where each set has a timestamp; get returns the value as of a given time."
+ },
+ {
+  "id": "design-hit-counter",
+  "lc": 362,
+  "title": "Design Hit Counter",
+  "url": "https://leetcode.com/problems/design-hit-counter/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Custom Data Structures"
+  ],
+  "amazon_core": true,
+  "premium": true,
+  "summary": "Count hits received in the past 5 minutes, given increasing timestamps."
+ },
+ {
+  "id": "design-in-memory-file-system",
+  "lc": 588,
+  "title": "Design In-Memory File System",
+  "url": "https://leetcode.com/problems/design-in-memory-file-system/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Custom Data Structures",
+   "Trie"
+  ],
+  "amazon_core": true,
+  "premium": true,
+  "summary": "In-memory file system supporting ls, mkdir, add content and read content by path."
+ },
+ {
+  "id": "lfu-cache",
+  "lc": 460,
+  "title": "LFU Cache",
+  "url": "https://leetcode.com/problems/lfu-cache/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Custom Data Structures",
+   "Hash Maps"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Cache evicting the least frequently used key (ties: least recent); O(1) ops."
+ },
+ {
+  "id": "implement-trie-prefix-tree",
+  "lc": 208,
+  "title": "Implement Trie (Prefix Tree)",
+  "url": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Trie"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Implement insert, search and startsWith for a set of words."
+ },
+ {
+  "id": "search-suggestions-system",
+  "lc": 1268,
+  "title": "Search Suggestions System",
+  "url": "https://leetcode.com/problems/search-suggestions-system/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Trie",
+   "Sort and Search"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "As each character of a search word is typed, suggest up to 3 lexicographically smallest matching products."
+ },
+ {
+  "id": "word-search-ii",
+  "lc": 212,
+  "title": "Word Search II",
+  "url": "https://leetcode.com/problems/word-search-ii/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Trie",
+   "Backtracking"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Letter grid and a word list; find every word that can be traced through adjacent cells."
+ },
+ {
+  "id": "two-sum",
+  "lc": 1,
+  "title": "Two Sum",
+  "url": "https://leetcode.com/problems/two-sum/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Hash Maps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Indices of the two numbers that add up to a target."
+ },
+ {
+  "id": "group-anagrams",
+  "lc": 49,
+  "title": "Group Anagrams",
+  "url": "https://leetcode.com/problems/group-anagrams/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Hash Maps",
+   "Knowing What to Track"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Group words that are rearrangements of each other."
+ },
+ {
+  "id": "longest-consecutive-sequence",
+  "lc": 128,
+  "title": "Longest Consecutive Sequence",
+  "url": "https://leetcode.com/problems/longest-consecutive-sequence/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Hash Maps"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Length of the longest run of consecutive integers in an unsorted array, in O(n)."
+ },
+ {
+  "id": "subarray-sum-equals-k",
+  "lc": 560,
+  "title": "Subarray Sum Equals K",
+  "url": "https://leetcode.com/problems/subarray-sum-equals-k/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Knowing What to Track",
+   "Hash Maps"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Count contiguous subarrays (values may be negative) summing to K."
+ },
+ {
+  "id": "reorder-data-in-log-files",
+  "lc": 937,
+  "title": "Reorder Data in Log Files",
+  "url": "https://leetcode.com/problems/reorder-data-in-log-files/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Sort and Search"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Log lines with identifiers; order letter-logs by content then id, keep digit-logs in original order after them."
+ },
+ {
+  "id": "valid-parentheses",
+  "lc": 20,
+  "title": "Valid Parentheses",
+  "url": "https://leetcode.com/problems/valid-parentheses/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Stacks"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Decide whether a string of brackets is properly nested and closed."
+ },
+ {
+  "id": "daily-temperatures",
+  "lc": 739,
+  "title": "Daily Temperatures",
+  "url": "https://leetcode.com/problems/daily-temperatures/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Stacks"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "For each day, how many days until a warmer temperature."
+ },
+ {
+  "id": "basic-calculator-ii",
+  "lc": 227,
+  "title": "Basic Calculator II",
+  "url": "https://leetcode.com/problems/basic-calculator-ii/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Stacks"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Evaluate a string expression with + - * / and non-negative integers, no parentheses."
+ },
+ {
+  "id": "decode-string",
+  "lc": 394,
+  "title": "Decode String",
+  "url": "https://leetcode.com/problems/decode-string/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Stacks"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Expand an encoding like 3[a2[c]] into the full string."
+ },
+ {
+  "id": "word-break",
+  "lc": 139,
+  "title": "Word Break",
+  "url": "https://leetcode.com/problems/word-break/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Can a string be split into a sequence of dictionary words?"
+ },
+ {
+  "id": "coin-change",
+  "lc": 322,
+  "title": "Coin Change",
+  "url": "https://leetcode.com/problems/coin-change/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Fewest coins of given denominations that make an amount."
+ },
+ {
+  "id": "longest-increasing-subsequence",
+  "lc": 300,
+  "title": "Longest Increasing Subsequence",
+  "url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming",
+   "Modified Binary Search"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Length of the longest strictly increasing subsequence."
+ },
+ {
+  "id": "house-robber",
+  "lc": 198,
+  "title": "House Robber",
+  "url": "https://leetcode.com/problems/house-robber/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Max total from a row of values without taking two adjacent ones."
+ },
+ {
+  "id": "maximal-square",
+  "lc": 221,
+  "title": "Maximal Square",
+  "url": "https://leetcode.com/problems/maximal-square/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming",
+   "Matrices"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Binary matrix; area of the largest square made only of 1s."
+ },
+ {
+  "id": "longest-palindromic-substring",
+  "lc": 5,
+  "title": "Longest Palindromic Substring",
+  "url": "https://leetcode.com/problems/longest-palindromic-substring/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Dynamic Programming",
+   "Two Pointers"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Longest substring that reads the same forwards and backwards."
+ },
+ {
+  "id": "word-search",
+  "lc": 79,
+  "title": "Word Search",
+  "url": "https://leetcode.com/problems/word-search/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Backtracking",
+   "Matrices"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Can a word be traced through horizontally/vertically adjacent cells of a letter grid without reuse?"
+ },
+ {
+  "id": "combination-sum",
+  "lc": 39,
+  "title": "Combination Sum",
+  "url": "https://leetcode.com/problems/combination-sum/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Backtracking"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "All combinations of candidates (reusable) that sum to a target."
+ },
+ {
+  "id": "generate-parentheses",
+  "lc": 22,
+  "title": "Generate Parentheses",
+  "url": "https://leetcode.com/problems/generate-parentheses/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Backtracking"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "All well-formed strings of n pairs of brackets."
+ },
+ {
+  "id": "subsets",
+  "lc": 78,
+  "title": "Subsets",
+  "url": "https://leetcode.com/problems/subsets/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Subsets"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Return every subset of a set of distinct integers."
+ },
+ {
+  "id": "letter-combinations-of-a-phone-number",
+  "lc": 17,
+  "title": "Letter Combinations of a Phone Number",
+  "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Subsets",
+   "Backtracking"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Every letter string a sequence of phone keypad digits could spell."
+ },
+ {
+  "id": "permutations",
+  "lc": 46,
+  "title": "Permutations",
+  "url": "https://leetcode.com/problems/permutations/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Subsets",
+   "Backtracking"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Every ordering of a list of distinct integers."
+ },
+ {
+  "id": "jump-game",
+  "lc": 55,
+  "title": "Jump Game",
+  "url": "https://leetcode.com/problems/jump-game/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Greedy"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Each value is the max jump length from there; can you reach the last index?"
+ },
+ {
+  "id": "gas-station",
+  "lc": 134,
+  "title": "Gas Station",
+  "url": "https://leetcode.com/problems/gas-station/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Greedy"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Circular route of fuel stops and costs; which start lets you complete the loop?"
+ },
+ {
+  "id": "number-of-provinces",
+  "lc": 547,
+  "title": "Number of Provinces",
+  "url": "https://leetcode.com/problems/number-of-provinces/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Union Find",
+   "Graphs"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Adjacency matrix of cities; count the directly-or-indirectly connected groups."
+ },
+ {
+  "id": "accounts-merge",
+  "lc": 721,
+  "title": "Accounts Merge",
+  "url": "https://leetcode.com/problems/accounts-merge/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Union Find",
+   "Graphs"
+  ],
+  "amazon_core": true,
+  "premium": false,
+  "summary": "Accounts as name plus emails; merge accounts sharing any email."
+ },
+ {
+  "id": "redundant-connection",
+  "lc": 684,
+  "title": "Redundant Connection",
+  "url": "https://leetcode.com/problems/redundant-connection/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Union Find"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "A tree plus one extra edge; return the edge that creates the cycle."
+ },
+ {
+  "id": "rotate-image",
+  "lc": 48,
+  "title": "Rotate Image",
+  "url": "https://leetcode.com/problems/rotate-image/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Matrices"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Rotate an n x n matrix 90 degrees clockwise in place."
+ },
+ {
+  "id": "spiral-matrix",
+  "lc": 54,
+  "title": "Spiral Matrix",
+  "url": "https://leetcode.com/problems/spiral-matrix/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Matrices"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Return all matrix elements in clockwise spiral order."
+ },
+ {
+  "id": "set-matrix-zeroes",
+  "lc": 73,
+  "title": "Set Matrix Zeroes",
+  "url": "https://leetcode.com/problems/set-matrix-zeroes/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Matrices"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Wherever a cell is 0, zero its whole row and column, in place."
+ },
+ {
+  "id": "first-missing-positive",
+  "lc": 41,
+  "title": "First Missing Positive",
+  "url": "https://leetcode.com/problems/first-missing-positive/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Cyclic Sort"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Smallest missing positive integer in an unsorted array, O(n) time and O(1) space."
+ },
+ {
+  "id": "find-all-numbers-disappeared-in-an-array",
+  "lc": 448,
+  "title": "Find All Numbers Disappeared in an Array",
+  "url": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Cyclic Sort"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Array of n values in 1..n; return the values that never appear."
+ },
+ {
+  "id": "russian-doll-envelopes",
+  "lc": 354,
+  "title": "Russian Doll Envelopes",
+  "url": "https://leetcode.com/problems/russian-doll-envelopes/",
+  "difficulty": "Hard",
+  "patterns": [
+   "Sort and Search",
+   "Dynamic Programming"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Envelopes (w,h); most that nest strictly inside one another."
+ },
+ {
+  "id": "single-number",
+  "lc": 136,
+  "title": "Single Number",
+  "url": "https://leetcode.com/problems/single-number/",
+  "difficulty": "Easy",
+  "patterns": [
+   "Bitwise Manipulation"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Every value appears twice except one; find it in O(1) space."
+ },
+ {
+  "id": "powx-n",
+  "lc": 50,
+  "title": "Pow(x, n)",
+  "url": "https://leetcode.com/problems/powx-n/",
+  "difficulty": "Medium",
+  "patterns": [
+   "Math and Geometry"
+  ],
+  "amazon_core": false,
+  "premium": false,
+  "summary": "Compute x raised to an integer power efficiently."
+ }
+]

@@ -1,0 +1,748 @@
+#!/usr/bin/env python3
+"""practise: a spaced-repetition coding interview trainer organised by problem pattern.
+
+State lives in plain files so it is easy to inspect, diff and extend:
+  bank/problems.json     problem bank (id, LeetCode link, patterns, Amazon-core flag, summary)
+  bank/patterns.json     patterns with a weight (interview likelihood) and recognition signals
+  plan.json              dated practice sessions
+  progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
+  progress/drills.jsonl    one JSON line per pattern-recognition drill answer
+  attempts/<date>_<id>/Solution.java   your written solutions
+  .practise/current.json   the attempt in progress (not committed)
+
+Python 3.8+ standard library only.
+"""
+import argparse
+import datetime as dt
+import json
+import os
+import random
+import signal
+import subprocess
+import sys
+import textwrap
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+BANK = os.path.join(ROOT, "bank", "problems.json")
+PATTERNS = os.path.join(ROOT, "bank", "patterns.json")
+PLAN = os.path.join(ROOT, "plan.json")
+PROGRESS = os.path.join(ROOT, "progress")
+ATTEMPTS_LOG = os.path.join(PROGRESS, "attempts.jsonl")
+DRILLS_LOG = os.path.join(PROGRESS, "drills.jsonl")
+ATTEMPTS_DIR = os.path.join(ROOT, "attempts")
+CURRENT = os.path.join(ROOT, ".practise", "current.json")
+
+DEFAULT_TIMEBOX = 25
+RATINGS = {
+    1: "again  - could not solve it / needed the solution",
+    2: "hard   - solved with hints, bugs, or well over time",
+    3: "good   - solved within the timebox, minor slips",
+    4: "easy   - fast, clean, optimal first time",
+}
+DIFF_ORDER = {"Medium": 0, "Hard": 1, "Easy": 2}
+
+
+# ---------------------------------------------------------------- data access
+
+def load_json(path, default=None):
+    if not os.path.exists(path):
+        return default
+    with open(path) as f:
+        return json.load(f)
+
+
+def save_json(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=1)
+        f.write("\n")
+
+
+def read_jsonl(path):
+    if not os.path.exists(path):
+        return []
+    out = []
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                out.append(json.loads(line))
+    return out
+
+
+def append_jsonl(path, row):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a") as f:
+        f.write(json.dumps(row, sort_keys=True) + "\n")
+
+
+def problems():
+    return load_json(BANK, [])
+
+
+def problems_by_id():
+    return {p["id"]: p for p in problems()}
+
+
+def patterns():
+    return load_json(PATTERNS, [])
+
+
+def pattern_names():
+    return [p["name"] for p in patterns()]
+
+
+def today():
+    return dt.date.today()
+
+
+def now_iso():
+    return dt.datetime.now().replace(microsecond=0).isoformat()
+
+
+def parse_date(s):
+    return dt.date.fromisoformat(s[:10])
+
+
+# ---------------------------------------------------------------- scheduling
+
+def next_interval(prev, rating):
+    """Days until the next review, SM-2 flavoured but simpler."""
+    if prev == 0:
+        return {1: 1, 2: 2, 3: 4, 4: 7}[rating]
+    if rating == 1:
+        return 1
+    if rating == 2:
+        return max(2, round(prev * 1.2))
+    if rating == 3:
+        return max(3, round(prev * 2.5))
+    return max(5, round(prev * 3.5))
+
+
+def schedule():
+    """Per problem: attempts list, last rating, interval and due date, derived from the log."""
+    sched = {}
+    for a in read_jsonl(ATTEMPTS_LOG):
+        s = sched.setdefault(a["id"], {"attempts": [], "interval": 0})
+        s["interval"] = next_interval(s["interval"], a["rating"])
+        s["attempts"].append(a)
+        s["last"] = a
+        s["due"] = parse_date(a["date"]) + dt.timedelta(days=s["interval"])
+    return sched
+
+
+def pattern_stats():
+    """Mastery per pattern from last rating of each attempted problem plus drill accuracy."""
+    bank = problems()
+    sched = schedule()
+    drills = read_jsonl(DRILLS_LOG)
+    t = today()
+    stats = {}
+    for pat in patterns():
+        name = pat["name"]
+        probs = [p for p in bank if name in p["patterns"]]
+        tried = [p for p in probs if p["id"] in sched]
+        ratings = [sched[p["id"]]["last"]["rating"] for p in tried]
+        recog = [sched[p["id"]]["last"].get("pattern_ok") for p in tried]
+        recog = [r for r in recog if r is not None]
+        d = [x for x in drills if x["answer"] == name]
+        d_ok = sum(1 for x in d if x["correct"])
+        solve = (sum(ratings) / (4.0 * len(ratings))) if ratings else 0.0
+        drill_acc = (d_ok / len(d)) if d else None
+        # Coverage matters: one good problem in a big pattern is not mastery.
+        coverage = min(1.0, len(tried) / 3.0)
+        mastery = solve * (0.5 + 0.5 * coverage)
+        if drill_acc is not None:
+            mastery = 0.8 * mastery + 0.2 * drill_acc
+        stats[name] = {
+            "weight": pat["weight"],
+            "total": len(probs),
+            "core": sum(1 for p in probs if p["amazon_core"]),
+            "tried": len(tried),
+            "avg_rating": (sum(ratings) / len(ratings)) if ratings else None,
+            "recognised": (sum(1 for r in recog if r) / len(recog)) if recog else None,
+            "drill_acc": drill_acc,
+            "drills": len(d),
+            "due": sum(1 for p in tried if sched[p["id"]]["due"] <= t),
+            "mastery": mastery,
+            "need": pat["weight"] * (1.0 - mastery),
+        }
+    return stats
+
+
+def pick_next(pattern=None, allow_premium=False, session=None, include_easy=False):
+    """Return (problem, reason)."""
+    bank = problems()
+    byid = {p["id"]: p for p in bank}
+    sched = schedule()
+    t = today()
+
+    def ok(p):
+        if pattern and pattern not in p["patterns"]:
+            return False
+        if p["premium"] and not allow_premium:
+            return False
+        return True
+
+    # 1. The current plan session's list, in order, if not yet attempted on/after the session date.
+    sess = find_session(session) if session is not None else None
+    if sess:
+        sdate = dt.date.fromisoformat(sess["date"])
+        for pid in sess["problems"] + sess.get("stretch", []):
+            p = byid.get(pid)
+            done = pid in sched and any(parse_date(a["date"]) >= sdate for a in sched[pid]["attempts"])
+            if p and not done and (not pattern or pattern in p["patterns"]):
+                tag = "plan" if pid in sess["problems"] else "plan stretch"
+                return p, "%s (%s session)" % (tag, sess["id"])
+
+    # 2. Due reviews, most overdue first, heavier patterns first.
+    weights = {x["name"]: x["weight"] for x in patterns()}
+    due = []
+    for pid, s in sched.items():
+        p = byid.get(pid)
+        if p and ok(p) and s["due"] <= t and parse_date(s["last"]["date"]) < t:
+            overdue = (t - s["due"]).days
+            w = max(weights.get(x, 1) for x in p["patterns"])
+            due.append((-overdue, s["last"]["rating"], -w, p))
+    if due:
+        due.sort(key=lambda x: (x[0], x[1], x[2]))
+        p = due[0][3]
+        return p, "review due (last rated %d)" % sched[p["id"]]["last"]["rating"]
+
+    # 3. New problem from the pattern with the highest need.
+    stats = pattern_stats()
+    cands = [p for p in bank if ok(p) and p["id"] not in sched]
+    if not include_easy:
+        non_easy = [p for p in cands if p["difficulty"] != "Easy"]
+        cands = non_easy or cands
+    if not cands:
+        return None, "nothing left to practise with these filters"
+    pats = [pattern] if pattern else sorted(stats, key=lambda n: -stats[n]["need"])
+    for name in pats:
+        pool = [p for p in cands if p["patterns"][0] == name] or [p for p in cands if name in p["patterns"]]
+        if pool:
+            pool.sort(key=lambda p: (not p["amazon_core"], DIFF_ORDER[p["difficulty"]], p["lc"]))
+            return pool[0], "new: weakest high-value pattern"
+    return cands[0], "new"
+
+
+def find_session(sid):
+    plan = load_json(PLAN, {"sessions": []})
+    sessions = plan.get("sessions", [])
+    if sid == "auto":
+        t = today().isoformat()
+        for s in sessions:
+            if s["date"] == t:
+                return s
+        return None
+    for s in sessions:
+        if s["id"] == sid:
+            return s
+    sys.exit("No session '%s' in plan.json" % sid)
+
+
+# ---------------------------------------------------------------- helpers
+
+def resolve_pattern(text, names=None):
+    names = names or pattern_names()
+    text = (text or "").strip()
+    if not text:
+        return None
+    if text.isdigit():
+        i = int(text) - 1
+        return names[i] if 0 <= i < len(names) else None
+    low = text.lower()
+    exact = [n for n in names if n.lower() == low]
+    if exact:
+        return exact[0]
+    hits = [n for n in names if low in n.lower()]
+    if len(hits) == 1:
+        return hits[0]
+    words = [n for n in names if all(w in n.lower() for w in low.split())]
+    return words[0] if len(words) == 1 else None
+
+
+def print_pattern_menu():
+    names = pattern_names()
+    cols = 3
+    rows = (len(names) + cols - 1) // cols
+    for r in range(rows):
+        line = ""
+        for c in range(cols):
+            i = r + c * rows
+            if i < len(names):
+                line += ("%2d %-26s" % (i + 1, names[i]))
+        print("  " + line)
+
+
+def ask(prompt, default=None):
+    try:
+        v = input(prompt)
+    except EOFError:
+        v = ""
+    v = v.strip()
+    return v if v else default
+
+
+def wrap(s, indent="  "):
+    return textwrap.fill(s, width=88, initial_indent=indent, subsequent_indent=indent)
+
+
+def find_problem(ref):
+    byid = problems_by_id()
+    if ref in byid:
+        return byid[ref]
+    if ref.isdigit():
+        for p in byid.values():
+            if p["lc"] == int(ref):
+                return p
+    hits = [p for p in byid.values() if ref.lower() in p["id"]]
+    if len(hits) == 1:
+        return hits[0]
+    if hits:
+        sys.exit("Ambiguous: " + ", ".join(p["id"] for p in hits))
+    sys.exit("No problem matching '%s' (see ./practise list)" % ref)
+
+
+def scaffold(p, timebox):
+    d = os.path.join(ATTEMPTS_DIR, "%s_%s" % (today().isoformat(), p["id"]))
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, "Solution.java")
+    if not os.path.exists(path):
+        with open(path, "w") as f:
+            f.write(textwrap.dedent("""\
+                /*
+                 * %(lc)s. %(title)s  [%(difficulty)s]
+                 * %(url)s
+                 *
+                 * Timebox %(tb)d min. Write it here WITHOUT running it (like the interview editor),
+                 * then paste into LeetCode to verify. Talk out loud as you go.
+                 *
+                 * 1. Clarify: inputs, sizes, edge cases, return value, assumptions
+                 *
+                 *
+                 * 2. Approach: which pattern and why; brute force first, then optimal; time/space
+                 *
+                 *
+                 * 3. Code   4. Test: trace one example by hand, then edge cases   5. Optimise
+                 */
+                import java.util.*;
+
+                class Solution {
+
+                }
+                """) % dict(p, tb=timebox))
+    return path
+
+
+def start_attempt(p, reason, timebox, open_editor, mock=False):
+    cur = load_json(CURRENT)
+    if cur:
+        print("Note: replacing unfinished attempt '%s'." % cur["id"])
+    path = scaffold(p, timebox)
+    save_json(CURRENT, {"id": p["id"], "started": now_iso(), "timebox": timebox, "file": path,
+                        "reason": reason, "mock": mock})
+    print()
+    print("  %s. %s  [%s]%s" % (p["lc"], p["title"], p["difficulty"], "  (premium)" if p["premium"] else ""))
+    print("  " + p["url"])
+    print("  why: " + reason)
+    print("  timebox: %d min, started %s" % (timebox, dt.datetime.now().strftime("%H:%M")))
+    print("  file: " + os.path.relpath(path, ROOT))
+    print()
+    print("  When finished: ./practise done   (or ./practise status to see elapsed time)")
+    if open_editor:
+        ed = os.environ.get("VISUAL") or os.environ.get("EDITOR")
+        try:
+            if ed:
+                subprocess.Popen(ed.split() + [path])
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", "-t", path])
+        except OSError as e:
+            print("  (could not open editor: %s)" % e)
+
+
+# ---------------------------------------------------------------- commands
+
+def cmd_next(a):
+    session = a.session if a.session else ("auto" if not a.pattern else None)
+    pat = resolve_pattern(a.pattern) if a.pattern else None
+    if a.pattern and not pat:
+        sys.exit("Unknown pattern '%s'. ./practise patterns lists them." % a.pattern)
+    p, reason = pick_next(pat, a.premium, session, a.easy)
+    if not p:
+        sys.exit(reason)
+    if a.peek:
+        print("%s  (%s)  %s" % (p["title"], reason, p["url"]))
+        return
+    start_attempt(p, reason, a.timebox, not a.no_open)
+
+
+def cmd_start(a):
+    p = find_problem(a.problem)
+    start_attempt(p, "chosen", a.timebox, not a.no_open)
+
+
+def cmd_status(a):
+    cur = load_json(CURRENT)
+    if not cur:
+        print("No attempt in progress. ./practise next")
+        return
+    started = dt.datetime.fromisoformat(cur["started"])
+    mins = (dt.datetime.now() - started).total_seconds() / 60
+    left = cur["timebox"] - mins
+    p = problems_by_id().get(cur["id"], {"title": cur["id"]})
+    print("%s: %.0f min elapsed, %s" % (p["title"], mins,
+          ("%.0f min left" % left) if left >= 0 else ("%.0f min OVER" % -left)))
+
+
+def cmd_done(a):
+    cur = load_json(CURRENT)
+    if not cur:
+        sys.exit("No attempt in progress.")
+    p = problems_by_id()[cur["id"]]
+    started = dt.datetime.fromisoformat(cur["started"])
+    minutes = a.minutes if a.minutes is not None else round((dt.datetime.now() - started).total_seconds() / 60)
+    print("\n  %s - %d min (timebox %d)" % (p["title"], minutes, cur["timebox"]))
+
+    used = a.used
+    if used is None:
+        print("\n  Which pattern did you use?")
+        print_pattern_menu()
+        while True:
+            used = resolve_pattern(ask("  number or name: "))
+            if used:
+                break
+            print("  not recognised, try again")
+    else:
+        used = resolve_pattern(used) or used
+    pattern_ok = used in p["patterns"]
+
+    rating = a.rating
+    if rating is None:
+        print()
+        for k, v in RATINGS.items():
+            print("  %d %s" % (k, v))
+        while rating not in RATINGS:
+            r = ask("  rating 1-4: ")
+            rating = int(r) if r and r.isdigit() else None
+    hints = a.hints if a.hints is not None else int(ask("  hints used [0]: ", "0"))
+    notes = a.notes if a.notes is not None else ask("  notes (mistakes, insight; enter to skip): ", "")
+
+    row = {"id": p["id"], "date": today().isoformat(), "started": cur["started"], "minutes": minutes,
+           "timebox": cur["timebox"], "rating": rating, "pattern_used": used, "pattern_ok": pattern_ok,
+           "hints": hints, "notes": notes, "file": os.path.relpath(cur["file"], ROOT), "mock": cur.get("mock", False)}
+    append_jsonl(ATTEMPTS_LOG, row)
+    os.remove(CURRENT)
+
+    s = schedule()[p["id"]]
+    print()
+    print("  Pattern(s): %s  %s" % (", ".join(p["patterns"]), "- you got it" if pattern_ok else "- you used " + used))
+    if not pattern_ok:
+        for pat in patterns():
+            if pat["name"] in p["patterns"]:
+                print(wrap("%s: %s" % (pat["name"], pat["signals"]), "    "))
+    print("  Next review: %s (in %d days)" % (s["due"].isoformat(), s["interval"]))
+
+
+def cmd_abandon(a):
+    if os.path.exists(CURRENT):
+        os.remove(CURRENT)
+        print("Dropped the current attempt (nothing logged).")
+
+
+def cmd_drill(a):
+    bank = [p for p in problems() if a.pattern is None or resolve_pattern(a.pattern) in p["patterns"]]
+    weights = {x["name"]: x["weight"] for x in patterns()}
+    sigs = {x["name"]: x["signals"] for x in patterns()}
+    drills = read_jsonl(DRILLS_LOG)
+    missed = {}
+    for d in drills:
+        missed[d["id"]] = missed.get(d["id"], 0) + (0 if d["correct"] else 1)
+    w = [max(weights[x] for x in p["patterns"]) + 2 * missed.get(p["id"], 0) for p in bank]
+    rng = random.Random()
+    chosen = []
+    pool, pw = list(bank), list(w)
+    for _ in range(min(a.n, len(pool))):
+        i = rng.choices(range(len(pool)), weights=pw)[0]
+        chosen.append(pool.pop(i))
+        pw.pop(i)
+    print("\nName the pattern for each problem. Answer with a number or part of a name; 'q' quits.\n")
+    print_pattern_menu()
+    right = 0
+    for n, p in enumerate(chosen, 1):
+        print("\n[%d/%d] %s" % (n, len(chosen), p["summary"]))
+        while True:
+            ans = ask("  pattern> ")
+            if ans and ans.lower() == "q":
+                chosen = chosen[:n - 1]
+                break
+            got = resolve_pattern(ans)
+            if got:
+                break
+            print("  not recognised (try a number)")
+        if ans and ans.lower() == "q":
+            break
+        ok = got in p["patterns"]
+        right += ok
+        append_jsonl(DRILLS_LOG, {"id": p["id"], "date": today().isoformat(), "guess": got,
+                                  "answer": p["patterns"][0], "correct": ok})
+        mark = "yes" if ok else "no, you said %s" % got
+        print("  %s -> %s  (%s)" % (mark, " / ".join(p["patterns"]), p["title"]))
+        if not ok:
+            print(wrap(sigs[p["patterns"][0]], "    "))
+    if chosen:
+        print("\nScore: %d/%d" % (right, len(chosen)))
+
+
+def fmt(v, kind):
+    if v is None:
+        return "-"
+    if kind == "pct":
+        return "%d%%" % round(100 * v)
+    if kind == "f1":
+        return "%.1f" % v
+    return str(v)
+
+
+def stats_rows():
+    st = pattern_stats()
+    names = sorted(st, key=lambda n: (-st[n]["need"], n))
+    rows = []
+    for n in names:
+        s = st[n]
+        rows.append([n, "*" * s["weight"], "%d/%d" % (s["tried"], s["total"]), fmt(s["avg_rating"], "f1"),
+                     fmt(s["recognised"], "pct"), fmt(s["drill_acc"], "pct") + ("" if not s["drills"] else " (%d)" % s["drills"]),
+                     str(s["due"]) if s["due"] else "", fmt(s["mastery"], "pct")])
+    return rows
+
+
+HEAD = ["pattern", "weight", "tried", "avg", "recog", "drill", "due", "mastery"]
+
+
+def cmd_stats(a):
+    rows = stats_rows()
+    widths = [max(len(r[i]) for r in rows + [HEAD]) for i in range(len(HEAD))]
+    line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r))
+    print("\nSorted by need = weight x (1 - mastery). avg = mean of latest rating per problem (1-4).")
+    print("recog = you named the right pattern when solving; drill = recognition drill accuracy.\n")
+    print(line(HEAD))
+    print(line(["-" * w for w in widths]))
+    for r in rows:
+        print(line(r))
+    att = read_jsonl(ATTEMPTS_LOG)
+    if att:
+        mins = sum(x["minutes"] for x in att)
+        print("\n%d attempts, %d problems, %.1f hours. Last 5:" % (len(att), len({x["id"] for x in att}), mins / 60.0))
+        byid = problems_by_id()
+        for x in att[-5:]:
+            print("  %s  %-45s r%d  %3d min  %s" % (x["date"], byid.get(x["id"], {"title": x["id"]})["title"][:45],
+                                                     x["rating"], x["minutes"], x.get("notes", "")[:40]))
+
+
+def cmd_report(a):
+    rows = stats_rows()
+    out = ["# Coding practice report", "", "_Generated %s by `practise report`._" % now_iso(), "",
+           "| " + " | ".join(HEAD) + " |", "|" + "---|" * len(HEAD)]
+    out += ["| " + " | ".join(r) + " |" for r in rows]
+    att = read_jsonl(ATTEMPTS_LOG)
+    byid = problems_by_id()
+    out += ["", "## Attempts", "", "| date | problem | rating | min | pattern ok | notes |", "|---|---|---|---|---|---|"]
+    for x in reversed(att):
+        p = byid.get(x["id"], {"title": x["id"], "url": ""})
+        out.append("| %s | [%s](%s) | %d | %d | %s | %s |" % (
+            x["date"], p["title"], p.get("url", ""), x["rating"], x["minutes"],
+            "yes" if x.get("pattern_ok") else "no", (x.get("notes") or "").replace("|", "/")))
+    text = "\n".join(out) + "\n"
+    if a.out:
+        with open(os.path.expanduser(a.out), "w") as f:
+            f.write(text)
+        print("Wrote " + a.out)
+    else:
+        print(text)
+
+
+def cmd_plan(a):
+    plan = load_json(PLAN, {"sessions": []})
+    sched = schedule()
+    byid = problems_by_id()
+    print("\n" + plan.get("name", "Plan"))
+    for s in plan["sessions"]:
+        sdate = dt.date.fromisoformat(s["date"])
+        marker = "  <- today" if sdate == today() else ""
+        print("\n[%s] %s  %d min  %s%s" % (s["id"], s["date"], s["minutes"], s["focus"], marker))
+        for st in s.get("steps", []):
+            print("   - " + st)
+        for label, ids in (("", s["problems"]), ("stretch ", s.get("stretch", []))):
+            for pid in ids:
+                p = byid.get(pid)
+                done = [x for x in sched.get(pid, {}).get("attempts", []) if parse_date(x["date"]) >= sdate]
+                tick = ("[x] r%d" % done[-1]["rating"]) if done else "[ ]   "
+                print("     %s %s%s" % (tick, label, p["title"] if p else pid))
+
+
+def cmd_list(a):
+    sched = schedule()
+    pat = resolve_pattern(a.pattern) if a.pattern else None
+    for p in sorted(problems(), key=lambda p: (p["patterns"][0], p["lc"])):
+        if pat and pat not in p["patterns"]:
+            continue
+        if a.core and not p["amazon_core"]:
+            continue
+        s = sched.get(p["id"])
+        state = ("r%d due %s" % (s["last"]["rating"], s["due"].isoformat())) if s else "new"
+        print("%-26s %4d %-52s %-6s %s%s  %s" % (p["patterns"][0], p["lc"], p["title"][:52], p["difficulty"],
+              "A" if p["amazon_core"] else " ", "$" if p["premium"] else " ", state))
+    print("\nA = Amazon-frequent, $ = LeetCode premium")
+
+
+def cmd_patterns(a):
+    for i, p in enumerate(patterns(), 1):
+        print("%2d %-26s %s" % (i, p["name"], "*" * p["weight"]))
+        print(wrap(p["signals"], "      "))
+
+
+MOCK_PROMPT = """You are a senior Amazon (AWS) engineer running the coding round of an SDE3 loop. \
+Interview me on LeetCode {lc} "{title}", but reword it as a realistic AWS/Amazon scenario and do NOT \
+name the problem or the pattern. Rules:
+- Present the problem in 3-5 sentences, deliberately leaving some requirements ambiguous.
+- Answer my clarifying questions as an interviewer would; reveal constraints only when asked.
+- Let me talk through my approach before coding; push back if I jump straight to code.
+- I'll paste my Java code; review it like a whiteboard (no running): find bugs by tracing, ask about edge cases.
+- Ask for time and space complexity, then 1-2 follow-ups (scale it up, make it concurrent, extend the API).
+- Keep to 35 minutes of interaction; tell me when we're at 25 minutes.
+- At the end score me 1-4 on Amazon's coding dimensions: Problem Solving, Data Structures & Algorithms, \
+Logical & Maintainable Code, plus communication, with one concrete thing to improve for each."""
+
+
+def cmd_mock(a):
+    if a.problem:
+        p = find_problem(a.problem)
+    else:
+        sched = schedule()
+        pool = [p for p in problems() if p["id"] not in sched and p["amazon_core"] and not p["premium"]]
+        if not pool:
+            pool = [p for p in problems() if not p["premium"]]
+        p = random.choice(pool)
+    prompt = MOCK_PROMPT.format(**p)
+    copied = False
+    if not a.show:
+        try:
+            subprocess.run(["pbcopy"], input=prompt.encode(), check=True)
+            copied = True
+        except (OSError, subprocess.CalledProcessError):
+            pass
+    if copied:
+        print("\nMock-interviewer prompt copied to the clipboard (not shown, so the problem stays hidden).")
+        print("Paste it into a new Claude chat.")
+    else:
+        print("\nPaste this into a new Claude chat:\n" + "-" * 60 + "\n" + prompt + "\n" + "-" * 60)
+    start_attempt(p, "mock interview", 35, False, mock=True)
+    print("  The file above is for your code; the problem title is printed in it, so don't open it until")
+    print("  the interviewer has described the problem. Log with ./practise done afterwards.")
+
+
+def cmd_add(a):
+    bank = problems()
+    slug = a.slug or ask("LeetCode slug (from the URL): ")
+    if any(p["id"] == slug for p in bank):
+        sys.exit("Already in the bank.")
+    lc = int(a.lc if a.lc is not None else ask("LeetCode number: ", "0"))
+    title = a.title or ask("Title: ", slug.replace("-", " ").title())
+    diff = a.difficulty or ask("Difficulty (Easy/Medium/Hard) [Medium]: ", "Medium")
+    pats = a.patterns
+    if not pats:
+        print_pattern_menu()
+        pats = ask("Patterns (comma separated numbers/names, primary first): ", "")
+    pats = [resolve_pattern(x) for x in pats.split(",")]
+    if not pats or None in pats:
+        sys.exit("Unrecognised pattern.")
+    summary = a.summary or ask("One-line summary in your own words (used by drill): ", "")
+    core = a.core if a.core else (ask("Amazon-frequent? y/N: ", "n").lower().startswith("y"))
+    bank.append({"id": slug, "lc": lc, "title": title, "url": "https://leetcode.com/problems/%s/" % slug,
+                 "difficulty": diff.capitalize(), "patterns": pats, "amazon_core": bool(core),
+                 "premium": bool(a.premium), "summary": summary})
+    save_json(BANK, bank)
+    print("Added %s (%s)." % (title, ", ".join(pats)))
+
+
+# ---------------------------------------------------------------- main
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(prog="practise", description="Pattern-based coding interview practice with spaced repetition.")
+    sub = ap.add_subparsers(dest="cmd")
+
+    s = sub.add_parser("next", help="start the next problem (plan > due reviews > weakest pattern)")
+    s.add_argument("-p", "--pattern", help="restrict to a pattern (number or name)")
+    s.add_argument("-s", "--session", help="plan session id (default: today's session if any)")
+    s.add_argument("-t", "--timebox", type=int, default=DEFAULT_TIMEBOX)
+    s.add_argument("--premium", action="store_true", help="allow LeetCode premium problems")
+    s.add_argument("--easy", action="store_true", help="allow Easy problems for new picks")
+    s.add_argument("--peek", action="store_true", help="show the pick without starting it")
+    s.add_argument("--no-open", action="store_true", help="don't open the editor")
+    s.set_defaults(func=cmd_next)
+
+    s = sub.add_parser("start", help="start a specific problem (slug, number or part of the slug)")
+    s.add_argument("problem")
+    s.add_argument("-t", "--timebox", type=int, default=DEFAULT_TIMEBOX)
+    s.add_argument("--no-open", action="store_true")
+    s.set_defaults(func=cmd_start)
+
+    s = sub.add_parser("status", help="time elapsed on the current attempt")
+    s.set_defaults(func=cmd_status)
+
+    s = sub.add_parser("done", help="log the current attempt")
+    s.add_argument("-r", "--rating", type=int, choices=[1, 2, 3, 4])
+    s.add_argument("-u", "--used", help="pattern you used")
+    s.add_argument("--hints", type=int)
+    s.add_argument("-n", "--notes")
+    s.add_argument("-m", "--minutes", type=int, help="override elapsed minutes")
+    s.set_defaults(func=cmd_done)
+
+    s = sub.add_parser("abandon", help="drop the current attempt without logging")
+    s.set_defaults(func=cmd_abandon)
+
+    s = sub.add_parser("drill", help="rapid pattern-recognition quiz")
+    s.add_argument("-n", type=int, default=10)
+    s.add_argument("-p", "--pattern")
+    s.set_defaults(func=cmd_drill)
+
+    s = sub.add_parser("stats", help="mastery by pattern")
+    s.set_defaults(func=cmd_stats)
+
+    s = sub.add_parser("report", help="markdown report (e.g. into your Obsidian vault)")
+    s.add_argument("-o", "--out")
+    s.set_defaults(func=cmd_report)
+
+    s = sub.add_parser("plan", help="show the session plan and progress")
+    s.set_defaults(func=cmd_plan)
+
+    s = sub.add_parser("list", help="list the problem bank")
+    s.add_argument("-p", "--pattern")
+    s.add_argument("--core", action="store_true", help="Amazon-frequent only")
+    s.set_defaults(func=cmd_list)
+
+    s = sub.add_parser("patterns", help="list patterns with weights and signals")
+    s.set_defaults(func=cmd_patterns)
+
+    s = sub.add_parser("mock", help="print a mock-interviewer prompt for Claude and start the timer")
+    s.add_argument("problem", nargs="?")
+    s.add_argument("--show", action="store_true", help="print the prompt instead of copying it")
+    s.set_defaults(func=cmd_mock)
+
+    s = sub.add_parser("add", help="add a problem to the bank")
+    s.add_argument("--slug"); s.add_argument("--lc"); s.add_argument("--title")
+    s.add_argument("--difficulty"); s.add_argument("--patterns"); s.add_argument("--summary")
+    s.add_argument("--core", action="store_true"); s.add_argument("--premium", action="store_true")
+    s.set_defaults(func=cmd_add)
+
+    a = ap.parse_args(argv)
+    if not a.cmd:
+        ap.print_help()
+        return
+    a.func(a)
+
+
+if __name__ == "__main__":
+    if hasattr(signal, "SIGPIPE"):
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    main()

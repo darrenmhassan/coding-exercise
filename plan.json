@@ -1,0 +1,47 @@
+{
+ "name": "AWS SDE3 coding interview, Wed 25 Nov 2026",
+ "sessions": [
+  {
+   "id": "sat",
+   "date": "2026-11-21",
+   "minutes": 120,
+   "focus": "Graphs on grids, Top K, Merge Intervals: the three most common Amazon shapes",
+   "steps": [
+    "10 min: ./practise drill -n 15 (pattern recognition warm-up)",
+    "4 x 25 min timed problems below, talking aloud, written without running; verify on LeetCode",
+    "10 min: ./practise stats, re-read the patterns you misidentified"
+   ],
+   "problems": ["number-of-islands", "rotting-oranges", "top-k-frequent-words", "merge-intervals"],
+   "stretch": ["k-closest-points-to-origin", "word-ladder"]
+  },
+  {
+   "id": "sun",
+   "date": "2026-11-22",
+   "minutes": 165,
+   "focus": "Trees, dependencies, sliding window and a design-a-class problem",
+   "steps": [
+    "10 min: ./practise drill -n 15",
+    "5 x 25 min timed problems below",
+    "Redo anything due from Saturday rated 1 or 2 (./practise next picks these first once the plan list is done)",
+    "10 min: ./practise stats"
+   ],
+   "problems": ["lowest-common-ancestor-of-a-binary-tree", "binary-tree-zigzag-level-order-traversal", "course-schedule-ii", "longest-substring-without-repeating-characters", "lru-cache"],
+   "stretch": ["find-median-from-data-stream", "search-suggestions-system", "all-nodes-distance-k-in-binary-tree"]
+  },
+  {
+   "id": "wed",
+   "date": "2026-11-25",
+   "minutes": 150,
+   "focus": "Consolidate, one full mock, then stop. Finish at least an hour before the interview",
+   "steps": [
+    "10 min: ./practise drill -n 20",
+    "50 min: ./practise mock on a problem you haven't seen (Claude plays interviewer: clarify, code, test, follow-ups)",
+    "2 x 25 min: the two problems below",
+    "Remaining time: ./practise next (it serves your due / weakest items)",
+    "Last 10 min: re-read the Interview structure note; no new problems"
+   ],
+   "problems": ["word-break", "reorganize-string"],
+   "stretch": ["merge-k-sorted-lists", "time-based-key-value-store"]
+  }
+ ]
+}
