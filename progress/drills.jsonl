@@ -1,0 +1,10 @@
+{"answer": "Union Find", "correct": false, "date": "2026-11-21", "guess": "Hash Maps", "id": "accounts-merge"}
+{"answer": "Graphs", "correct": true, "date": "2026-11-21", "guess": "Graphs", "id": "pacific-atlantic-water-flow"}
+{"answer": "Tree DFS", "correct": false, "date": "2026-11-21", "guess": "Backtracking", "id": "all-nodes-distance-k-in-binary-tree"}
+{"answer": "Stacks", "correct": false, "date": "2026-11-21", "guess": "Two Pointers", "id": "daily-temperatures"}
+{"answer": "Custom Data Structures", "correct": true, "date": "2026-11-21", "guess": "Hash Maps", "hinted": false, "id": "lfu-cache", "source": "claude"}
+{"answer": "Hash Maps", "correct": false, "date": "2026-11-21", "guess": "Sort and Search", "hinted": false, "id": "two-sum", "source": "claude"}
+{"answer": "Graphs", "correct": false, "date": "2026-11-21", "guess": "Matrices", "hinted": false, "id": "rotting-oranges", "source": "claude"}
+{"answer": "Union Find", "correct": true, "date": "2026-11-21", "guess": "Graphs", "hinted": false, "id": "number-of-provinces", "source": "claude"}
+{"answer": "Top K Elements", "correct": true, "date": "2026-11-21", "guess": "Top K Elements", "hinted": false, "id": "top-k-frequent-words", "source": "claude"}
+{"answer": "Dynamic Programming", "correct": false, "date": "2026-11-21", "guess": "Greedy", "hinted": false, "id": "coin-change", "source": "claude"}
