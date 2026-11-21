@@ -494,6 +494,8 @@ def cmd_drill(a):
     right = 0
     for n, p in enumerate(chosen, 1):
         print("\n[%d/%d] %s" % (n, len(chosen), p["summary"]))
+        if p.get("example"):
+            print(wrap("e.g. " + p["example"], "      "))
         while True:
             ans = ask("  pattern> ")
             if ans and ans.lower() == "q":
@@ -701,10 +703,11 @@ def cmd_add(a):
     if not pats or None in pats:
         sys.exit("Unrecognised pattern.")
     summary = a.summary or ask("One-line summary in your own words (used by drill): ", "")
+    example = a.example or ask("Small example, input -> output (used by drill): ", "")
     core = a.core if a.core else (ask("Amazon-frequent? y/N: ", "n").lower().startswith("y"))
     bank.append({"id": slug, "lc": lc, "title": title, "url": "https://leetcode.com/problems/%s/" % slug,
                  "difficulty": diff.capitalize(), "patterns": pats, "amazon_core": bool(core),
-                 "premium": bool(a.premium), "summary": summary})
+                 "premium": bool(a.premium), "summary": summary, "example": example})
     save_json(BANK, bank)
     print("Added %s (%s)." % (title, ", ".join(pats)))
 
@@ -781,7 +784,7 @@ def main(argv=None):
 
     s = sub.add_parser("add", help="add a problem to the bank")
     s.add_argument("--slug"); s.add_argument("--lc"); s.add_argument("--title")
-    s.add_argument("--difficulty"); s.add_argument("--patterns"); s.add_argument("--summary")
+    s.add_argument("--difficulty"); s.add_argument("--patterns"); s.add_argument("--summary"); s.add_argument("--example")
     s.add_argument("--core", action="store_true"); s.add_argument("--premium", action="store_true")
     s.set_defaults(func=cmd_add)
 

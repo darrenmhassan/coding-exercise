@@ -63,7 +63,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise start <slug|number>` starts a specific problem.
 - `./practise list [--pattern X] [--core]` shows the bank and your state per problem.
 - `./practise patterns` lists patterns, weights and recognition signals.
-- `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --core`).
+- `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
 
@@ -71,7 +71,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 
 | path | what |
 |---|---|
-| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), Amazon-frequent flag, premium flag, one-line summary used by `drill` |
+| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), Amazon-frequent flag, premium flag, one-line summary and a small input -> output example, both used by `drill` |
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
 | `bank/templates/` | one Java reference template per pattern |
 | `plan.json` | dated sessions (edit or replace for the next interview) |
