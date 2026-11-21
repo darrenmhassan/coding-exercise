@@ -13,11 +13,12 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 ## Setup
 
 1. Run `./practise drill-pick -n <count>` (add `-p "<pattern>"` if a pattern was given). It returns
-   JSON: `patterns` (the valid names, from my Educative notes) and `problems`, each with `id`,
+   JSON: `patterns` (the valid names, from my Educative notes), `grid` (a numbered 3-column
+   layout of those names) and `problems`, each with `id`,
    `title`, `patterns` (primary first; any listed pattern counts as correct), `summary`, `example`,
    `signals` (why each pattern applies) and `difficulty`.
 2. Do NOT show me the JSON, titles, LeetCode numbers or patterns. Say how many problems we'll do,
-   and that I can answer with a pattern name, or say "hint", "skip" or "stop".
+   and that I can answer with a pattern number or name, or say "hint", "skip" or "stop".
 
 ## For each problem, one at a time
 
@@ -26,7 +27,10 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
    the example from `example` translated into the scenario. Never name the problem or hint at the
    pattern in the wording. Give the example as input -> output ONLY: do not explain how the output
    is reached (no "relabel one package to get AAAA"), since that reveals the approach.
-   End with: "Which pattern, and what in the problem tells you?"
+   Then show the `grid` verbatim inside a plain code block (```text), with every problem, so I
+   can see all the options. End with: "Which pattern, and what in the problem tells you?"
+   A number means the pattern with that number in the grid; pass the number or name to
+   `drill-log --guess` (it accepts either).
    No hints of any kind before my first answer unless I explicitly ask for one.
 2. **Wait for my answer.** Never answer for me.
 3. **Log my FIRST answer** straight away: `./practise drill-log --id <id> --guess "<my pattern>"`

@@ -284,17 +284,23 @@ def show_pattern(name, signals=True, code=True, indent="    "):
         print()
 
 
-def print_pattern_menu():
+def pattern_grid(indent="  "):
     names = pattern_names()
     cols = 3
     rows = (len(names) + cols - 1) // cols
+    lines = []
     for r in range(rows):
         line = ""
         for c in range(cols):
             i = r + c * rows
             if i < len(names):
                 line += ("%2d %-26s" % (i + 1, names[i]))
-        print("  " + line)
+        lines.append((indent + line).rstrip())
+    return "\n".join(lines)
+
+
+def print_pattern_menu():
+    print(pattern_grid())
 
 
 def ask(prompt, default=None):
@@ -509,7 +515,7 @@ def cmd_drill_pick(a):
         q = dict(p)
         q["signals"] = {name: sigs[name] for name in p["patterns"]}
         out.append(q)
-    print(json.dumps({"patterns": pattern_names(), "problems": out}, indent=1))
+    print(json.dumps({"patterns": pattern_names(), "grid": pattern_grid(""), "problems": out}, indent=1))
 
 
 def cmd_drill_log(a):
