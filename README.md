@@ -10,7 +10,7 @@ Python 3.8+ standard library only. Solutions are written in Java.
 
 ```sh
 ./practise plan              # the dated session plan and what's ticked off
-./practise drill -n 15       # 10-minute pattern-recognition warm-up
+./practise drill -n 15       # quick pattern-recognition warm-up (or /drill in Claude Code)
 ./practise next              # start the next problem; opens attempts/<date>_<id>/Solution.java
 ./practise status            # elapsed vs timebox
 ./practise done              # log it: pattern you used, rating 1-4, hints, notes
@@ -30,6 +30,22 @@ done, paste it into LeetCode. Rate honestly:
 | 4 easy | fast, clean, optimal first time |
 
 The pattern isn't shown when a problem starts, only after `done`, so recognition is practised too.
+
+## Interactive tutor: `/drill` in Claude Code
+
+```sh
+cd ~/home/coding-exercise && claude
+/drill            # 8 problems
+/drill 12         # more
+/drill 5 graphs   # focus on one pattern
+```
+
+Claude presents each problem as an Amazon-style scenario with an example, asks which pattern and
+why, gives a guiding question if you're wrong, then explains the signals, the key insight, a Java
+sketch of the solution, complexity and a common trap. It picks problems with
+`./practise drill-pick` (weighted towards likely and previously missed patterns) and logs your first
+answer with `./practise drill-log`, so `stats` and future picks include tutor sessions.
+`./practise drill` remains as the quick offline version.
 
 ## Pattern templates
 
@@ -78,6 +94,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 | `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it |
 | `progress/drills.jsonl` | drill answers |
 | `attempts/` | my written solutions |
+| `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 
 Everything except `.practise/` (the in-progress attempt) is meant to be committed, so history
 travels with the repo.

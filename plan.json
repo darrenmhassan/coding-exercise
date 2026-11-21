@@ -7,7 +7,7 @@
    "minutes": 120,
    "focus": "Graphs on grids, Top K, Merge Intervals: the three most common Amazon shapes",
    "steps": [
-    "10 min: ./practise drill -n 15 (pattern recognition warm-up)",
+    "15 min: /drill 6 in Claude Code (or ./practise drill -n 15)",
     "4 x 25 min timed problems below, talking aloud, written without running; verify on LeetCode",
     "10 min: ./practise stats, re-read the patterns you misidentified"
    ],
@@ -20,7 +20,7 @@
    "minutes": 165,
    "focus": "Trees, dependencies, sliding window and a design-a-class problem",
    "steps": [
-    "10 min: ./practise drill -n 15",
+    "15 min: /drill 6 in Claude Code (or ./practise drill -n 15)",
     "5 x 25 min timed problems below",
     "Redo anything due from Saturday rated 1 or 2 (./practise next picks these first once the plan list is done)",
     "10 min: ./practise stats"
@@ -34,7 +34,7 @@
    "minutes": 150,
    "focus": "Consolidate, one full mock, then stop. Finish at least an hour before the interview",
    "steps": [
-    "10 min: ./practise drill -n 20",
+    "15 min: /drill 8 in Claude Code",
     "50 min: ./practise mock on a problem you haven't seen (Claude plays interviewer: clarify, code, test, follow-ups)",
     "2 x 25 min: the two problems below",
     "Remaining time: ./practise next (it serves your due / weakest items)",

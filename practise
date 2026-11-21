@@ -473,22 +473,57 @@ def cmd_abandon(a):
         print("Dropped the current attempt (nothing logged).")
 
 
-def cmd_drill(a):
-    bank = [p for p in problems() if a.pattern is None or resolve_pattern(a.pattern) in p["patterns"]]
+def pick_drill(n, pattern=None):
+    """Weighted sample: likely-at-Amazon patterns and previously missed problems come up more."""
+    pat = resolve_pattern(pattern) if pattern else None
+    if pattern and not pat:
+        sys.exit("Unknown pattern '%s'." % pattern)
+    bank = [p for p in problems() if pat is None or pat in p["patterns"]]
     weights = {x["name"]: x["weight"] for x in patterns()}
-    sigs = {x["name"]: x["signals"] for x in patterns()}
-    drills = read_jsonl(DRILLS_LOG)
     missed = {}
-    for d in drills:
+    for d in read_jsonl(DRILLS_LOG):
         missed[d["id"]] = missed.get(d["id"], 0) + (0 if d["correct"] else 1)
-    w = [max(weights[x] for x in p["patterns"]) + 2 * missed.get(p["id"], 0) for p in bank]
+    pool = list(bank)
+    pw = [max(weights[x] for x in p["patterns"]) + 2 * missed.get(p["id"], 0) for p in pool]
     rng = random.Random()
     chosen = []
-    pool, pw = list(bank), list(w)
-    for _ in range(min(a.n, len(pool))):
+    for _ in range(min(n, len(pool))):
         i = rng.choices(range(len(pool)), weights=pw)[0]
         chosen.append(pool.pop(i))
         pw.pop(i)
+    return chosen
+
+
+def log_drill(p, guess, hinted=False, source="cli"):
+    ok = guess in p["patterns"]
+    append_jsonl(DRILLS_LOG, {"id": p["id"], "date": today().isoformat(), "guess": guess,
+                              "answer": p["patterns"][0], "correct": ok, "hinted": hinted, "source": source})
+    return ok
+
+
+def cmd_drill_pick(a):
+    """JSON for the /drill Claude Code tutor."""
+    sigs = {x["name"]: x["signals"] for x in patterns()}
+    out = []
+    for p in pick_drill(a.n, a.pattern):
+        q = dict(p)
+        q["signals"] = {name: sigs[name] for name in p["patterns"]}
+        out.append(q)
+    print(json.dumps({"patterns": pattern_names(), "problems": out}, indent=1))
+
+
+def cmd_drill_log(a):
+    p = find_problem(a.id)
+    guess = resolve_pattern(a.guess)
+    if not guess:
+        sys.exit("Unknown pattern '%s'. Valid: %s" % (a.guess, ", ".join(pattern_names())))
+    ok = log_drill(p, guess, a.hinted, "claude")
+    print(json.dumps({"id": p["id"], "guess": guess, "correct": ok, "patterns": p["patterns"]}))
+
+
+def cmd_drill(a):
+    sigs = {x["name"]: x["signals"] for x in patterns()}
+    chosen = pick_drill(a.n, a.pattern)
     print("\nName the pattern for each problem. Answer with a number or part of a name; 'q' quits.\n")
     print_pattern_menu()
     right = 0
@@ -507,10 +542,8 @@ def cmd_drill(a):
             print("  not recognised (try a number)")
         if ans and ans.lower() == "q":
             break
-        ok = got in p["patterns"]
+        ok = log_drill(p, got)
         right += ok
-        append_jsonl(DRILLS_LOG, {"id": p["id"], "date": today().isoformat(), "guess": got,
-                                  "answer": p["patterns"][0], "correct": ok})
         mark = "yes" if ok else "no, you said %s" % got
         print("  %s -> %s  (%s)" % (mark, " / ".join(p["patterns"]), p["title"]))
         primary = p["patterns"][0] if not ok or got not in p["patterns"] else got
@@ -754,6 +787,17 @@ def main(argv=None):
     s.add_argument("--code", action="store_true", help="always show the template, even when right")
     s.add_argument("--no-code", action="store_true", help="never show templates (fast mode)")
     s.set_defaults(func=cmd_drill)
+
+    s = sub.add_parser("drill-pick", help="(for the /drill Claude tutor) pick drill problems as JSON")
+    s.add_argument("-n", type=int, default=10)
+    s.add_argument("-p", "--pattern")
+    s.set_defaults(func=cmd_drill_pick)
+
+    s = sub.add_parser("drill-log", help="(for the /drill Claude tutor) record one drill answer")
+    s.add_argument("--id", required=True)
+    s.add_argument("--guess", required=True, help="the user's FIRST answer")
+    s.add_argument("--hinted", action="store_true", help="they only got there after a hint")
+    s.set_defaults(func=cmd_drill_log)
 
     s = sub.add_parser("template", help="show a pattern's signals and Java template")
     s.add_argument("pattern", nargs="?", help="number or name; omit to pick from the menu")
