@@ -1,7 +1,7 @@
 ---
 description: Coached coding round. Identify the pattern, then code the solution in Java with Claude guiding (hints on request), reviewing and logging the attempt.
 argument-hint: "[pattern | problem-slug]   e.g. /coding-coach   /coding-coach graphs   /coding-coach lru-cache"
-allowed-tools: Bash(./practise next:*), Bash(./practise start:*), Bash(./practise status), Bash(./practise done:*), Bash(./practise drill-log:*), Bash(./practise template:*), Bash(./practise list:*), Bash(javac:*), Bash(java:*), Read, Write, Edit
+allowed-tools: Bash(./coding next:*), Bash(./coding start:*), Bash(./coding status), Bash(./coding done:*), Bash(./coding drill-log:*), Bash(./coding template:*), Bash(./coding list:*), Bash(javac:*), Bash(java:*), Read, Write, Edit
 ---
 
 You are my coding coach for one interview-style problem. I'm practising for senior software engineer
@@ -11,9 +11,9 @@ Arguments: `$ARGUMENTS` (optional: a pattern to focus on, or a specific problem 
 
 ## 1. Pick the problem (hidden)
 
-- No argument: `./practise next --json` (it follows my plan, then due reviews, then my weakest pattern).
-- A pattern: `./practise next --json -p "<pattern>"`.
-- A problem slug or number: use that problem; get its details from `./practise list` or the bank.
+- No argument: `./coding next --json` (it follows my plan, then due reviews, then my weakest pattern).
+- A pattern: `./coding next --json -p "<pattern>"`.
+- A problem slug or number: use that problem; get its details from `./coding list` or the bank.
 
 The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `example`, `signals`,
 `reason`). Don't show me the JSON, the title, the LeetCode number or the pattern.
@@ -25,7 +25,7 @@ The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `exampl
    Ask: "Which pattern, and what tells you?" No hints unless I ask.
 2. Wait. If I'm wrong, ask one guiding question and let me try again, then reveal the pattern and
    the 2-3 signals in a few lines. Don't show any solution code.
-3. Only after the reveal, log my first answer: `./practise drill-log --id <id> --guess "<first answer>"`, adding
+3. Only after the reveal, log my first answer: `./coding drill-log --id <id> --guess "<first answer>"`, adding
    `--retry "<second answer>"` if I answered again after your guiding question.
 
 ## 3. Clarify and plan (as in a real interview)
@@ -38,7 +38,7 @@ The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `exampl
 
 ## 4. Code (timed)
 
-1. Run `./practise start <id> --no-open -t 30`. It creates `attempts/<date>_<id>/Solution.java` and
+1. Run `./coding start <id> --no-open -t 30`. It creates `attempts/<date>_<id>/Solution.java` and
    starts a 30-minute timer. Tell me the file path. I'll write the code there (in my editor) or
    paste it into the chat; if I paste it, save it into that file with Write/Edit.
 2. While I code, stay quiet unless I ask. If I say "hint", use this ladder, one rung per request,
@@ -47,7 +47,7 @@ The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `exampl
    2. The structure: which data structure / loop shape, in words.
    3. A specific line or two of code for the part I'm stuck on, never the whole solution.
    If I say "give up", show a complete, well-commented solution and explain it.
-3. If I ask how long I've had, run `./practise status`.
+3. If I ask how long I've had, run `./coding status`.
 
 ## 5. Review (whiteboard-style, then verify)
 
@@ -72,6 +72,6 @@ When I say I'm done:
    - hints: the number of hint-ladder rungs you gave;
    - complexity: `--suboptimal` if time or space is worse than the optimal, else `--optimal`;
    - pattern used: the pattern my code actually uses.
-2. Log it: `./practise done -u "<pattern>" --result <pass|fixed|fail> --bugs <n> --hints <n>
+2. Log it: `./coding done -u "<pattern>" --result <pass|fixed|fail> --bugs <n> --hints <n>
    --optimal|--suboptimal -n "<one-line note: main mistake or insight>"`.
    It prints the derived rating with its reasons and the next review date; show me both.

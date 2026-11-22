@@ -7,9 +7,9 @@
    "minutes": 120,
    "focus": "Grids, Top K, intervals",
    "steps": [
-    "15 min: /drill 6 in Claude Code (or ./practise drill -n 15)",
+    "15 min: /coding-drill 6 in Claude Code (or ./coding drill -n 15)",
     "Timed problems below, talking aloud, written without running; verify on LeetCode",
-    "10 min: ./practise stats"
+    "10 min: ./coding stats"
    ],
    "problems": ["number-of-islands", "rotting-oranges", "top-k-frequent-words", "merge-intervals"],
    "stretch": ["k-closest-points-to-origin", "word-ladder"]
@@ -20,9 +20,9 @@
    "minutes": 165,
    "focus": "Trees, dependencies, sliding window, a design-a-class problem",
    "steps": [
-    "15 min: /drill 6 in Claude Code",
+    "15 min: /coding-drill 6 in Claude Code",
     "Timed problems below",
-    "./practise next for anything due, then ./practise stats"
+    "./coding next for anything due, then ./coding stats"
    ],
    "problems": ["lowest-common-ancestor-of-a-binary-tree", "binary-tree-zigzag-level-order-traversal", "course-schedule-ii", "longest-substring-without-repeating-characters", "lru-cache"],
    "stretch": ["find-median-from-data-stream", "search-suggestions-system"]
@@ -33,9 +33,9 @@
    "minutes": 150,
    "focus": "Consolidate, one full mock, then stop",
    "steps": [
-    "15 min: /drill 8 in Claude Code",
-    "50 min: ./practise mock on a problem you haven't seen",
-    "Problems below, then ./practise next for due / weakest items"
+    "15 min: /coding-drill 8 in Claude Code",
+    "50 min: ./coding mock on a problem you haven't seen",
+    "Problems below, then ./coding next for due / weakest items"
    ],
    "problems": ["word-break", "reorganize-string"],
    "stretch": ["merge-k-sorted-lists", "time-based-key-value-store"]

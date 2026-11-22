@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""practise: a spaced-repetition coding interview trainer organised by problem pattern.
+"""coding: a spaced-repetition coding interview trainer organised by problem pattern.
 
 State lives in plain files so it is easy to inspect, diff and extend:
   bank/problems.json     problem bank (id, LeetCode link, patterns, commonly-asked flag, summary, example)
   bank/patterns.json     patterns with a weight (interview likelihood) and recognition signals
   .practise/plan.json    optional dated practice sessions (local, not committed; see plan.example.json)
   .practise/weights/      optional named weight profiles, <name>.json = {"<pattern>": 1-5}, and
-                          `active` naming the one in use (local, not committed; see `practise weights`)
+                          `active` naming the one in use (local, not committed; see `./coding weights`)
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
                            progress/ and attempts/ stay on this machine (git-ignored)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
@@ -113,7 +113,7 @@ def active_weights():
         return None, None
     path = name if name.endswith(".json") else os.path.join(WEIGHTS_DIR, name + ".json")
     if not os.path.exists(path):
-        sys.exit("Weight profile '%s' not found (%s). See `practise weights`." % (name, path))
+        sys.exit("Weight profile '%s' not found (%s). See `./coding weights`." % (name, path))
     return os.path.basename(path)[:-5], path
 
 
@@ -408,7 +408,7 @@ def find_problem(ref):
         return hits[0]
     if hits:
         sys.exit("Ambiguous: " + ", ".join(p["id"] for p in hits))
-    sys.exit("No problem matching '%s' (see ./practise list)" % ref)
+    sys.exit("No problem matching '%s' (see ./coding list)" % ref)
 
 
 def scaffold(p, timebox):
@@ -456,8 +456,8 @@ def start_attempt(p, reason, timebox, open_editor, mock=False):
     print("  timebox: %d min, started %s" % (timebox, dt.datetime.now().strftime("%H:%M")))
     print("  file: " + os.path.relpath(path, ROOT))
     print()
-    print("  When finished: %s   (or %s to see elapsed time)" % (cmd_hint("./practise done", "/coding-done"),
-                                                                cmd_hint("./practise status", "/coding-status")))
+    print("  When finished: %s   (or %s to see elapsed time)" % (cmd_hint("./coding done", "/coding-done"),
+                                                                cmd_hint("./coding status", "/coding-status")))
     if open_editor:
         ed = os.environ.get("VISUAL") or os.environ.get("EDITOR")
         try:
@@ -475,7 +475,7 @@ def cmd_next(a):
     session = a.session if a.session else ("auto" if not a.pattern else None)
     pat = resolve_pattern(a.pattern) if a.pattern else None
     if a.pattern and not pat:
-        sys.exit("Unknown pattern '%s'. ./practise patterns lists them." % a.pattern)
+        sys.exit("Unknown pattern '%s'. ./coding patterns lists them." % a.pattern)
     p, reason = pick_next(pat, a.premium, session, a.easy)
     if not p:
         sys.exit(reason)
@@ -498,7 +498,7 @@ def cmd_start(a):
 def cmd_status(a):
     cur = load_json(CURRENT)
     if not cur:
-        print("No attempt in progress. " + cmd_hint("./practise next", "/coding-next"))
+        print("No attempt in progress. " + cmd_hint("./coding next", "/coding-next"))
         return
     started = dt.datetime.fromisoformat(cur["started"])
     mins = (dt.datetime.now() - started).total_seconds() / 60
@@ -565,7 +565,7 @@ def cmd_done(a):
         print()
         show_pattern(p["patterns"][0])
     else:
-        print("  (%s %s shows the reference template)" % (cmd_hint("./practise template", "/coding-template"),
+        print("  (%s %s shows the reference template)" % (cmd_hint("./coding template", "/coding-template"),
                                                         "\"%s\"" % used if " " in used else used))
     print("  Next review: %s (in %d days)" % (s["due"].isoformat(), s["interval"]))
 
@@ -811,7 +811,7 @@ def cmd_drill(a):
     if chosen:
         print("\nScore: %d/%d" % (right, len(chosen)))
     if not quit_early:
-        print("Session saved; ./practise sessions shows every completed session.")
+        print("Session saved; ./coding sessions shows every completed session.")
 
 
 def fmt(v, kind):
@@ -856,7 +856,7 @@ def cmd_weights(a):
     active, _ = active_weights()
     profiles = weight_profiles()
     if not profiles:
-        print("No weight profiles. Add %s/<name>.json, e.g. {\"Trie\": 4}, then `practise weights <name>`." % WEIGHTS_DIR)
+        print("No weight profiles. Add %s/<name>.json, e.g. {\"Trie\": 4}, then `./coding weights <name>`." % WEIGHTS_DIR)
     for name in profiles:
         note = load_json(os.path.join(WEIGHTS_DIR, name + ".json"), {}).get("_note", "")
         print("%s %-12s %s" % ("*" if name == active else " ", name, note))
@@ -887,7 +887,7 @@ def cmd_stats(a):
 
 def cmd_report(a):
     rows = stats_rows()
-    out = ["# Coding practice report", "", "_Generated %s by `practise report`._" % now_iso(), "",
+    out = ["# Coding practice report", "", "_Generated %s by `./coding report`._" % now_iso(), "",
            "| " + " | ".join(HEAD) + " |", "|" + "---|" * len(HEAD)]
     out += ["| " + " | ".join(r) + " |" for r in rows]
     srows = session_rows()
@@ -1003,7 +1003,7 @@ def cmd_mock(a):
         print("\nPaste this into a new Claude chat:\n" + "-" * 60 + "\n" + prompt + "\n" + "-" * 60)
     start_attempt(p, "mock interview", 35, False, mock=True)
     print("  The file above is for your code; the problem title is printed in it, so don't open it until")
-    print("  the interviewer has described the problem. Log with %s afterwards." % cmd_hint("./practise done", "/coding-done"))
+    print("  the interviewer has described the problem. Log with %s afterwards." % cmd_hint("./coding done", "/coding-done"))
 
 
 def cmd_add(a):
@@ -1034,7 +1034,7 @@ def cmd_add(a):
 # ---------------------------------------------------------------- main
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="practise", description="Pattern-based coding interview practice with spaced repetition.")
+    ap = argparse.ArgumentParser(prog="coding", description="Pattern-based coding interview practice with spaced repetition.")
     sub = ap.add_subparsers(dest="cmd")
 
     s = sub.add_parser("next", help="start the next problem (plan > due reviews > weakest pattern)")

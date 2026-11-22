@@ -2,12 +2,12 @@
 
 Pattern-based coding interview practice with spaced repetition. Problems are tagged with the
 patterns from my Educative notes ([docs/patterns-reference.md](docs/patterns-reference.md): what each
-pattern is, when to use it and example questions), and the `practise` CLI decides what to work on next, times each attempt, and tracks mastery by pattern.
+pattern is, when to use it and example questions), and the `coding` CLI decides what to work on next, times each attempt, and tracks mastery by pattern.
 
 Python 3.8+ standard library only. Solutions are written in Java.
 
 Most of it is used from Claude Code in this directory (`cd ~/home/coding-exercise && claude`, or the
-Claude app with this folder open). Every step also has a plain `./practise` command for the terminal.
+Claude app with this folder open). Every step also has a plain `./coding` command for the terminal.
 
 ## Ways to practise
 
@@ -38,7 +38,7 @@ Your first answer is the one that counts in the score. A right answer on the ret
 separately as "fixed". Nothing is logged until the answer has been revealed, so the
 log never gives the answer away.
 
-Terminal version, without the teaching: `./practise drill [-n 10] [-p pattern] [--code | --no-code]`.
+Terminal version, without the teaching: `./coding drill [-n 10] [-p pattern] [--code | --no-code]`.
 It shows the "when to use" signals and the pattern's Java template when you're wrong (press `t` to
 see it when you're right; `--code` always shows it, `--no-code` never).
 
@@ -74,8 +74,8 @@ A timed problem on your own, written as you would in the interview editor (witho
    optimal, and asks only how many hints you used. Then it logs the attempt with a
    [derived rating](#how-attempts-are-rated) and reveals the bank's pattern.
 
-Terminal version: `./practise next` (or `start`), `./practise status`, then paste the solution into
-LeetCode and run `./practise done`, which asks about your submissions instead.
+Terminal version: `./coding next` (or `start`), `./coding status`, then paste the solution into
+LeetCode and run `./coding done`, which asks about your submissions instead.
 
 The pattern is never shown when a problem starts, only after `done`, so recognition is practised too.
 
@@ -145,9 +145,9 @@ Unlisted patterns keep their default, keys starting with `_` are notes, and an u
 is an error.
 
 ```sh
-./practise weights            # list profiles and show the active one (or /coding-weights)
-./practise weights <name>     # use that profile from now on
-./practise weights --off      # back to the defaults in bank/patterns.json
+./coding weights            # list profiles and show the active one (or /coding-weights)
+./coding weights <name>     # use that profile from now on
+./coding weights --off      # back to the defaults in bank/patterns.json
 ```
 
 `PRACTISE_WEIGHTS=<name or path>` overrides the choice for one run. `stats` names the active profile
@@ -171,7 +171,7 @@ Every user-facing command, with its slash command in Claude Code. The slash comm
 for anything the command would otherwise prompt for. All of them start with `coding-`, which groups
 them in the `/` menu and keeps them clear of Claude Code's built-ins (`/stats`, `/status`, `/plan`).
 
-| `./practise` | slash command | options |
+| `./coding` | slash command | options |
 |---|---|---|
 | `drill` | `/coding-drill [count] [pattern]` (the tutor) | `-n N` (default 10), `-p/--pattern`, `--code`, `--no-code` |
 | `next` | `/coding-next [pattern]` | `-p/--pattern`, `-s/--session plan-session`, `-t/--timebox minutes` (default 25), `--easy`, `--premium`, `--peek` (show without starting), `--no-open` (don't open the editor), `--json` (used by `/coding-coach`) |

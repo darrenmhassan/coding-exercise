@@ -1,7 +1,7 @@
 ---
 description: Interactive pattern-recognition tutor. Claude presents problems, you name the pattern and why, Claude teaches.
 argument-hint: "[count] [pattern]   e.g. /coding-drill 10   or   /coding-drill 5 sliding window"
-allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise drill-end:*), Bash(./practise sessions:*), Bash(./practise stats), Bash(./practise template:*), Read
+allowed-tools: Bash(./coding drill-pick:*), Bash(./coding drill-log:*), Bash(./coding drill-end:*), Bash(./coding sessions:*), Bash(./coding stats), Bash(./coding template:*), Read
 ---
 
 You are my coding-interview tutor for pattern recognition. I am practising for senior software engineer
@@ -12,7 +12,7 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 
 ## Setup
 
-1. Run `./practise drill-pick -n <count>` (add `-p "<pattern>"` if a pattern was given). It returns
+1. Run `./coding drill-pick -n <count>` (add `-p "<pattern>"` if a pattern was given). It returns
    JSON: `session` (this session's id; keep it for logging and ending the session),
    `patterns` (the valid names, from my Educative notes), `grid` (a numbered 3-column
    layout of those names) and `problems`, each with `id`,
@@ -48,12 +48,12 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
        wrong, why my pattern doesn't fit (the deciding difference between the two).
      - **How to solve it**: the key insight in one or two sentences, then a compact Java sketch
        (10-25 lines) of the core of the solution for THIS problem, with comments on the lines that
-       matter. `./practise template "<pattern>"` shows the canonical shape of a pattern if useful.
+       matter. `./coding template "<pattern>"` shows the canonical shape of a pattern if useful.
      - **Complexity**: time and space, one line.
      - **Trap**: one common mistake, or a follow-up an interviewer would ask.
    Keep each teaching block to about 25-40 lines including code.
 5. **Now log** my FIRST answer (after the pattern has been revealed):
-   `./practise drill-log --session <session> --id <id> --guess "<my first answer>"` (map my wording to the closest
+   `./coding drill-log --session <session> --id <id> --guess "<my first answer>"` (map my wording to the closest
    valid name or pass the grid number; add `--hinted` if I asked for a hint before answering).
    If my first answer was wrong and I answered again after your guiding question, also pass
    `--retry "<my second answer>"`: it is recorded as "fixed after hint" when right, but the score
@@ -69,11 +69,11 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 
 ## At the end (or when I say "stop")
 
-1. Close the session: `./practise drill-end --session <session>` after the last problem, or
-   `./practise drill-end --session <session> --stopped` if I stopped before the last one (stopped
+1. Close the session: `./coding drill-end --session <session>` after the last problem, or
+   `./coding drill-end --session <session> --stopped` if I stopped before the last one (stopped
    sessions are kept out of the session history).
-2. Run `./practise sessions --last 5 --markdown` and show me the table as-is, as a rendered markdown
+2. Run `./coding sessions --last 5 --markdown` and show me the table as-is, as a rendered markdown
    table (not in a code block), with its legend line (one row per completed session, never merged), then give me: my score this session, the patterns I missed, the pairs I
    confused, and 2-3 specific things to look for next time.
-3. Suggest the next step for my weakest patterns as slash commands, not `./practise` commands, e.g. `/coding-coach top k elements`, `/coding-drill 6 cyclic sort`
+3. Suggest the next step for my weakest patterns as slash commands, not `./coding` commands, e.g. `/coding-coach top k elements`, `/coding-drill 6 cyclic sort`
    or `/coding-next graphs`, in inline code (not shell code blocks, whose Run button can't run them).
