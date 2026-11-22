@@ -95,7 +95,7 @@ A full round with Claude as the interviewer, in a separate chat so the problem s
 | command | shows |
 |---|---|
 | `/coding-stats` | mastery by pattern, sorted by need, plus the 2-3 patterns to work on next |
-| `/coding-sessions [N]` | one row per completed drill session (never merged): score, misses fixed after a hint, missed patterns |
+| `/coding-sessions [N]` | one row per completed drill session (never merged): score, misses fixed after a hint, minutes from each problem appearing to your answer (teaching and breaks left out), missed patterns |
 | `/coding-list [pattern] [--core]` | the problem bank and your state per problem |
 | `/coding-patterns` | the patterns with their weights and recognition signals |
 | `/coding-template [pattern]` | a pattern's signals and Java reference template |
@@ -191,7 +191,7 @@ them in the `/` menu and keeps them clear of Claude Code's built-ins (`/stats`, 
 | `weights [profile]` | `/coding-weights [profile]` | `--off` |
 | `add` | `/coding-add <URL or slug>` | `--slug`, `--lc`, `--title`, `--difficulty`, `--patterns`, `--summary`, `--example`, `--core`, `--premium` |
 
-`drill-pick` (`-n`, `-p`), `drill-log` (`--session`, `--id`, `--guess` for the first answer,
+`drill-pick` (`-n`, `-p`), `drill-shown` (`--session`, `-n`: starts a problem's timer), `drill-log` (`--session`, `--id`, `--guess` for the first answer,
 `--retry` for the answer after a guiding question, `--hinted`) and `drill-end` (`--session`,
 `--stopped`) are the plumbing `/coding-drill` and `/coding-coach` use; they have no slash command.
 Run without a terminal (as slash commands do), any command that would wait for input exits and

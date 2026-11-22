@@ -10,7 +10,7 @@ State lives in plain files so it is easy to inspect, diff and extend:
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
                            progress/ and attempts/ stay on this machine (git-ignored)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
-  progress/drill_sessions.jsonl  start/end events of each drill session
+  progress/drill_sessions.jsonl  start, shown (each problem presented) and end events of each drill session
   attempts/<date>_<id>/Solution.java   your written solutions
   .practise/current.json   the attempt in progress (not committed)
 
@@ -630,15 +630,40 @@ def start_session(source, chosen, pattern=None):
     return sid
 
 
+def log_shown(sid, n):
+    append_jsonl(SESSIONS_LOG, {"session": sid, "event": "shown", "n": n, "at": now_iso()})
+
+
 def end_session(sid, status):
     append_jsonl(SESSIONS_LOG, {"session": sid, "event": "end", "at": now_iso(), "status": status})
 
 
+def problem_minutes(shown, rows):
+    """Minutes from each problem appearing to its answer being logged, summed.
+
+    Breaks are taken after the teaching, before asking for the next problem, so they fall outside
+    these spans. Returns None for sessions logged before problems were timed.
+    """
+    if not shown or any("at" not in d for d in rows):
+        return None
+    shown = sorted(shown)
+    total = 0.0
+    for d in rows:
+        at = dt.datetime.fromisoformat(d["at"])
+        before = [t for t in shown if t <= at]
+        if before:
+            total += (at - before[-1]).total_seconds() / 60
+    return round(total)
+
+
 def completed_sessions():
     """One summary per COMPLETED drill session, oldest first. Each session is kept separate."""
-    starts, ends = {}, {}
+    starts, ends, shown = {}, {}, {}
     for e in read_jsonl(SESSIONS_LOG):
-        (starts if e["event"] == "start" else ends)[e["session"]] = e
+        if e["event"] == "shown":
+            shown.setdefault(e["session"], []).append(dt.datetime.fromisoformat(e["at"]))
+        else:
+            (starts if e["event"] == "start" else ends)[e["session"]] = e
     answers = {}
     for d in read_jsonl(DRILLS_LOG):
         if d.get("session"):
@@ -651,8 +676,10 @@ def completed_sessions():
         rows = answers.get(sid, [])
         t0, t1 = dt.datetime.fromisoformat(st["at"]), dt.datetime.fromisoformat(en["at"])
         missed = [d["answer"] for d in rows if not d["correct"]]
+        minutes = problem_minutes(shown.get(sid), rows)
         out.append({
-            "session": sid, "start": t0, "minutes": max(0, round((t1 - t0).total_seconds() / 60)),
+            "session": sid, "start": t0, "timed": minutes is not None,
+            "minutes": minutes if minutes is not None else max(0, round((t1 - t0).total_seconds() / 60)),
             "source": st.get("source", "?"), "focus": st.get("pattern") or "all",
             "planned": st.get("planned", len(rows)), "answered": len(rows),
             "correct": sum(1 for d in rows if d["correct"]),
@@ -665,7 +692,8 @@ def completed_sessions():
 
 SESSION_HEAD = ["#", "date", "start", "via", "focus", "answered", "score", "fixed", "hints", "min", "missed (correct pattern)"]
 SESSION_LEGEND = ("answered = of planned; score = right first time; fixed = misses right on the retry after a\n"
-                  "guiding question; hints = asked for before answering; min = from the start of the session to its end.")
+                  "guiding question; hints = asked for before answering; min = time from each problem appearing to\n"
+                  "your answer, so teaching and breaks are left out (* = older session: start to end).")
 
 
 def session_rows():
@@ -677,7 +705,7 @@ def session_rows():
                      x["focus"], "%d/%d" % (x["answered"], x["planned"]),
                      "%d/%d %s" % (x["correct"], x["answered"], fmt(score, "pct")),
                      "%d/%d" % (x["fixed"], len(x["missed"])) if x["missed"] else "-",
-                     str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]), missed])
+                     str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]) + ("" if x["timed"] else "*"), missed])
     return rows
 
 
@@ -742,6 +770,13 @@ def cmd_drill_log(a):
     print("logged")       # deliberately says nothing about the answer
 
 
+def cmd_drill_shown(a):
+    if not any(e["session"] == a.session and e["event"] == "start" for e in read_jsonl(SESSIONS_LOG)):
+        sys.exit("No drill session '%s'." % a.session)
+    log_shown(a.session, a.n)
+    print("ok")
+
+
 def cmd_drill_end(a):
     if not any(e["session"] == a.session and e["event"] == "start" for e in read_jsonl(SESSIONS_LOG)):
         sys.exit("No drill session '%s'." % a.session)
@@ -758,6 +793,7 @@ def cmd_drill(a):
     print_pattern_menu()
     right = 0
     for n, p in enumerate(chosen, 1):
+        log_shown(sid, n)
         print("\n[%d/%d] %s" % (n, len(chosen), p["summary"]))
         if p.get("example"):
             print(wrap("e.g. " + p["example"], "      "))
@@ -1071,6 +1107,11 @@ def main(argv=None):
     s.add_argument("--retry", help="their answer after the guiding question, if the first was wrong")
     s.add_argument("--session", help="session id from drill-pick")
     s.set_defaults(func=cmd_drill_log)
+
+    s = sub.add_parser("drill-shown", help="(for the /coding-drill Claude tutor) record that a problem was presented")
+    s.add_argument("--session", required=True)
+    s.add_argument("-n", type=int, required=True, help="the problem's position in the session (1, 2, ...)")
+    s.set_defaults(func=cmd_drill_shown)
 
     s = sub.add_parser("drill-end", help="(for the /coding-drill Claude tutor) close a drill session")
     s.add_argument("--session", required=True)

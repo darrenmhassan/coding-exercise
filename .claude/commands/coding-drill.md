@@ -1,7 +1,7 @@
 ---
 description: Interactive pattern-recognition tutor. Claude presents problems, you name the pattern and why, Claude teaches.
 argument-hint: "[count] [pattern]   e.g. /coding-drill 10   or   /coding-drill 5 sliding window"
-allowed-tools: Bash(./coding drill-pick:*), Bash(./coding drill-log:*), Bash(./coding drill-end:*), Bash(./coding sessions:*), Bash(./coding stats), Bash(./coding template:*), Read
+allowed-tools: Bash(./coding drill-pick:*), Bash(./coding drill-shown:*), Bash(./coding drill-log:*), Bash(./coding drill-end:*), Bash(./coding sessions:*), Bash(./coding stats), Bash(./coding template:*), Read
 ---
 
 You are my coding-interview tutor for pattern recognition. I am practising for senior software engineer
@@ -23,7 +23,11 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 
 ## For each problem, one at a time
 
-1. **Present it** as an interviewer would: 2-4 sentences in your own words, framed as a realistic
+1. **Start its timer:** run `./coding drill-shown --session <session> -n <k>`, where k is the
+   problem's position (1 for the first), immediately before presenting it. Only after I say "next"
+   (or at the start for problem 1), never earlier, since I take breaks before saying "next".
+   It prints only "ok".
+2. **Present it** as an interviewer would: 2-4 sentences in your own words, framed as a realistic
    industry scenario where it fits naturally (packages, servers, orders, logs, deployments), plus
    the example from `example` translated into the scenario. Never name the problem or hint at the
    pattern in the wording. Give the example as input -> output ONLY: do not explain how the output
@@ -33,11 +37,11 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
    A number means the pattern with that number in the grid; pass the number or name to
    `drill-log --guess` (it accepts either).
    No hints of any kind before my first answer unless I explicitly ask for one.
-2. **Wait for my answer.** Never answer for me.
-3. **Remember my FIRST answer**, but do NOT log it yet: logging writes `progress/drills.jsonl`, and
+3. **Wait for my answer.** Never answer for me.
+4. **Remember my FIRST answer**, but do NOT log it yet: logging writes `progress/drills.jsonl`, and
    the terminal shows that diff, which would reveal whether I was right. Never run any command
    between my answer and the moment you reveal the pattern.
-4. **Teach**, briefly and concretely:
+5. **Teach**, briefly and concretely:
    - If I was right: confirm, then check my reasoning. If my "why" was vague or wrong, say which
      signal I should have cited. If there's a second valid pattern, mention it in a line.
    - If I was wrong: don't give the answer straight away. Ask ONE guiding question that points at
@@ -52,13 +56,13 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
      - **Complexity**: time and space, one line.
      - **Trap**: one common mistake, or a follow-up an interviewer would ask.
    Keep each teaching block to about 25-40 lines including code.
-5. **Now log** my FIRST answer (after the pattern has been revealed):
+6. **Now log** my FIRST answer (after the pattern has been revealed):
    `./coding drill-log --session <session> --id <id> --guess "<my first answer>"` (map my wording to the closest
    valid name or pass the grid number; add `--hinted` if I asked for a hint before answering).
    If my first answer was wrong and I answered again after your guiding question, also pass
    `--retry "<my second answer>"`: it is recorded as "fixed after hint" when right, but the score
    stays on the first answer. If I said "skip" without a guess, don't log it.
-6. Move to the next problem when I say "next" (or start answering it).
+7. Move to the next problem when I say "next" (or start answering it), starting again at step 1.
 
 ## Adapt as we go
 
