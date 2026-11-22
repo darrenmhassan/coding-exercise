@@ -456,8 +456,8 @@ def start_attempt(p, reason, timebox, open_editor, mock=False):
     print("  timebox: %d min, started %s" % (timebox, dt.datetime.now().strftime("%H:%M")))
     print("  file: " + os.path.relpath(path, ROOT))
     print()
-    print("  When finished: %s   (or %s to see elapsed time)" % (cmd_hint("./practise done", "/done"),
-                                                                cmd_hint("./practise status", "/practise-status")))
+    print("  When finished: %s   (or %s to see elapsed time)" % (cmd_hint("./practise done", "/coding-done"),
+                                                                cmd_hint("./practise status", "/coding-status")))
     if open_editor:
         ed = os.environ.get("VISUAL") or os.environ.get("EDITOR")
         try:
@@ -498,7 +498,7 @@ def cmd_start(a):
 def cmd_status(a):
     cur = load_json(CURRENT)
     if not cur:
-        print("No attempt in progress. " + cmd_hint("./practise next", "/next"))
+        print("No attempt in progress. " + cmd_hint("./practise next", "/coding-next"))
         return
     started = dt.datetime.fromisoformat(cur["started"])
     mins = (dt.datetime.now() - started).total_seconds() / 60
@@ -565,7 +565,7 @@ def cmd_done(a):
         print()
         show_pattern(p["patterns"][0])
     else:
-        print("  (%s %s shows the reference template)" % (cmd_hint("./practise template", "/template"),
+        print("  (%s %s shows the reference template)" % (cmd_hint("./practise template", "/coding-template"),
                                                         "\"%s\"" % used if " " in used else used))
     print("  Next review: %s (in %d days)" % (s["due"].isoformat(), s["interval"]))
 
@@ -735,7 +735,7 @@ def cmd_sessions(a):
 
 
 def cmd_drill_pick(a):
-    """JSON for the /drill Claude Code tutor."""
+    """JSON for the /coding-drill Claude Code tutor."""
     sigs = {x["name"]: x["signals"] for x in patterns()}
     chosen = pick_drill(a.n, a.pattern)
     sid = start_session("claude", chosen, resolve_pattern(a.pattern) if a.pattern else None)
@@ -1003,7 +1003,7 @@ def cmd_mock(a):
         print("\nPaste this into a new Claude chat:\n" + "-" * 60 + "\n" + prompt + "\n" + "-" * 60)
     start_attempt(p, "mock interview", 35, False, mock=True)
     print("  The file above is for your code; the problem title is printed in it, so don't open it until")
-    print("  the interviewer has described the problem. Log with %s afterwards." % cmd_hint("./practise done", "/done"))
+    print("  the interviewer has described the problem. Log with %s afterwards." % cmd_hint("./practise done", "/coding-done"))
 
 
 def cmd_add(a):
@@ -1044,7 +1044,7 @@ def main(argv=None):
     s.add_argument("--premium", action="store_true", help="allow LeetCode premium problems")
     s.add_argument("--easy", action="store_true", help="allow Easy problems for new picks")
     s.add_argument("--peek", action="store_true", help="show the pick without starting it")
-    s.add_argument("--json", action="store_true", help="(for /coach) print the pick as JSON without starting it")
+    s.add_argument("--json", action="store_true", help="(for /coding-coach) print the pick as JSON without starting it")
     s.add_argument("--no-open", action="store_true", help="don't open the editor")
     s.set_defaults(func=cmd_next)
 
@@ -1078,12 +1078,12 @@ def main(argv=None):
     s.add_argument("--no-code", action="store_true", help="never show templates (fast mode)")
     s.set_defaults(func=cmd_drill)
 
-    s = sub.add_parser("drill-pick", help="(for the /drill Claude tutor) pick drill problems as JSON")
+    s = sub.add_parser("drill-pick", help="(for the /coding-drill Claude tutor) pick drill problems as JSON")
     s.add_argument("-n", type=int, default=10)
     s.add_argument("-p", "--pattern")
     s.set_defaults(func=cmd_drill_pick)
 
-    s = sub.add_parser("drill-log", help="(for the /drill Claude tutor) record one drill answer")
+    s = sub.add_parser("drill-log", help="(for the /coding-drill Claude tutor) record one drill answer")
     s.add_argument("--id", required=True)
     s.add_argument("--guess", required=True, help="the user's FIRST answer")
     s.add_argument("--hinted", action="store_true", help="they asked for a hint before answering")
@@ -1091,7 +1091,7 @@ def main(argv=None):
     s.add_argument("--session", help="session id from drill-pick")
     s.set_defaults(func=cmd_drill_log)
 
-    s = sub.add_parser("drill-end", help="(for the /drill Claude tutor) close a drill session")
+    s = sub.add_parser("drill-end", help="(for the /coding-drill Claude tutor) close a drill session")
     s.add_argument("--session", required=True)
     s.add_argument("--stopped", action="store_true", help="ended before the last problem")
     s.set_defaults(func=cmd_drill_end)

@@ -9,4 +9,4 @@ this directory's local progress logs (`progress/`). Show the table exactly as pr
 markdown table (not in a code block), with the legend line under it, and don't merge, total or
 average across sessions. Then add at most 2 lines on what stands
 out (e.g. a pattern missed in several sessions), with any suggested next step as a slash command
-(e.g. `/drill 6 cyclic sort` or `/coach heaps`), not a `./practise` command.
+(e.g. `/coding-drill 6 cyclic sort` or `/coding-coach heaps`), not a `./practise` command.

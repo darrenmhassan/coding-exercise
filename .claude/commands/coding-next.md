@@ -11,5 +11,5 @@ Equivalent of `./practise next`. Arguments: `$ARGUMENTS`.
 2. Run `./practise next` with my arguments: a bare pattern name or number becomes `-p "<pattern>"`;
    pass `--timebox`, `--easy`, `--premium`, `--peek` and `--no-open` through as given.
 3. Show the output as printed in a ```text block. Don't name or hint at the pattern.
-4. Remind me to write the solution in the file it created without running it, and to use `/done`
-   when finished (or `/coach` next time for a coached round).
+4. Remind me to write the solution in the file it created without running it, and to use `/coding-done`
+   when finished (or `/coding-coach` next time for a coached round).

@@ -1,6 +1,6 @@
 ---
 description: Coached coding round. Identify the pattern, then code the solution in Java with Claude guiding (hints on request), reviewing and logging the attempt.
-argument-hint: "[pattern | problem-slug]   e.g. /coach   /coach graphs   /coach lru-cache"
+argument-hint: "[pattern | problem-slug]   e.g. /coding-coach   /coding-coach graphs   /coding-coach lru-cache"
 allowed-tools: Bash(./practise next:*), Bash(./practise start:*), Bash(./practise status), Bash(./practise done:*), Bash(./practise drill-log:*), Bash(./practise template:*), Bash(./practise list:*), Bash(javac:*), Bash(java:*), Read, Write, Edit
 ---
 
@@ -18,7 +18,7 @@ Arguments: `$ARGUMENTS` (optional: a pattern to focus on, or a specific problem 
 The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `example`, `signals`,
 `reason`). Don't show me the JSON, the title, the LeetCode number or the pattern.
 
-## 2. Recognise the pattern (like /drill, quicker)
+## 2. Recognise the pattern (like /coding-drill, quicker)
 
 1. Present the problem in your own words as a realistic industry scenario (3-5 sentences), plus the
    example as input -> output ONLY (no explanation of how). Show the `grid` in a ```text block.

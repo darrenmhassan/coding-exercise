@@ -3,7 +3,7 @@ description: Show the dated practice plan and what's ticked off, if one is set u
 allowed-tools: Bash(./practise plan)
 ---
 
-Equivalent of `./practise plan` (named `/practise-plan` because `/plan` is built into Claude Code).
+Equivalent of `./practise plan`.
 Run it and show the output as printed in a ```text block. If there's no plan, say that `next`,
-`/coach` and `/drill` then choose by pattern need, and that a plan can be added by copying
+`/coding-coach` and `/coding-drill` then choose by pattern need, and that a plan can be added by copying
 `plan.example.json` to `.practise/plan.json`.

@@ -1,6 +1,6 @@
 ---
 description: Interactive pattern-recognition tutor. Claude presents problems, you name the pattern and why, Claude teaches.
-argument-hint: "[count] [pattern]   e.g. /drill 10   or   /drill 5 sliding window"
+argument-hint: "[count] [pattern]   e.g. /coding-drill 10   or   /coding-drill 5 sliding window"
 allowed-tools: Bash(./practise drill-pick:*), Bash(./practise drill-log:*), Bash(./practise drill-end:*), Bash(./practise sessions:*), Bash(./practise stats), Bash(./practise template:*), Read
 ---
 
@@ -75,5 +75,5 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 2. Run `./practise sessions --last 5 --markdown` and show me the table as-is, as a rendered markdown
    table (not in a code block), with its legend line (one row per completed session, never merged), then give me: my score this session, the patterns I missed, the pairs I
    confused, and 2-3 specific things to look for next time.
-3. Suggest the next step for my weakest patterns as slash commands, not `./practise` commands, e.g. `/coach top k elements`, `/drill 6 cyclic sort`
-   or `/next graphs`, in inline code (not shell code blocks, whose Run button can't run them).
+3. Suggest the next step for my weakest patterns as slash commands, not `./practise` commands, e.g. `/coding-coach top k elements`, `/coding-drill 6 cyclic sort`
+   or `/coding-next graphs`, in inline code (not shell code blocks, whose Run button can't run them).
