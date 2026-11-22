@@ -72,7 +72,7 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 1. Close the session: `./practise drill-end --session <session>` after the last problem, or
    `./practise drill-end --session <session> --stopped` if I stopped before the last one (stopped
    sessions are kept out of the session history).
-2. Run `./practise sessions --last 5` and show me the table as-is (one row per completed session,
-   never merged), then give me: my score this session, the patterns I missed, the pairs I
+2. Run `./practise sessions --last 5 --markdown` and show me the table as-is, as a rendered markdown
+   table (not in a code block), with its legend line (one row per completed session, never merged), then give me: my score this session, the patterns I missed, the pairs I
    confused, and 2-3 specific things to look for next time.
 3. Suggest the next command, e.g. `./practise next -p "<weakest pattern>"`.

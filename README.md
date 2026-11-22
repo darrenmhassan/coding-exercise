@@ -35,7 +35,7 @@ Fast recognition reps: Claude describes a problem, you name the pattern and say 
 5. At the end Claude shows your recent sessions, the patterns you missed and what to look for next.
 
 Your first answer is the one that counts in the score. A right answer on the retry is shown
-separately as "fixed after hint". Nothing is logged until the answer has been revealed, so the
+separately as "fixed". Nothing is logged until the answer has been revealed, so the
 log never gives the answer away.
 
 Terminal version, without the teaching: `./practise drill [-n 10] [-p pattern] [--code | --no-code]`.
