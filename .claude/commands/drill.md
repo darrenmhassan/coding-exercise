@@ -55,8 +55,9 @@ Arguments: `$ARGUMENTS` (optional count, default 8, and optional pattern to focu
 5. **Now log** my FIRST answer (after the pattern has been revealed):
    `./practise drill-log --session <session> --id <id> --guess "<my first answer>"` (map my wording to the closest
    valid name or pass the grid number; add `--hinted` if I asked for a hint before answering).
-   If I said "skip" without a guess, don't log it. A guess made after your guiding question is
-   NOT the first answer.
+   If my first answer was wrong and I answered again after your guiding question, also pass
+   `--retry "<my second answer>"`: it is recorded as "fixed after hint" when right, but the score
+   stays on the first answer. If I said "skip" without a guess, don't log it.
 6. Move to the next problem when I say "next" (or start answering it).
 
 ## Adapt as we go

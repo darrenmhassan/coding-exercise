@@ -153,6 +153,7 @@ def pattern_stats():
         d_ok = sum(1 for x in d if x["correct"])
         solve = (sum(ratings) / (4.0 * len(ratings))) if ratings else 0.0
         drill_acc = (d_ok / len(d)) if d else None
+        d_missed = [x for x in d if not x["correct"]]
         # Coverage matters: one good problem in a big pattern is not mastery.
         coverage = min(1.0, len(tried) / 3.0)
         mastery = solve * (0.5 + 0.5 * coverage)
@@ -167,6 +168,8 @@ def pattern_stats():
             "recognised": (sum(1 for r in recog if r) / len(recog)) if recog else None,
             "drill_acc": drill_acc,
             "drills": len(d),
+            "drill_missed": len(d_missed),
+            "drill_fixed": sum(1 for x in d_missed if x.get("retry_correct")),
             "due": sum(1 for p in tried if sched[p["id"]]["due"] <= t),
             "mastery": mastery,
             "need": pat["weight"] * (1.0 - mastery),
@@ -518,12 +521,17 @@ def pick_drill(n, pattern=None):
     return chosen
 
 
-def log_drill(p, guess, hinted=False, source="cli", session=None):
+def log_drill(p, guess, hinted=False, source="cli", session=None, retry=None):
     ok = guess in p["patterns"]
     row = {"id": p["id"], "date": today().isoformat(), "guess": guess,
            "answer": p["patterns"][0], "correct": ok, "hinted": hinted, "source": source}
     if session:
         row["session"] = session
+    # Score stays on the first answer; the retry after the tutor's guiding question is kept
+    # separately so recovering with a nudge is visible without inflating accuracy.
+    if retry and not ok:
+        row["retry"] = retry
+        row["retry_correct"] = retry in p["patterns"]
     append_jsonl(DRILLS_LOG, row)
     return ok
 
@@ -562,12 +570,13 @@ def completed_sessions():
             "planned": st.get("planned", len(rows)), "answered": len(rows),
             "correct": sum(1 for d in rows if d["correct"]),
             "hinted": sum(1 for d in rows if d.get("hinted")), "missed": missed,
+            "fixed": sum(1 for d in rows if d.get("retry_correct")),
         })
     out.sort(key=lambda x: x["start"])
     return out
 
 
-SESSION_HEAD = ["#", "date", "time", "via", "focus", "answered", "correct", "score", "hinted", "min", "missed (correct pattern)"]
+SESSION_HEAD = ["#", "date", "time", "via", "focus", "answered", "correct", "score", "fixed after hint", "hinted", "min", "missed (correct pattern)"]
 
 
 def session_rows():
@@ -577,7 +586,8 @@ def session_rows():
         missed = ", ".join(sorted(set(x["missed"]), key=x["missed"].index)) or "-"
         rows.append([str(i), x["start"].strftime("%Y-%m-%d"), x["start"].strftime("%H:%M"), x["source"],
                      x["focus"], "%d/%d" % (x["answered"], x["planned"]), str(x["correct"]),
-                     fmt(score, "pct"), str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]), missed])
+                     fmt(score, "pct"),
+                     "%d/%d" % (x["fixed"], len(x["missed"])) if x["missed"] else "-", str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]), missed])
     return rows
 
 
@@ -625,7 +635,12 @@ def cmd_drill_log(a):
     guess = resolve_pattern(a.guess)
     if not guess:
         sys.exit("Unknown pattern '%s'. Valid: %s" % (a.guess, ", ".join(pattern_names())))
-    log_drill(p, guess, a.hinted, "claude", a.session)
+    retry = None
+    if a.retry:
+        retry = resolve_pattern(a.retry)
+        if not retry:
+            sys.exit("Unknown pattern '%s'. Valid: %s" % (a.retry, ", ".join(pattern_names())))
+    log_drill(p, guess, a.hinted, "claude", a.session, retry)
     print("logged")       # deliberately says nothing about the answer
 
 
@@ -700,11 +715,12 @@ def stats_rows():
         s = st[n]
         rows.append([n, "*" * s["weight"], "%d/%d" % (s["tried"], s["total"]), fmt(s["avg_rating"], "f1"),
                      fmt(s["recognised"], "pct"), fmt(s["drill_acc"], "pct") + ("" if not s["drills"] else " (%d)" % s["drills"]),
+                     "%d/%d" % (s["drill_fixed"], s["drill_missed"]) if s["drill_missed"] else "",
                      str(s["due"]) if s["due"] else "", fmt(s["mastery"], "pct")])
     return rows
 
 
-HEAD = ["pattern", "weight", "tried", "avg", "recog", "drill", "due", "mastery"]
+HEAD = ["pattern", "weight", "tried", "avg", "recog", "drill", "fixed", "due", "mastery"]
 
 
 def cmd_stats(a):
@@ -712,7 +728,8 @@ def cmd_stats(a):
     widths = [max(len(r[i]) for r in rows + [HEAD]) for i in range(len(HEAD))]
     line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r))
     print("\nSorted by need = weight x (1 - mastery). avg = mean of latest rating per problem (1-4).")
-    print("recog = you named the right pattern when solving; drill = recognition drill accuracy.\n")
+    print("recog = you named the right pattern when solving; drill = recognition drill accuracy (first answers).")
+    print("fixed = drill misses you got right on the retry after a guiding question.\n")
     print(line(HEAD))
     print(line(["-" * w for w in widths]))
     for r in rows:
@@ -926,7 +943,8 @@ def main(argv=None):
     s = sub.add_parser("drill-log", help="(for the /drill Claude tutor) record one drill answer")
     s.add_argument("--id", required=True)
     s.add_argument("--guess", required=True, help="the user's FIRST answer")
-    s.add_argument("--hinted", action="store_true", help="they only got there after a hint")
+    s.add_argument("--hinted", action="store_true", help="they asked for a hint before answering")
+    s.add_argument("--retry", help="their answer after the guiding question, if the first was wrong")
     s.add_argument("--session", help="session id from drill-pick")
     s.set_defaults(func=cmd_drill_log)
 

@@ -44,7 +44,7 @@ Claude presents each problem as a realistic industry scenario with an example, a
 why, gives a guiding question if you're wrong, then explains the signals, the key insight, a Java
 sketch of the solution, complexity and a common trap. It picks problems with
 `./practise drill-pick` (weighted towards likely and previously missed patterns) and logs your first
-answer with `./practise drill-log`, so `stats` and future picks include tutor sessions.
+answer with `./practise drill-log` (plus your retry after a guiding question, shown as "fixed after hint" but not counted in the score), so `stats` and future picks include tutor sessions.
 `./practise drill` remains as the quick offline version. Both pick problems at random, weighted towards
 high-weight patterns and ones you've missed, and away from ones you drilled in the last few days,
 so restarting gives you a different set.
@@ -106,7 +106,7 @@ Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premiu
 - `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
 - `./practise abandon` drops the in-progress attempt.
 - `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
-  `./practise drill`): when, how, focus, answered, correct, score, hints, minutes and the patterns missed.
+  `./practise drill`): when, how, focus, answered, correct, score, misses fixed after a hint, hints, minutes and the patterns missed.
   Sessions are never merged, and stopped or unfinished ones are left out. `report` includes the table too.
 
 ## Files

@@ -25,7 +25,8 @@ The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `exampl
    Ask: "Which pattern, and what tells you?" No hints unless I ask.
 2. Wait. If I'm wrong, ask one guiding question and let me try again, then reveal the pattern and
    the 2-3 signals in a few lines. Don't show any solution code.
-3. Only after the reveal, log my first answer: `./practise drill-log --id <id> --guess "<first answer>"`.
+3. Only after the reveal, log my first answer: `./practise drill-log --id <id> --guess "<first answer>"`, adding
+   `--retry "<second answer>"` if I answered again after your guiding question.
 
 ## 3. Clarify and plan (as in a real interview)
 
