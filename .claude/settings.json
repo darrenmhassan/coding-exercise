@@ -1,3 +1,6 @@
 {
-  "promptSuggestionEnabled": false
+  "promptSuggestionEnabled": false,
+  "env": {
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false"
+  }
 }
