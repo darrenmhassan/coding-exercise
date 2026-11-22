@@ -2,6 +2,7 @@
 description: Add a LeetCode problem to the bank.
 argument-hint: "<LeetCode URL or slug>"
 allowed-tools: Bash(./coding add:*), Bash(./coding patterns), Bash(./coding list:*), Read
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding add`. Arguments: `$ARGUMENTS`.

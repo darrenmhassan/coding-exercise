@@ -2,6 +2,7 @@
 description: Copy a mock-interviewer prompt for a separate Claude chat and start a 35-minute attempt.
 argument-hint: "[problem]   omit for a random unseen, commonly asked problem"
 allowed-tools: Bash(./coding mock:*), Bash(./coding status)
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding mock`. Arguments: `$ARGUMENTS`.

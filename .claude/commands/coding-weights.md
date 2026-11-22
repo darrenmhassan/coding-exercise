@@ -2,6 +2,7 @@
 description: List the pattern weight profiles, or choose the one in use.
 argument-hint: "[profile | --off]"
 allowed-tools: Bash(./coding weights:*), Bash(./coding stats)
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding weights`. Arguments: `$ARGUMENTS`.

@@ -2,6 +2,7 @@
 description: Check the current attempt's solution, then log it with a rating derived from how it went.
 argument-hint: "[notes]"
 allowed-tools: Bash(./coding done:*), Bash(./coding status), Bash(./coding patterns), Bash(javac:*), Bash(java:*), Read, Write, Edit
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding done`. I don't rate myself: you measure how the attempt went and

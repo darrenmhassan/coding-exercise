@@ -2,6 +2,7 @@
 description: Start a specific problem by slug, LeetCode number or part of the slug.
 argument-hint: "<slug|number> [--timebox N] [--no-open]"
 allowed-tools: Bash(./coding start:*), Bash(./coding status)
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding start`. Arguments: `$ARGUMENTS`.

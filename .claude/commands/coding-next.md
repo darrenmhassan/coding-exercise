@@ -2,6 +2,7 @@
 description: Start the next practice problem (due reviews, then the weakest high-value pattern).
 argument-hint: "[pattern] [--timebox N] [--easy] [--premium] [--peek]"
 allowed-tools: Bash(./coding next:*), Bash(./coding status)
+disable-model-invocation: true
 ---
 
 Equivalent of `./coding next`. Arguments: `$ARGUMENTS`.
