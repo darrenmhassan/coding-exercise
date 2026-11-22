@@ -108,6 +108,20 @@ Edit them freely; the file name is the pattern name in lower case with dashes.
    Weight (1-5) is how often the pattern comes up in interviews; mastery blends latest ratings, coverage
    (3 problems tried counts as full coverage) and drill accuracy. Commonly asked Mediums first.
 
+Weights can be tuned per company or interview without changing the bank. Each profile is a local,
+git-ignored file `.practise/weights/<name>.json` of overrides, e.g. `{"_note": "...", "Trie": 4}`:
+unlisted patterns keep their default, keys starting with `_` are notes, and an unknown pattern name
+is an error. Choose one with:
+
+```sh
+./practise weights            # list profiles and show the active one
+./practise weights <name>     # use that profile from now on
+./practise weights --off      # back to the defaults in bank/patterns.json
+```
+
+`PRACTISE_WEIGHTS=<name or path>` overrides the choice for one run. The active profile applies to
+`next`, `/coach`, `/drill`, `stats` and `patterns`, and `stats` names it at the top.
+
 Filters: `-p/--pattern graphs`, `-s/--session sun`, `--premium` (allow LeetCode premium), `--easy`,
 `-t/--timebox 35`, `--peek` (show without starting), `--no-open` (don't open the editor) and `--json`
 (print the pick as JSON without starting it; used by `/coach`).
@@ -137,6 +151,7 @@ Filters: `-p/--pattern graphs`, `-s/--session sun`, `--premium` (allow LeetCode 
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
 | `bank/templates/` | one Java reference template per pattern |
 | `.practise/plan.json` | optional dated sessions, local only (copy `plan.example.json`) |
+| `.practise/weights/` | optional weight profiles per company, `<name>.json`, plus `active` naming the one in use; local only |
 | `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it (local only) |
 | `progress/drills.jsonl` | drill answers (tagged with their session) |
 | `progress/drill_sessions.jsonl` | start and end of each drill session |
@@ -154,11 +169,11 @@ this directory, in the terminal or in the Claude app with this folder; `/stats`,
 `./practise stats` / `sessions` read only these local files. To back it up, copy `progress/` and
 `attempts/` somewhere safe.
 
-`.practise/` holds the in-progress attempt and your optional local plan; it is git-ignored too.
+`.practise/` holds the in-progress attempt and your optional local plan and weight profiles; it is
+git-ignored too.
 
 ## Ideas for later
 
 - Local test cases per problem so solutions can be checked offline.
-- Weight patterns per target company (separate weight sets in `patterns.json`).
 - Track time-to-first-correct-approach separately from total time.
 - A low-level design track (parking lot, rate limiter, file search) alongside the algorithm bank.

@@ -5,6 +5,8 @@ State lives in plain files so it is easy to inspect, diff and extend:
   bank/problems.json     problem bank (id, LeetCode link, patterns, commonly-asked flag, summary, example)
   bank/patterns.json     patterns with a weight (interview likelihood) and recognition signals
   .practise/plan.json    optional dated practice sessions (local, not committed; see plan.example.json)
+  .practise/weights/      optional named weight profiles, <name>.json = {"<pattern>": 1-5}, and
+                          `active` naming the one in use (local, not committed; see `practise weights`)
   progress/attempts.jsonl  one JSON line per attempt (the schedule is derived from this)
                            progress/ and attempts/ stay on this machine (git-ignored)
   progress/drills.jsonl    one JSON line per pattern-recognition drill answer
@@ -28,6 +30,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 BANK = os.path.join(ROOT, "bank", "problems.json")
 PATTERNS = os.path.join(ROOT, "bank", "patterns.json")
 PLAN = os.environ.get("PRACTISE_PLAN") or os.path.join(ROOT, ".practise", "plan.json")
+WEIGHTS_DIR = os.path.join(ROOT, ".practise", "weights")
+ACTIVE_WEIGHTS = os.path.join(WEIGHTS_DIR, "active")
 PROGRESS = os.path.join(ROOT, "progress")
 ATTEMPTS_LOG = os.path.join(PROGRESS, "attempts.jsonl")
 DRILLS_LOG = os.path.join(PROGRESS, "drills.jsonl")
@@ -88,8 +92,38 @@ def problems_by_id():
     return {p["id"]: p for p in problems()}
 
 
+def weight_profiles():
+    if not os.path.isdir(WEIGHTS_DIR):
+        return []
+    return sorted(f[:-5] for f in os.listdir(WEIGHTS_DIR) if f.endswith(".json"))
+
+
+def active_weights():
+    """(name, path) of the weight profile in use, or (None, None). PRACTISE_WEIGHTS (a name or path) wins."""
+    name = os.environ.get("PRACTISE_WEIGHTS")
+    if name is None and os.path.exists(ACTIVE_WEIGHTS):
+        with open(ACTIVE_WEIGHTS) as f:
+            name = f.read().strip()
+    if not name:
+        return None, None
+    path = name if name.endswith(".json") else os.path.join(WEIGHTS_DIR, name + ".json")
+    if not os.path.exists(path):
+        sys.exit("Weight profile '%s' not found (%s). See `practise weights`." % (name, path))
+    return os.path.basename(path)[:-5], path
+
+
 def patterns():
-    return load_json(PATTERNS, [])
+    pats = load_json(PATTERNS, [])
+    _, path = active_weights()
+    override = load_json(path, {}) if path else {}
+    # Keys starting with "_" are notes; anything else must be a real pattern name, so a typo can't silently do nothing.
+    unknown = {k for k in override if not k.startswith("_")} - {p["name"] for p in pats}
+    if unknown:
+        sys.exit("Unknown pattern(s) in %s: %s" % (path, ", ".join(sorted(unknown))))
+    for p in pats:
+        if p["name"] in override:
+            p["weight"] = int(override[p["name"]])
+    return pats
 
 
 def pattern_names():
@@ -724,11 +758,35 @@ def stats_rows():
 HEAD = ["pattern", "weight", "tried", "avg", "recog", "drill", "fixed", "due", "mastery"]
 
 
+def cmd_weights(a):
+    if a.off:
+        if os.path.exists(ACTIVE_WEIGHTS):
+            os.remove(ACTIVE_WEIGHTS)
+        print("Using the default weights from bank/patterns.json.")
+        return
+    if a.profile:
+        if a.profile not in weight_profiles():
+            sys.exit("No profile '%s'. Create %s first." % (a.profile, os.path.join(WEIGHTS_DIR, a.profile + ".json")))
+        with open(ACTIVE_WEIGHTS, "w") as f:
+            f.write(a.profile + "\n")
+        print("Using weight profile '%s'." % a.profile)
+        return
+    active, _ = active_weights()
+    profiles = weight_profiles()
+    if not profiles:
+        print("No weight profiles. Add %s/<name>.json, e.g. {\"Trie\": 4}, then `practise weights <name>`." % WEIGHTS_DIR)
+    for name in profiles:
+        note = load_json(os.path.join(WEIGHTS_DIR, name + ".json"), {}).get("_note", "")
+        print("%s %-12s %s" % ("*" if name == active else " ", name, note))
+    print("\nActive: %s" % (active or "none (default weights)"))
+
+
 def cmd_stats(a):
     rows = stats_rows()
     widths = [max(len(r[i]) for r in rows + [HEAD]) for i in range(len(HEAD))]
     line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r))
-    print("\nSorted by need = weight x (1 - mastery). avg = mean of latest rating per problem (1-4).")
+    print("\nWeights: %s." % (active_weights()[0] or "default"))
+    print("Sorted by need = weight x (1 - mastery). avg = mean of latest rating per problem (1-4).")
     print("recog = you named the right pattern when solving; drill = recognition drill accuracy (first answers).")
     print("fixed = drill misses you got right on the retry after a guiding question.\n")
     print(line(HEAD))
@@ -962,6 +1020,11 @@ def main(argv=None):
     s = sub.add_parser("template", help="show a pattern's signals and Java template")
     s.add_argument("pattern", nargs="?", help="number or name; omit to pick from the menu")
     s.set_defaults(func=cmd_template)
+
+    s = sub.add_parser("weights", help="list weight profiles, or choose the one to use")
+    s.add_argument("profile", nargs="?", help="profile name to make active")
+    s.add_argument("--off", action="store_true", help="go back to the default weights")
+    s.set_defaults(func=cmd_weights)
 
     s = sub.add_parser("stats", help="mastery by pattern")
     s.set_defaults(func=cmd_stats)
