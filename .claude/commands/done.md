@@ -28,4 +28,5 @@ Equivalent of `./practise done`. I don't rate myself: you measure how the attemp
    every flag: without them it waits for terminal input. Add `-m <minutes>` only if I say the timer
    was wrong (e.g. I started late).
 7. Show the output as printed in a ```text block (the derived rating with its reasons, the bank's
-   pattern, and the next review date), then one line on what to work on next.
+   pattern, and the next review date), then one line on what to work on next, as slash commands, not `./practise` commands, e.g. `/coach top k elements`, `/drill 6 cyclic sort`
+   or `/next graphs`, in inline code (not shell code blocks, whose Run button can't run them).

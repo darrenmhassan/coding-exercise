@@ -139,6 +139,11 @@ def today():
     return dt.date.today()
 
 
+def cmd_hint(cli, slash):
+    """The way to run a follow-up command here: slash command inside Claude Code, else the CLI."""
+    return slash if os.environ.get("CLAUDECODE") else cli
+
+
 def now_iso():
     return dt.datetime.now().replace(microsecond=0).isoformat()
 
@@ -451,7 +456,8 @@ def start_attempt(p, reason, timebox, open_editor, mock=False):
     print("  timebox: %d min, started %s" % (timebox, dt.datetime.now().strftime("%H:%M")))
     print("  file: " + os.path.relpath(path, ROOT))
     print()
-    print("  When finished: ./practise done   (or ./practise status to see elapsed time)")
+    print("  When finished: %s   (or %s to see elapsed time)" % (cmd_hint("./practise done", "/done"),
+                                                                cmd_hint("./practise status", "/practise-status")))
     if open_editor:
         ed = os.environ.get("VISUAL") or os.environ.get("EDITOR")
         try:
@@ -492,7 +498,7 @@ def cmd_start(a):
 def cmd_status(a):
     cur = load_json(CURRENT)
     if not cur:
-        print("No attempt in progress. ./practise next")
+        print("No attempt in progress. " + cmd_hint("./practise next", "/next"))
         return
     started = dt.datetime.fromisoformat(cur["started"])
     mins = (dt.datetime.now() - started).total_seconds() / 60
@@ -559,7 +565,8 @@ def cmd_done(a):
         print()
         show_pattern(p["patterns"][0])
     else:
-        print("  (./practise template %s shows the reference template)" % ("\"%s\"" % used if " " in used else used))
+        print("  (%s %s shows the reference template)" % (cmd_hint("./practise template", "/template"),
+                                                        "\"%s\"" % used if " " in used else used))
     print("  Next review: %s (in %d days)" % (s["due"].isoformat(), s["interval"]))
 
 
@@ -603,7 +610,7 @@ def pick_drill(n, pattern=None):
 
 def log_drill(p, guess, hinted=False, source="cli", session=None, retry=None):
     ok = guess in p["patterns"]
-    row = {"id": p["id"], "date": today().isoformat(), "guess": guess,
+    row = {"id": p["id"], "date": today().isoformat(), "at": now_iso(), "guess": guess,
            "answer": p["patterns"][0], "correct": ok, "hinted": hinted, "source": source}
     if session:
         row["session"] = session
@@ -627,6 +634,22 @@ def end_session(sid, status):
     append_jsonl(SESSIONS_LOG, {"session": sid, "event": "end", "at": now_iso(), "status": status})
 
 
+# A gap longer than this between drill answers is taken as a break, and only this much of it counts.
+DRILL_GAP_CAP_MINUTES = 12
+
+
+def active_minutes(t0, rows, t1):
+    """Minutes spent on problems: the gaps between session start, each answer and the end, each capped.
+
+    Returns None when answers predate per-answer timestamps, so the caller can fall back to wall-clock.
+    """
+    if any("at" not in d for d in rows):
+        return None
+    times = [t0] + sorted(dt.datetime.fromisoformat(d["at"]) for d in rows) + [t1]
+    gaps = [(b - a).total_seconds() / 60 for a, b in zip(times, times[1:])]
+    return round(sum(min(max(g, 0), DRILL_GAP_CAP_MINUTES) for g in gaps))
+
+
 def completed_sessions():
     """One summary per COMPLETED drill session, oldest first. Each session is kept separate."""
     starts, ends = {}, {}
@@ -644,8 +667,10 @@ def completed_sessions():
         rows = answers.get(sid, [])
         t0, t1 = dt.datetime.fromisoformat(st["at"]), dt.datetime.fromisoformat(en["at"])
         missed = [d["answer"] for d in rows if not d["correct"]]
+        active = active_minutes(t0, rows, t1)
         out.append({
-            "session": sid, "start": t0, "minutes": max(0, round((t1 - t0).total_seconds() / 60)),
+            "session": sid, "start": t0, "active": active is not None,
+            "minutes": active if active is not None else max(0, round((t1 - t0).total_seconds() / 60)),
             "source": st.get("source", "?"), "focus": st.get("pattern") or "all",
             "planned": st.get("planned", len(rows)), "answered": len(rows),
             "correct": sum(1 for d in rows if d["correct"]),
@@ -658,7 +683,8 @@ def completed_sessions():
 
 SESSION_HEAD = ["#", "date", "start", "via", "focus", "answered", "score", "fixed", "hints", "min", "missed (correct pattern)"]
 SESSION_LEGEND = ("answered = of planned; score = right first time; fixed = misses right on the retry after a\n"
-                  "guiding question; hints = asked for before answering; min = wall-clock, including breaks.")
+                  "guiding question; hints = asked for before answering; min = time on problems, with any gap over\n"
+                  "%d min counted as %d (* = older session: wall-clock, including breaks)." % (DRILL_GAP_CAP_MINUTES, DRILL_GAP_CAP_MINUTES))
 
 
 def session_rows():
@@ -670,7 +696,7 @@ def session_rows():
                      x["focus"], "%d/%d" % (x["answered"], x["planned"]),
                      "%d/%d %s" % (x["correct"], x["answered"], fmt(score, "pct")),
                      "%d/%d" % (x["fixed"], len(x["missed"])) if x["missed"] else "-",
-                     str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]), missed])
+                     str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]) + ("" if x["active"] else "*"), missed])
     return rows
 
 
@@ -977,7 +1003,7 @@ def cmd_mock(a):
         print("\nPaste this into a new Claude chat:\n" + "-" * 60 + "\n" + prompt + "\n" + "-" * 60)
     start_attempt(p, "mock interview", 35, False, mock=True)
     print("  The file above is for your code; the problem title is printed in it, so don't open it until")
-    print("  the interviewer has described the problem. Log with ./practise done afterwards.")
+    print("  the interviewer has described the problem. Log with %s afterwards." % cmd_hint("./practise done", "/done"))
 
 
 def cmd_add(a):

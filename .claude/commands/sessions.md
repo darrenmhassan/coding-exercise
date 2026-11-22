@@ -8,4 +8,5 @@ Run `./practise sessions --markdown` (add `--last $ARGUMENTS` if a number was gi
 this directory's local progress logs (`progress/`). Show the table exactly as printed, as a rendered
 markdown table (not in a code block), with the legend line under it, and don't merge, total or
 average across sessions. Then add at most 2 lines on what stands
-out (e.g. a pattern missed in several sessions).
+out (e.g. a pattern missed in several sessions), with any suggested next step as a slash command
+(e.g. `/drill 6 cyclic sort` or `/coach heaps`), not a `./practise` command.
