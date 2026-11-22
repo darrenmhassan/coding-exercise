@@ -51,9 +51,9 @@ answer with `./practise drill-log` (plus your retry after a guiding question, sh
 hint" but not counted in the score), and closes the session with `./practise drill-end` (`--stopped`
 if you stop early, which keeps it out of the session history). So `stats`, `sessions` and future picks
 include tutor sessions.
-`./practise drill [-n N] [-p pattern]` remains as the quick offline version. Both pick problems at random, weighted towards
-high-weight patterns and ones you've missed, and away from ones you drilled in the last few days,
-so restarting gives you a different set.
+`./practise drill [-n N] [-p pattern]` remains as the quick offline version. Both pick problems at random, weighted by the same
+pattern need as `next` (heavy patterns you're weak in or haven't tried come up most), towards problems
+you've missed, and away from ones you drilled in the last few days, so restarting gives you a different set.
 
 ## Coached coding: `/coach` in Claude Code
 

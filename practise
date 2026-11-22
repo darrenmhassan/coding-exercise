@@ -491,12 +491,13 @@ def cmd_abandon(a):
 
 
 def pick_drill(n, pattern=None):
-    """Weighted sample: high-weight patterns and previously missed problems come up more; recently seen ones less."""
+    """Weighted sample by pattern need (as in `next`), previously missed problems more, recently seen ones less."""
     pat = resolve_pattern(pattern) if pattern else None
     if pattern and not pat:
         sys.exit("Unknown pattern '%s'." % pattern)
     bank = [p for p in problems() if pat is None or pat in p["patterns"]]
-    weights = {x["name"]: x["weight"] for x in patterns()}
+    # The floor keeps strong patterns in rotation occasionally instead of dropping out entirely.
+    weights = {name: s["need"] + 0.5 for name, s in pattern_stats().items()}
     missed = {}
     for d in read_jsonl(DRILLS_LOG):
         missed[d["id"]] = missed.get(d["id"], 0) + (0 if d["correct"] else 1)
