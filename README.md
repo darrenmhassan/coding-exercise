@@ -17,7 +17,7 @@ Claude app with this folder open). Every step also has a plain `./practise` comm
 | [Coach](#coach-session) | a full interview-style problem, with hints and review | 30-45 min | `/coach` |
 | [Solo problem](#solo-problem) | a timed problem on your own, checked afterwards | 25-35 min | `/next` |
 | [Mock interview](#mock-interview) | a full round with Claude as interviewer, in a separate chat | ~50 min | `/mock` |
-| [Progress check](#progress-check) | seeing where you're weak and what to do next | 2 min | `/stats` |
+| [Progress check](#progress-check) | seeing where you're weak and what to do next | 2 min | `/practise-stats` |
 
 All of them choose problems the same way: heavy patterns you're weak in or haven't tried come up
 most (see [How problems are chosen](#how-problems-are-chosen)).
@@ -94,7 +94,7 @@ A full round with Claude as the interviewer, in a separate chat so the problem s
 
 | command | shows |
 |---|---|
-| `/stats` | mastery by pattern, sorted by need, plus the 2-3 patterns to work on next |
+| `/practise-stats` | mastery by pattern, sorted by need, plus the 2-3 patterns to work on next |
 | `/sessions [N]` | one row per completed drill session (never merged): score, misses fixed after a hint, missed patterns |
 | `/list [pattern] [--core]` | the problem bank and your state per problem |
 | `/patterns` | the patterns with their weights and recognition signals |
@@ -168,7 +168,7 @@ confirm, then adds it to `bank/problems.json`.
 ## Command reference
 
 Every user-facing command, with its slash command in Claude Code. The slash commands ask in the chat
-for anything the command would otherwise prompt for. Two are renamed because Claude Code has
+for anything the command would otherwise prompt for. Three are renamed (`stats`, `status`, `plan`) because Claude Code has
 built-ins with the same name.
 
 | `./practise` | slash command | options |
@@ -181,7 +181,7 @@ built-ins with the same name.
 | `abandon` | `/abandon` | |
 | `mock [problem]` | `/mock [problem]` | `--show` (print the prompt instead of copying it) |
 | - | `/coach [pattern or problem]` | |
-| `stats` | `/stats` | |
+| `stats` | `/practise-stats` | |
 | `sessions` | `/sessions [N]` | `--last N`, `--markdown` |
 | `list` | `/list [pattern] [--core]` | `-p/--pattern`, `--core` (commonly asked only) |
 | `patterns` | `/patterns` | |
