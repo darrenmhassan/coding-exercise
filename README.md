@@ -6,29 +6,109 @@ patterns from my Educative notes (`Vault/career/Programming Patterns Reference.m
 
 Python 3.8+ standard library only. Solutions are written in Java.
 
-## Daily loop
+Most of it is used from Claude Code in this directory (`cd ~/home/coding-exercise && claude`, or the
+Claude app with this folder open). Every step also has a plain `./practise` command for the terminal.
 
-```sh
-./practise plan              # the dated session plan and what's ticked off
-./practise drill -n 15       # quick pattern-recognition warm-up, default 10 (or /drill in Claude Code)
-./practise next              # start the next problem; opens attempts/<date>_<id>/Solution.java
-./practise status            # elapsed vs timebox
-./practise done              # log how it went; the rating is derived from that (or /done in Claude Code)
-./practise stats             # mastery by pattern, sorted by what needs work most
-```
+## Ways to practise
 
-`done` asks for anything you don't pass as a flag: `-u/--used <pattern>`, `--result pass|fixed|fail`,
-`--bugs N`, `--hints N`, `--optimal` or `--suboptimal`, `-n/--notes "..."`, and `-m/--minutes N` to
-override the elapsed time.
+| session | what it trains | how long | start with |
+|---|---|---|---|
+| [Drill](#drill-session) | naming the pattern from a problem statement | 10-20 min | `/drill` |
+| [Coach](#coach-session) | a full interview-style problem, with hints and review | 30-45 min | `/coach` |
+| [Solo problem](#solo-problem) | a timed problem on your own, checked afterwards | 25-35 min | `/next` |
+| [Mock interview](#mock-interview) | a full round with Claude as interviewer, in a separate chat | ~50 min | `/mock` |
+| [Progress check](#progress-check) | seeing where you're weak and what to do next | 2 min | `/stats` |
 
-How to do a problem: open the LeetCode link only to read the statement, write the solution in
-the scaffold file **without running it** (the interview editor won't run code), talking aloud through
-the five steps in the header (clarify, approach, code, test by hand, optimise). When you think it's
-done, run `/done` in Claude Code (or paste it into LeetCode and run `./practise done`).
+All of them choose problems the same way: heavy patterns you're weak in or haven't tried come up
+most (see [How problems are chosen](#how-problems-are-chosen)).
 
-You don't rate yourself. `/done` reads your solution, works out which pattern it uses, runs it
-against the example and edge cases (showing you any failing input to fix), and checks its
-complexity against the optimal. The rating comes from those measurements:
+## Drill session
+
+Fast recognition reps: Claude describes a problem, you name the pattern and say why.
+
+1. `/drill` for 8 problems, `/drill 12` for more, or `/drill 5 graphs` to focus on one pattern.
+2. For each problem Claude gives a realistic industry scenario with an example (input -> output only)
+   and the numbered grid of patterns. Answer with a number or name, or say "hint", "skip" or "stop".
+3. If you're wrong, Claude asks one guiding question and you get one more try.
+4. Claude then teaches: the signals in the wording, the key insight, a short Java sketch, the
+   complexity and a common trap. Say "next" to move on.
+5. At the end Claude shows your recent sessions, the patterns you missed and what to look for next.
+
+Your first answer is the one that counts in the score. A right answer on the retry is shown
+separately as "fixed after hint". Nothing is logged until the answer has been revealed, so the
+log never gives the answer away.
+
+Terminal version, without the teaching: `./practise drill [-n 10] [-p pattern] [--code | --no-code]`.
+It shows the "when to use" signals and the pattern's Java template when you're wrong (press `t` to
+see it when you're right; `--code` always shows it, `--no-code` never).
+
+## Coach session
+
+One interview-style round on a full problem, with Claude as a coach.
+
+1. `/coach` for the next problem, `/coach graphs` for one pattern, or `/coach lru-cache` for a
+   specific problem.
+2. **Recognise:** Claude presents the problem as a scenario and you name the pattern (as in a drill).
+3. **Clarify and plan:** ask your clarifying questions, then outline the approach and its time and
+   space complexity before coding. Claude points at flaws rather than fixing them.
+4. **Code:** a 30-minute timer starts and you write `attempts/<date>_<id>/Solution.java` (or paste
+   into the chat). Say "hint" for the hint ladder: a guiding question, then the structure, then a
+   line or two of code. "give up" shows a full solution.
+5. **Review:** you trace the example by hand, Claude checks complexity and readability, then runs a
+   small `Main.java` harness with the example and edge cases. Failing inputs are shown for you to fix.
+6. **Follow-up:** one question an interviewer might ask (scale, concurrency, extending the API).
+7. **Log:** Claude logs the result, bugs, hints and complexity; the rating is
+   [derived from them](#how-attempts-are-rated) and sets the next review date.
+
+## Solo problem
+
+A timed problem on your own, written as you would in the interview editor (without running it).
+
+1. `/next` picks a problem, opens `attempts/<date>_<id>/Solution.java` and starts the timer.
+   `/next graphs` picks from one pattern; `/start <slug or number>` starts a specific problem.
+2. Read the statement on LeetCode only. Write the solution in the file without running it, talking
+   aloud through the five steps in its header: clarify, approach, code, test by hand, optimise.
+3. `/practise-status` shows the time used and left. `/abandon` drops the attempt without logging it.
+4. `/done` checks your work: it works out which pattern your code uses, runs it against the example
+   and edge cases (showing any failing input for you to fix), compares its complexity with the
+   optimal, and asks only how many hints you used. Then it logs the attempt with a
+   [derived rating](#how-attempts-are-rated) and reveals the bank's pattern.
+
+Terminal version: `./practise next` (or `start`), `./practise status`, then paste the solution into
+LeetCode and run `./practise done`, which asks about your submissions instead.
+
+The pattern is never shown when a problem starts, only after `done`, so recognition is practised too.
+
+## Mock interview
+
+A full round with Claude as the interviewer, in a separate chat so the problem stays hidden here.
+
+1. `/mock` (a random unseen, commonly asked problem) or `/mock <problem>`. It copies an interviewer
+   prompt to the clipboard and starts a 35-minute attempt.
+2. Paste the prompt into a new Claude chat. It rewords the problem as an industry scenario, leaves
+   requirements ambiguous for you to clarify, asks follow-ups and scores you on problem solving,
+   data structures and algorithms, logical and maintainable code, and communication.
+3. Put your final code in the attempt's `Solution.java` and run `/done` to check and log it.
+
+## Progress check
+
+| command | shows |
+|---|---|
+| `/stats` | mastery by pattern, sorted by need, plus the 2-3 patterns to work on next |
+| `/sessions [N]` | one row per completed drill session (never merged): score, misses fixed after a hint, missed patterns |
+| `/list [pattern] [--core]` | the problem bank and your state per problem |
+| `/patterns` | the patterns with their weights and recognition signals |
+| `/template [pattern]` | a pattern's signals and Java reference template |
+| `/report [path]` | a markdown report of all of the above, shown or written to a file |
+
+In `stats`: `tried` is problems attempted out of the bank, `avg` the mean latest rating, `recog` how
+often you named the right pattern when solving, `drill` your first-answer drill accuracy, `fixed`
+drill misses you got right on the retry, `due` reviews waiting, and `mastery` the blend used to
+choose problems.
+
+## How attempts are rated
+
+You don't rate yourself. `done` measures the attempt and derives a rating from 1 to 4:
 
 | rating | when |
 |---|---|
@@ -37,176 +117,107 @@ complexity against the optimal. The rating comes from those measurements:
 | 3 good | solved with one slip: 1 bug, over the timebox, or suboptimal complexity |
 | 4 easy | correct first run, no hints, within the timebox, optimal |
 
-Each signal caps the rating and the lowest cap wins; `done` prints the rating with its reasons.
-The timer measures the minutes, so only the result, bugs, hints and complexity are passed in.
+Each signal caps the rating and the lowest cap wins; `done` prints the rating with its reasons. The
+timer measures the minutes, and `/done` or `/coach` measure the result, bugs and complexity by
+running your code.
 
-The pattern isn't shown when a problem starts, only after `done`, so recognition is practised too.
+The rating sets the next review: 1, 2, 4 or 7 days after the first attempt. After that, a 1 resets
+it to 1 day, and a 2, 3 or 4 multiplies the previous interval by about 1.2, 2.5 or 3.5.
 
-## Interactive tutor: `/drill` in Claude Code
+## How problems are chosen
 
-```sh
-cd ~/home/coding-exercise && claude
-/drill            # 8 problems
-/drill 12         # more
-/drill 5 graphs   # focus on one pattern
-```
+`/next` and `/coach` pick in this order:
 
-Claude presents each problem as a realistic industry scenario with an example, asks which pattern and
-why, gives a guiding question if you're wrong, then explains the signals, the key insight, a Java
-sketch of the solution, complexity and a common trap. It picks problems with
-`./practise drill-pick` (weighted towards likely and previously missed patterns), logs your first
-answer with `./practise drill-log` (plus your retry after a guiding question, shown as "fixed after
-hint" but not counted in the score), and closes the session with `./practise drill-end` (`--stopped`
-if you stop early, which keeps it out of the session history). So `stats`, `sessions` and future picks
-include tutor sessions.
-`./practise drill [-n N] [-p pattern]` remains as the quick offline version. Both pick problems at random, weighted by the same
-pattern need as `next` (heavy patterns you're weak in or haven't tried come up most), towards problems
-you've missed, and away from ones you drilled in the last few days, so restarting gives you a different set.
-
-## Coached coding: `/coach` in Claude Code
-
-```sh
-/coach              # next problem from the schedule (plan > due > weakest pattern)
-/coach graphs       # a problem from one pattern
-/coach lru-cache    # a specific problem
-```
-
-One interview-style round, about 30-45 minutes. Claude presents the problem as a scenario, you name
-the pattern, then clarify requirements and outline the approach before coding. You code in
-`attempts/<date>_<id>/Solution.java` (or paste into the chat) with a 30-minute timer, and say
-"hint" for a hint ladder: a guiding question, then the structure, then a line or two of code,
-never the whole solution unless you say "give up". When you're done, Claude reviews it
-whiteboard-style (you trace the example; it points at failing inputs rather than fixing them), then
-verifies it with a small `Main.java` harness, asks a follow-up and logs the result, bugs, hints and
-complexity with `./practise done`, which derives the rating, so it feeds the spaced-repetition schedule like any other attempt.
-
-Use `/drill` for fast recognition reps and `/coach` for full problems.
-
-## Progress: `/stats` and `/sessions` in Claude Code
-
-```sh
-/stats          # ./practise stats: mastery by pattern, plus the 2-3 patterns that need work most
-/sessions       # ./practise sessions: one row per completed drill session
-/sessions 5     # only the last 5
-```
-
-Both read only the local logs in `progress/` and show the table as printed, with a short note on
-what stands out.
-
-## Slash commands for every practise command
-
-In Claude Code, each user-facing `./practise` command has a slash command that runs it, asks in the
-chat for anything the command would otherwise prompt for, and keeps the pattern hidden until it's
-meant to be revealed:
-
-| slash command | runs | notes |
-|---|---|---|
-| `/next [pattern]` | `next` | checks for an attempt in progress first |
-| `/start <problem>` | `start` | |
-| `/practise-status` | `status` | `/status` is built into Claude Code |
-| `/done [notes]` | `done` | checks and runs your solution, then logs it; only asks how many hints you used |
-| `/abandon` | `abandon` | asks you to confirm |
-| `/drill [count] [pattern]` | the tutor (see above) | replaces the offline `drill` quiz in Claude Code |
-| `/coach [pattern or problem]` | coached round (see below) | |
-| `/stats`, `/sessions [N]` | `stats`, `sessions` | |
-| `/template [pattern]` | `template` | |
-| `/report [path]` | `report` | |
-| `/practise-plan` | `plan` | `/plan` is built into Claude Code |
-| `/list [pattern] [--core]` | `list` | |
-| `/patterns` | `patterns` | |
-| `/mock [problem]` | `mock` | prompt goes to the clipboard, never shown in the chat |
-| `/add <URL or slug>` | `add` | drafts every field for you to confirm |
-| `/weights [profile or --off]` | `weights` | |
-
-`drill-pick`, `drill-log` and `drill-end` have none: they're the plumbing `/drill` and `/coach` use.
-
-## Pattern templates
-
-`bank/templates/<pattern>.java` holds a short reference implementation for each pattern (the
-canonical loop shape, with comments on the key invariant and common variants). They're shown:
-
-- in `drill` when you name the wrong pattern (after the "when to use" signals for both your answer
-  and the right one); when you're right, press `t` to see it. `--code` always shows it, `--no-code` never;
-- in `done` when the pattern you used doesn't match the bank;
-- on demand with `./practise template graphs` (or no argument to pick from the menu).
-
-Edit them freely; the file name is the pattern name in lower case with dashes.
-
-## How `next` chooses
-
-1. **Today's plan session**, if you have a plan: its problems in order, then its stretch problems.
-   Plans are optional and local: copy `plan.example.json` to `.practise/plan.json` (git-ignored) and
-   set your own dates, or point `PRACTISE_PLAN` at a file elsewhere.
-2. **Due reviews**: problems whose spaced-repetition date has arrived, most overdue first.
-   Intervals: first attempt 1/2/4/7 days for ratings 1-4, then roughly x1 / x1.2 / x2.5 / x3.5.
-3. **New problem from the highest-need pattern**, where need = weight x (1 - mastery).
-   Weight (1-5) is how often the pattern comes up in interviews; mastery blends latest ratings, coverage
+1. **Today's plan session**, only if you have a plan: its problems in order, then its stretch problems.
+2. **Due reviews**: problems whose review date has arrived, most overdue first.
+3. **New problem from the highest-need pattern**, where need = weight x (1 - mastery). Weight (1-5)
+   is how often the pattern comes up in interviews; mastery blends your latest ratings, coverage
    (3 problems tried counts as full coverage) and drill accuracy. Commonly asked Mediums first.
 
+`/drill` has no plan or reviews: it samples at random by the same need, favours problems you've missed, and avoids ones you
+drilled in the last few days, so restarting gives a different set.
+
+### Weight profiles
+
 Weights can be tuned per company or interview without changing the bank. Each profile is a local,
-git-ignored file `.practise/weights/<name>.json` of overrides, e.g. `{"_note": "...", "Trie": 4}`:
-unlisted patterns keep their default, keys starting with `_` are notes, and an unknown pattern name
-is an error. Choose one with:
+git-ignored file `.practise/weights/<name>.json` of overrides, e.g. `{"_note": "...", "Trie": 4}`.
+Unlisted patterns keep their default, keys starting with `_` are notes, and an unknown pattern name
+is an error.
 
 ```sh
-./practise weights            # list profiles and show the active one
+./practise weights            # list profiles and show the active one (or /weights)
 ./practise weights <name>     # use that profile from now on
 ./practise weights --off      # back to the defaults in bank/patterns.json
 ```
 
-`PRACTISE_WEIGHTS=<name or path>` overrides the choice for one run. The active profile applies to
-`next`, `/coach`, `/drill`, `stats` and `patterns`, and `stats` names it at the top.
+`PRACTISE_WEIGHTS=<name or path>` overrides the choice for one run. `stats` names the active profile
+at the top.
 
-Filters: `-p/--pattern graphs`, `-s/--session sun`, `--premium` (allow LeetCode premium), `--easy`,
-`-t/--timebox 35`, `--peek` (show without starting), `--no-open` (don't open the editor) and `--json`
-(print the pick as JSON without starting it; used by `/coach`).
+### Dated plan (optional)
 
-## Other commands
+Copy `plan.example.json` to `.practise/plan.json` (git-ignored) and set your own dates and problems,
+or point `PRACTISE_PLAN` at a file elsewhere. `/practise-plan` shows it and what's ticked off.
+Without a plan, picks go straight to due reviews and need.
 
-- `./practise mock [problem]` copies a mock-interviewer prompt to the clipboard for a Claude chat
-  (reworded industry scenario, clarifying questions, follow-ups, scoring on problem solving,
-  DS&A, logical & maintainable code and communication) and starts a 35-minute timer. `--show`
-  prints the prompt instead of copying it.
-- `./practise start <slug|number> [-t minutes] [--no-open]` starts a specific problem.
-- `./practise list [--pattern X] [--core]` shows the bank and your state per problem.
-- `./practise patterns` lists patterns, weights and recognition signals.
-- `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core --premium`).
-- `./practise report` prints a markdown report; `-o ~/Documents/Vault/career/Coding\ practice\ report.md`
-  writes it to a file instead.
-- `./practise abandon` drops the in-progress attempt.
-- `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
-  `./practise drill`): when, how, focus, answered, correct, score, misses fixed after a hint, hints, minutes and the patterns missed.
-  Sessions are never merged, and stopped or unfinished ones are left out. `report` includes the table too.
+### Adding problems
+
+`/add <LeetCode URL or slug>` drafts every field (number, title, difficulty, patterns with the
+primary first, commonly asked, premium, an own-words summary and a small example) for you to
+confirm, then adds it to `bank/problems.json`.
+
+## Command reference
+
+Every user-facing command, with its slash command in Claude Code. The slash commands ask in the chat
+for anything the command would otherwise prompt for. Two are renamed because Claude Code has
+built-ins with the same name.
+
+| `./practise` | slash command | options |
+|---|---|---|
+| `drill` | `/drill [count] [pattern]` (the tutor) | `-n N` (default 10), `-p/--pattern`, `--code`, `--no-code` |
+| `next` | `/next [pattern]` | `-p/--pattern`, `-s/--session plan-session`, `-t/--timebox minutes` (default 25), `--easy`, `--premium`, `--peek` (show without starting), `--no-open` (don't open the editor), `--json` (used by `/coach`) |
+| `start <problem>` | `/start <problem>` | `-t/--timebox minutes`, `--no-open` |
+| `status` | `/practise-status` | |
+| `done` | `/done [notes]` | `-u/--used pattern`, `--result pass\|fixed\|fail`, `--bugs N`, `--hints N`, `--optimal` or `--suboptimal`, `-n/--notes`, `-m/--minutes` (override the timer) |
+| `abandon` | `/abandon` | |
+| `mock [problem]` | `/mock [problem]` | `--show` (print the prompt instead of copying it) |
+| - | `/coach [pattern or problem]` | |
+| `stats` | `/stats` | |
+| `sessions` | `/sessions [N]` | `--last N`, `--markdown` |
+| `list` | `/list [pattern] [--core]` | `-p/--pattern`, `--core` (commonly asked only) |
+| `patterns` | `/patterns` | |
+| `template [pattern]` | `/template [pattern]` | no pattern: pick from the menu |
+| `report` | `/report [path]` | `-o/--out path` (write to a file instead of printing) |
+| `plan` | `/practise-plan` | |
+| `weights [profile]` | `/weights [profile]` | `--off` |
+| `add` | `/add <URL or slug>` | `--slug`, `--lc`, `--title`, `--difficulty`, `--patterns`, `--summary`, `--example`, `--core`, `--premium` |
+
+`drill-pick` (`-n`, `-p`), `drill-log` (`--session`, `--id`, `--guess` for the first answer,
+`--retry` for the answer after a guiding question, `--hinted`) and `drill-end` (`--session`,
+`--stopped`) are the plumbing `/drill` and `/coach` use; they have no slash command.
+Run without a terminal (as slash commands do), any command that would wait for input exits and
+asks for a flag instead.
 
 ## Files
 
 | path | what |
 |---|---|
-| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), commonly-asked flag, premium flag, one-line summary and a small input -> output example, both used by `drill` |
+| `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), commonly-asked flag, premium flag, one-line summary and a small input -> output example |
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
-| `bank/templates/` | one Java reference template per pattern |
-| `.practise/plan.json` | optional dated sessions, local only (copy `plan.example.json`) |
-| `.practise/weights/` | optional weight profiles per company, `<name>.json`, plus `active` naming the one in use; local only |
-| `progress/attempts.jsonl` | append-only attempt log; the schedule is derived from it (local only) |
-| `progress/drills.jsonl` | drill answers (tagged with their session) |
-| `progress/drill_sessions.jsonl` | start and end of each drill session |
-| `attempts/` | my written solutions (local only) |
-| `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
-| `.claude/commands/coach.md` | the `/coach` coached-coding prompt |
-| `.claude/commands/stats.md`, `sessions.md` | `/stats` and `/sessions`, reading the local logs |
-| `.claude/commands/*.md` | the other slash commands, one per `practise` command |
+| `bank/templates/` | one Java reference template per pattern; the file name is the pattern name in lower case with dashes, edit freely |
+| `.claude/commands/*.md` | the slash commands; `drill.md` and `coach.md` hold the tutor and coach prompts (edit them to change how Claude teaches) |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
+| `progress/attempts.jsonl` | append-only attempt log; the review schedule is derived from it |
+| `progress/drills.jsonl` | drill answers, tagged with their session |
+| `progress/drill_sessions.jsonl` | start and end of each drill session |
+| `attempts/` | your written solutions |
+| `.practise/` | the attempt in progress, the optional plan and the weight profiles |
 
 ## Where your progress lives
 
-Everything you record (attempt and drill logs in `progress/`, solutions in `attempts/`) stays in
-this directory on this machine and is git-ignored, so none of it goes to GitHub. Run sessions from
-this directory, in the terminal or in the Claude app with this folder; `/stats`, `/sessions` and
-`./practise stats` / `sessions` read only these local files. To back it up, copy `progress/` and
-`attempts/` somewhere safe.
-
-`.practise/` holds the in-progress attempt and your optional local plan and weight profiles; it is
-git-ignored too.
+`progress/`, `attempts/` and `.practise/` stay in this directory on this machine and are git-ignored,
+so none of it goes to GitHub. Run sessions from this directory (terminal or Claude app); the
+progress commands read only these local files. To back up, copy `progress/` and `attempts/`
+somewhere safe.
 
 ## Ideas for later
 
