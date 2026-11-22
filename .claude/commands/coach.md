@@ -1,5 +1,5 @@
 ---
-description: Coached coding round. Identify the pattern, then code the solution in Java with Claude guiding (hints on request), reviewing and rating.
+description: Coached coding round. Identify the pattern, then code the solution in Java with Claude guiding (hints on request), reviewing and logging the attempt.
 argument-hint: "[pattern | problem-slug]   e.g. /coach   /coach graphs   /coach lru-cache"
 allowed-tools: Bash(./practise next:*), Bash(./practise start:*), Bash(./practise status), Bash(./practise done:*), Bash(./practise drill-log:*), Bash(./practise template:*), Bash(./practise list:*), Bash(javac:*), Bash(java:*), Read, Write, Edit
 ---
@@ -63,11 +63,15 @@ When I say I'm done:
    and report pass/fail. If something fails, show me the failing input and let me fix it.
 3. Ask one follow-up an interviewer might ask (scale, concurrency, extending the API) and discuss briefly.
 
-## 6. Rate and log
+## 6. Log (the rating is derived, not chosen)
 
-1. Propose a rating with a one-line reason, using: 1 = couldn't solve / gave up; 2 = solved with
-   hints, bugs found only by the harness, or well over time; 3 = solved in time with minor slips;
-   4 = fast, clean, optimal first time. Let me accept or change it.
-2. Log it: `./practise done -u "<pattern I used>" -r <rating> --hints <count> -n "<one-line note: main mistake or insight>"`.
-   It prints the next review date; tell me.
-3. Give me 2-3 specific takeaways, then offer another problem (`/coach`) or a `/drill`.
+1. Don't propose or ask for a rating. From what happened, take:
+   - result: `pass` if the harness passed on its first run with no bugs found in review, `fixed` if
+     it passed after I fixed bugs (count each fix, from review or harness, as a bug), `fail` if I gave
+     up, saw the solution, or it still fails;
+   - hints: the number of hint-ladder rungs you gave;
+   - complexity: `--suboptimal` if time or space is worse than the optimal, else `--optimal`;
+   - pattern used: the pattern my code actually uses.
+2. Log it: `./practise done -u "<pattern>" --result <pass|fixed|fail> --bugs <n> --hints <n>
+   --optimal|--suboptimal -n "<one-line note: main mistake or insight>"`.
+   It prints the derived rating with its reasons and the next review date; show me both.

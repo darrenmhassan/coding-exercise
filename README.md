@@ -13,24 +13,32 @@ Python 3.8+ standard library only. Solutions are written in Java.
 ./practise drill -n 15       # quick pattern-recognition warm-up, default 10 (or /drill in Claude Code)
 ./practise next              # start the next problem; opens attempts/<date>_<id>/Solution.java
 ./practise status            # elapsed vs timebox
-./practise done              # log it: pattern you used, rating 1-4, hints, notes
+./practise done              # log how it went; the rating is derived from that (or /done in Claude Code)
 ./practise stats             # mastery by pattern, sorted by what needs work most
 ```
 
-`done` asks for anything you don't pass as a flag: `-r/--rating 1-4`, `-u/--used <pattern>`,
-`--hints N`, `-n/--notes "..."`, and `-m/--minutes N` to override the elapsed time.
+`done` asks for anything you don't pass as a flag: `-u/--used <pattern>`, `--result pass|fixed|fail`,
+`--bugs N`, `--hints N`, `--optimal` or `--suboptimal`, `-n/--notes "..."`, and `-m/--minutes N` to
+override the elapsed time.
 
 How to do a problem: open the LeetCode link only to read the statement, write the solution in
 the scaffold file **without running it** (the interview editor won't run code), talking aloud through
 the five steps in the header (clarify, approach, code, test by hand, optimise). When you think it's
-done, paste it into LeetCode. Rate honestly:
+done, run `/done` in Claude Code (or paste it into LeetCode and run `./practise done`).
 
-| rating | meaning |
+You don't rate yourself. `/done` reads your solution, works out which pattern it uses, runs it
+against the example and edge cases (showing you any failing input to fix), and checks its
+complexity against the optimal. The rating comes from those measurements:
+
+| rating | when |
 |---|---|
-| 1 again | couldn't solve it / needed the solution |
-| 2 hard | solved with hints, bugs found by LeetCode, or well over time |
-| 3 good | solved within the timebox, minor slips |
-| 4 easy | fast, clean, optimal first time |
+| 1 again | not solved: still failing, gave up, or saw the solution |
+| 2 hard | solved, but with any hint, 2+ bugs to fix, or over 1.5x the timebox |
+| 3 good | solved with one slip: 1 bug, over the timebox, or suboptimal complexity |
+| 4 easy | correct first run, no hints, within the timebox, optimal |
+
+Each signal caps the rating and the lowest cap wins; `done` prints the rating with its reasons.
+The timer measures the minutes, so only the result, bugs, hints and complexity are passed in.
 
 The pattern isn't shown when a problem starts, only after `done`, so recognition is practised too.
 
@@ -69,8 +77,8 @@ the pattern, then clarify requirements and outline the approach before coding. Y
 "hint" for a hint ladder: a guiding question, then the structure, then a line or two of code,
 never the whole solution unless you say "give up". When you're done, Claude reviews it
 whiteboard-style (you trace the example; it points at failing inputs rather than fixing them), then
-verifies it with a small `Main.java` harness, asks a follow-up, proposes a rating and logs it with
-`./practise done`, so it feeds the spaced-repetition schedule like any other attempt.
+verifies it with a small `Main.java` harness, asks a follow-up and logs the result, bugs, hints and
+complexity with `./practise done`, which derives the rating, so it feeds the spaced-repetition schedule like any other attempt.
 
 Use `/drill` for fast recognition reps and `/coach` for full problems.
 
@@ -96,7 +104,7 @@ meant to be revealed:
 | `/next [pattern]` | `next` | checks for an attempt in progress first |
 | `/start <problem>` | `start` | |
 | `/practise-status` | `status` | `/status` is built into Claude Code |
-| `/done [rating] [pattern] [hints] [notes]` | `done` | asks for whatever you didn't pass |
+| `/done [notes]` | `done` | checks and runs your solution, then logs it; only asks how many hints you used |
 | `/abandon` | `abandon` | asks you to confirm |
 | `/drill [count] [pattern]` | the tutor (see above) | replaces the offline `drill` quiz in Claude Code |
 | `/coach [pattern or problem]` | coached round (see below) | |

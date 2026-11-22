@@ -47,6 +47,11 @@ RATINGS = {
     3: "good   - solved within the timebox, minor slips",
     4: "easy   - fast, clean, optimal first time",
 }
+RESULTS = {
+    "pass": "correct on the first run of the tests (or first LeetCode submission)",
+    "fixed": "correct after fixing bugs that the review or tests found",
+    "fail": "still wrong at the end, gave up, or looked at the solution",
+}
 DIFF_ORDER = {"Medium": 0, "Hard": 1, "Easy": 2}
 
 
@@ -155,6 +160,32 @@ def next_interval(prev, rating):
     if rating == 3:
         return max(3, round(prev * 2.5))
     return max(5, round(prev * 3.5))
+
+
+def derive_rating(result, bugs, hints, minutes, timebox, suboptimal):
+    """Rating 1-4 from measured performance, plus the reasons for anything below 4.
+
+    Each signal caps the rating at the level the RATINGS table gives it, and the lowest cap wins.
+    """
+    if result == "fail":
+        return 1, ["not solved"]
+    caps = []
+    if hints:
+        caps.append((2, "%d hint%s" % (hints, "" if hints == 1 else "s")))
+    if bugs >= 2:
+        caps.append((2, "%d bugs to fix" % bugs))
+    elif bugs == 1:
+        caps.append((3, "1 bug to fix"))
+    if minutes > 1.5 * timebox:
+        caps.append((2, "well over time (%d of %d min)" % (minutes, timebox)))
+    elif minutes > timebox:
+        caps.append((3, "over time (%d of %d min)" % (minutes, timebox)))
+    if suboptimal:
+        caps.append((3, "suboptimal complexity"))
+    if not caps:
+        return 4, []
+    rating = min(c for c, _ in caps)
+    return rating, [r for _, r in caps]
 
 
 def schedule():
@@ -493,25 +524,36 @@ def cmd_done(a):
         used = resolve_pattern(used) or used
     pattern_ok = used in p["patterns"]
 
-    rating = a.rating
-    if rating is None:
+    result = a.result
+    if result is None:
         print()
-        for k, v in RATINGS.items():
-            print("  %d %s" % (k, v))
-        while rating not in RATINGS:
-            r = ask("  rating 1-4: ")
-            rating = int(r) if r and r.isdigit() else None
+        for k, v in RESULTS.items():
+            print("  %-5s %s" % (k, v))
+        while result not in RESULTS:
+            result = (ask("  result: ") or "").lower()
+    bugs = a.bugs
+    if bugs is None:
+        bugs = int(ask("  bugs you had to fix (failed runs or submissions) [0]: ", "0")) if result == "fixed" else 0
+    if result == "fixed":
+        bugs = max(bugs, 1)
     hints = a.hints if a.hints is not None else int(ask("  hints used [0]: ", "0"))
+    suboptimal = a.suboptimal
+    if suboptimal is None:
+        suboptimal = result != "fail" and ask("  worse time/space complexity than the optimal? y/N: ", "n").lower().startswith("y")
     notes = a.notes if a.notes is not None else ask("  notes (mistakes, insight; enter to skip): ", "")
+    rating, reasons = derive_rating(result, bugs, hints, minutes, cur["timebox"], suboptimal)
 
     row = {"id": p["id"], "date": today().isoformat(), "started": cur["started"], "minutes": minutes,
-           "timebox": cur["timebox"], "rating": rating, "pattern_used": used, "pattern_ok": pattern_ok,
+           "timebox": cur["timebox"], "rating": rating, "rating_reasons": reasons, "result": result,
+           "bugs": bugs, "suboptimal": bool(suboptimal), "pattern_used": used, "pattern_ok": pattern_ok,
            "hints": hints, "notes": notes, "file": os.path.relpath(cur["file"], ROOT), "mock": cur.get("mock", False)}
     append_jsonl(ATTEMPTS_LOG, row)
     os.remove(CURRENT)
 
     s = schedule()[p["id"]]
     print()
+    print("  Rating: %d %s%s" % (rating, RATINGS[rating].split("-")[0].strip(),
+                                  "" if not reasons else " (" + "; ".join(reasons) + ")"))
     print("  Pattern(s): %s  %s" % (", ".join(p["patterns"]), "- you got it" if pattern_ok else "- you used " + used))
     if not pattern_ok:
         print()
@@ -979,10 +1021,13 @@ def main(argv=None):
     s = sub.add_parser("status", help="time elapsed on the current attempt")
     s.set_defaults(func=cmd_status)
 
-    s = sub.add_parser("done", help="log the current attempt")
-    s.add_argument("-r", "--rating", type=int, choices=[1, 2, 3, 4])
+    s = sub.add_parser("done", help="log the current attempt; the rating is derived from how it went")
     s.add_argument("-u", "--used", help="pattern you used")
+    s.add_argument("--result", choices=list(RESULTS), help="pass, fixed or fail (see RESULTS)")
+    s.add_argument("--bugs", type=int, help="bugs that had to be fixed before it was correct")
     s.add_argument("--hints", type=int)
+    s.add_argument("--suboptimal", action="store_true", default=None, help="worse complexity than the optimal")
+    s.add_argument("--optimal", dest="suboptimal", action="store_false", help="optimal complexity")
     s.add_argument("-n", "--notes")
     s.add_argument("-m", "--minutes", type=int, help="override elapsed minutes")
     s.set_defaults(func=cmd_done)
