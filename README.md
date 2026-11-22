@@ -85,6 +85,33 @@ Use `/drill` for fast recognition reps and `/coach` for full problems.
 Both read only the local logs in `progress/` and show the table as printed, with a short note on
 what stands out.
 
+## Slash commands for every practise command
+
+In Claude Code, each user-facing `./practise` command has a slash command that runs it, asks in the
+chat for anything the command would otherwise prompt for, and keeps the pattern hidden until it's
+meant to be revealed:
+
+| slash command | runs | notes |
+|---|---|---|
+| `/next [pattern]` | `next` | checks for an attempt in progress first |
+| `/start <problem>` | `start` | |
+| `/practise-status` | `status` | `/status` is built into Claude Code |
+| `/done [rating] [pattern] [hints] [notes]` | `done` | asks for whatever you didn't pass |
+| `/abandon` | `abandon` | asks you to confirm |
+| `/drill [count] [pattern]` | the tutor (see above) | replaces the offline `drill` quiz in Claude Code |
+| `/coach [pattern or problem]` | coached round (see below) | |
+| `/stats`, `/sessions [N]` | `stats`, `sessions` | |
+| `/template [pattern]` | `template` | |
+| `/report [path]` | `report` | |
+| `/practise-plan` | `plan` | `/plan` is built into Claude Code |
+| `/list [pattern] [--core]` | `list` | |
+| `/patterns` | `patterns` | |
+| `/mock [problem]` | `mock` | prompt goes to the clipboard, never shown in the chat |
+| `/add <URL or slug>` | `add` | drafts every field for you to confirm |
+| `/weights [profile or --off]` | `weights` | |
+
+`drill-pick`, `drill-log` and `drill-end` have none: they're the plumbing `/drill` and `/coach` use.
+
 ## Pattern templates
 
 `bank/templates/<pattern>.java` holds a short reference implementation for each pattern (the
@@ -159,6 +186,7 @@ Filters: `-p/--pattern graphs`, `-s/--session sun`, `--premium` (allow LeetCode 
 | `.claude/commands/drill.md` | the `/drill` tutor prompt (edit it to change how Claude teaches) |
 | `.claude/commands/coach.md` | the `/coach` coached-coding prompt |
 | `.claude/commands/stats.md`, `sessions.md` | `/stats` and `/sessions`, reading the local logs |
+| `.claude/commands/*.md` | the other slash commands, one per `practise` command |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
 
 ## Where your progress lives

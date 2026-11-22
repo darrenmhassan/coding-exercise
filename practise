@@ -347,6 +347,9 @@ def ask(prompt, default=None):
     try:
         v = input(prompt)
     except EOFError:
+        # No terminal (e.g. run by a slash command): fail fast instead of looping on a required value.
+        if default is None:
+            sys.exit("\nNo input available for '%s'; pass it as a flag (see --help)." % prompt.strip())
         v = ""
     v = v.strip()
     return v if v else default
