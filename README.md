@@ -10,12 +10,15 @@ Python 3.8+ standard library only. Solutions are written in Java.
 
 ```sh
 ./practise plan              # the dated session plan and what's ticked off
-./practise drill -n 15       # quick pattern-recognition warm-up (or /drill in Claude Code)
+./practise drill -n 15       # quick pattern-recognition warm-up, default 10 (or /drill in Claude Code)
 ./practise next              # start the next problem; opens attempts/<date>_<id>/Solution.java
 ./practise status            # elapsed vs timebox
 ./practise done              # log it: pattern you used, rating 1-4, hints, notes
 ./practise stats             # mastery by pattern, sorted by what needs work most
 ```
+
+`done` asks for anything you don't pass as a flag: `-r/--rating 1-4`, `-u/--used <pattern>`,
+`--hints N`, `-n/--notes "..."`, and `-m/--minutes N` to override the elapsed time.
 
 How to do a problem: open the LeetCode link only to read the statement, write the solution in
 the scaffold file **without running it** (the interview editor won't run code), talking aloud through
@@ -43,9 +46,12 @@ cd ~/home/coding-exercise && claude
 Claude presents each problem as a realistic industry scenario with an example, asks which pattern and
 why, gives a guiding question if you're wrong, then explains the signals, the key insight, a Java
 sketch of the solution, complexity and a common trap. It picks problems with
-`./practise drill-pick` (weighted towards likely and previously missed patterns) and logs your first
-answer with `./practise drill-log` (plus your retry after a guiding question, shown as "fixed after hint" but not counted in the score), so `stats` and future picks include tutor sessions.
-`./practise drill` remains as the quick offline version. Both pick problems at random, weighted towards
+`./practise drill-pick` (weighted towards likely and previously missed patterns), logs your first
+answer with `./practise drill-log` (plus your retry after a guiding question, shown as "fixed after
+hint" but not counted in the score), and closes the session with `./practise drill-end` (`--stopped`
+if you stop early, which keeps it out of the session history). So `stats`, `sessions` and future picks
+include tutor sessions.
+`./practise drill [-n N] [-p pattern]` remains as the quick offline version. Both pick problems at random, weighted towards
 high-weight patterns and ones you've missed, and away from ones you drilled in the last few days,
 so restarting gives you a different set.
 
@@ -67,6 +73,17 @@ verifies it with a small `Main.java` harness, asks a follow-up, proposes a ratin
 `./practise done`, so it feeds the spaced-repetition schedule like any other attempt.
 
 Use `/drill` for fast recognition reps and `/coach` for full problems.
+
+## Progress: `/stats` and `/sessions` in Claude Code
+
+```sh
+/stats          # ./practise stats: mastery by pattern, plus the 2-3 patterns that need work most
+/sessions       # ./practise sessions: one row per completed drill session
+/sessions 5     # only the last 5
+```
+
+Both read only the local logs in `progress/` and show the table as printed, with a short note on
+what stands out.
 
 ## Pattern templates
 
@@ -91,19 +108,22 @@ Edit them freely; the file name is the pattern name in lower case with dashes.
    Weight (1-5) is how often the pattern comes up in interviews; mastery blends latest ratings, coverage
    (3 problems tried counts as full coverage) and drill accuracy. Commonly asked Mediums first.
 
-Filters: `--pattern graphs`, `--session sun`, `--premium` (allow LeetCode premium), `--easy`,
-`--timebox 35`, `--peek` (show without starting).
+Filters: `-p/--pattern graphs`, `-s/--session sun`, `--premium` (allow LeetCode premium), `--easy`,
+`-t/--timebox 35`, `--peek` (show without starting), `--no-open` (don't open the editor) and `--json`
+(print the pick as JSON without starting it; used by `/coach`).
 
 ## Other commands
 
 - `./practise mock [problem]` copies a mock-interviewer prompt to the clipboard for a Claude chat
   (reworded industry scenario, clarifying questions, follow-ups, scoring on problem solving,
-  DS&A, logical & maintainable code and communication) and starts a 35-minute timer.
-- `./practise start <slug|number>` starts a specific problem.
+  DS&A, logical & maintainable code and communication) and starts a 35-minute timer. `--show`
+  prints the prompt instead of copying it.
+- `./practise start <slug|number> [-t minutes] [--no-open]` starts a specific problem.
 - `./practise list [--pattern X] [--core]` shows the bank and your state per problem.
 - `./practise patterns` lists patterns, weights and recognition signals.
-- `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core`).
-- `./practise report -o ~/Documents/Vault/career/Coding\ practice\ report.md` writes a markdown report.
+- `./practise add` adds a problem (or pass `--slug --lc --title --difficulty --patterns --summary --example --core --premium`).
+- `./practise report` prints a markdown report; `-o ~/Documents/Vault/career/Coding\ practice\ report.md`
+  writes it to a file instead.
 - `./practise abandon` drops the in-progress attempt.
 - `./practise sessions [--last N] [--markdown]` shows one row per completed drill session (`/drill` or
   `./practise drill`): when, how, focus, answered, correct, score, misses fixed after a hint, hints, minutes and the patterns missed.
