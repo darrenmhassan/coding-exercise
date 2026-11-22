@@ -4,6 +4,7 @@ Darren's coding-interview practice repo. Solutions are written in Java; the tool
 `practise` script (Python 3 standard library only). See README.md for usage.
 
 - Problem bank: `bank/problems.json` (patterns use the names in `bank/patterns.json`, primary first).
+- Patterns reference (from my notes): `docs/patterns-reference.md`.
 - Pattern templates: `bank/templates/<pattern-slug>.java`.
 - Progress logs are append-only JSONL in `progress/`; the spaced-repetition schedule is derived
   from `progress/attempts.jsonl`, so never rewrite or reorder those files.

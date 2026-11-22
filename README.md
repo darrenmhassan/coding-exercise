@@ -1,8 +1,8 @@
 # coding-exercise
 
 Pattern-based coding interview practice with spaced repetition. Problems are tagged with the
-patterns from my Educative notes (`Vault/career/Programming Patterns Reference.md`), and the
-`practise` CLI decides what to work on next, times each attempt, and tracks mastery by pattern.
+patterns from my Educative notes ([docs/patterns-reference.md](docs/patterns-reference.md): what each
+pattern is, when to use it and example questions), and the `practise` CLI decides what to work on next, times each attempt, and tracks mastery by pattern.
 
 Python 3.8+ standard library only. Solutions are written in Java.
 
@@ -203,6 +203,7 @@ asks for a flag instead.
 |---|---|
 | `bank/problems.json` | problem bank: slug, LeetCode number, patterns (primary first), commonly-asked flag, premium flag, one-line summary and a small input -> output example |
 | `bank/patterns.json` | pattern names (match my notes), weight, recognition signals |
+| `docs/patterns-reference.md` | the patterns reference: description, when to use, example questions, and a quick reference by category |
 | `bank/templates/` | one Java reference template per pattern; the file name is the pattern name in lower case with dashes, edit freely |
 | `.claude/commands/*.md` | the slash commands; `drill.md` and `coach.md` hold the tutor and coach prompts (edit them to change how Claude teaches) |
 | `.claude/settings.json` | turns off Claude Code's prompt suggestions in this repo (they give drill answers away) |
