@@ -38,7 +38,7 @@ The JSON has `grid` and `problem` (`id`, `title`, `patterns`, `summary`, `exampl
 
 ## 4. Code (timed)
 
-1. Run `./coding start <id> --no-open -t 30`. It creates `attempts/<date>_<id>/Solution.java` and
+1. Run `./coding start <id> --no-open -t 30 --via coach`. It creates `attempts/<date>_<id>/Solution.java` and
    starts a 30-minute timer. Tell me the file path. I'll write the code there (in my editor) or
    paste it into the chat; if I paste it, save it into that file with Write/Edit.
 2. While I code, stay quiet unless I ask. If I say "hint", use this ladder, one rung per request,

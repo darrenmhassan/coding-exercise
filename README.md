@@ -95,9 +95,9 @@ A full round with Claude as the interviewer, in a separate chat so the problem s
 | command | shows |
 |---|---|
 | `/coding-stats` | mastery by pattern, sorted by need, plus the 2-3 patterns to work on next |
-| `/coding-sessions [N]` | one row per completed drill session (never merged): score, misses fixed after a hint, minutes from each problem appearing to your answer (teaching and breaks left out), missed patterns |
-| `/coding-list [pattern] [--core]` | the problem bank and your state per problem |
-| `/coding-patterns` | the patterns with their weights and recognition signals |
+| `/coding-sessions [N]` | one row per session, oldest first (never merged): drills with their score, misses fixed after a hint and missed patterns; coach rounds, solo problems and mocks with the problem, rating and minutes |
+| `/coding-list [pattern] [--core]` | the problem bank by pattern, with LeetCode links and your last rating and next review per problem |
+| `/coding-patterns` | the patterns with their weights, your mastery and when to use each |
 | `/coding-template [pattern]` | a pattern's signals and Java reference template |
 | `/coding-report [path]` | a markdown report of all of the above, shown or written to a file |
 
@@ -175,7 +175,7 @@ them in the `/` menu and keeps them clear of Claude Code's built-ins (`/stats`, 
 |---|---|---|
 | `drill` | `/coding-drill [count] [pattern]` (the tutor) | `-n N` (default 10), `-p/--pattern`, `--code`, `--no-code` |
 | `next` | `/coding-next [pattern]` | `-p/--pattern`, `-s/--session plan-session`, `-t/--timebox minutes` (default 25), `--easy`, `--premium`, `--peek` (show without starting), `--no-open` (don't open the editor), `--json` (used by `/coding-coach`) |
-| `start <problem>` | `/coding-start <problem>` | `-t/--timebox minutes`, `--no-open` |
+| `start <problem>` | `/coding-start <problem>` | `-t/--timebox minutes`, `--no-open`, `--via solo\|coach` (used by `/coding-coach`) |
 | `status` | `/coding-status` | |
 | `done` | `/coding-done [notes]` | `-u/--used pattern`, `--result pass\|fixed\|fail`, `--bugs N`, `--hints N`, `--optimal` or `--suboptimal`, `-n/--notes`, `-m/--minutes` (override the timer) |
 | `abandon` | `/coding-abandon` | |
@@ -183,8 +183,8 @@ them in the `/` menu and keeps them clear of Claude Code's built-ins (`/stats`, 
 | - | `/coding-coach [pattern or problem]` | |
 | `stats` | `/coding-stats` | |
 | `sessions` | `/coding-sessions [N]` | `--last N`, `--markdown` |
-| `list` | `/coding-list [pattern] [--core]` | `-p/--pattern`, `--core` (commonly asked only) |
-| `patterns` | `/coding-patterns` | |
+| `list` | `/coding-list [pattern] [--core]` | `-p/--pattern`, `--core` (commonly asked only), `--markdown` |
+| `patterns` | `/coding-patterns` | `--markdown` |
 | `template [pattern]` | `/coding-template [pattern]` | no pattern: pick from the menu |
 | `report` | `/coding-report [path]` | `-o/--out path` (write to a file instead of printing) |
 | `plan` | `/coding-plan` | |

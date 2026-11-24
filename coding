@@ -442,13 +442,13 @@ def scaffold(p, timebox):
     return path
 
 
-def start_attempt(p, reason, timebox, open_editor, mock=False):
+def start_attempt(p, reason, timebox, open_editor, mock=False, via="solo"):
     cur = load_json(CURRENT)
     if cur:
         print("Note: replacing unfinished attempt '%s'." % cur["id"])
     path = scaffold(p, timebox)
     save_json(CURRENT, {"id": p["id"], "started": now_iso(), "timebox": timebox, "file": path,
-                        "reason": reason, "mock": mock})
+                        "reason": reason, "mock": mock, "via": "mock" if mock else via})
     print()
     print("  %s. %s  [%s]%s" % (p["lc"], p["title"], p["difficulty"], "  (premium)" if p["premium"] else ""))
     print("  " + p["url"])
@@ -492,7 +492,7 @@ def cmd_next(a):
 
 def cmd_start(a):
     p = find_problem(a.problem)
-    start_attempt(p, "chosen", a.timebox, not a.no_open)
+    start_attempt(p, "chosen", a.timebox, not a.no_open, via=a.via)
 
 
 def cmd_status(a):
@@ -552,7 +552,8 @@ def cmd_done(a):
     row = {"id": p["id"], "date": today().isoformat(), "started": cur["started"], "minutes": minutes,
            "timebox": cur["timebox"], "rating": rating, "rating_reasons": reasons, "result": result,
            "bugs": bugs, "suboptimal": bool(suboptimal), "pattern_used": used, "pattern_ok": pattern_ok,
-           "hints": hints, "notes": notes, "file": os.path.relpath(cur["file"], ROOT), "mock": cur.get("mock", False)}
+           "hints": hints, "notes": notes, "file": os.path.relpath(cur["file"], ROOT), "mock": cur.get("mock", False),
+           "via": cur.get("via", "mock" if cur.get("mock") else "solo")}
     append_jsonl(ATTEMPTS_LOG, row)
     os.remove(CURRENT)
 
@@ -690,28 +691,65 @@ def completed_sessions():
     return out
 
 
-SESSION_HEAD = ["#", "date", "start", "via", "focus", "answered", "score", "fixed", "hints", "min", "missed (correct pattern)"]
-SESSION_LEGEND = ("answered = of planned; score = right first time; fixed = misses right on the retry after a\n"
-                  "guiding question; hints = asked for before answering; min = time from each problem appearing to\n"
-                  "your answer, so teaching and breaks are left out (* = older session: start to end).")
+SESSION_HEAD = ["#", "date", "start", "type", "what", "result", "min", "details"]
+SESSION_LEGEND = ("drill: score = right first time, fixed = misses right on the retry after a guiding question,\n"
+                  "min = time from each problem appearing to your answer (* = older session: start to end).\n"
+                  "coach, solo and mock: the problem, its derived rating (1-4) and reasons, min = used/timebox.")
+
+
+def attempt_via(x):
+    """How an attempt was run. Rows logged before `via` existed are inferred: /coding-coach used a 30-minute timebox."""
+    if x.get("via"):
+        return x["via"]
+    if x.get("mock"):
+        return "mock"
+    return "coach" if x.get("timebox") == 30 else "solo"
+
+
+def attempt_result(x):
+    """The result cell for one coach, solo or mock attempt in the sessions table."""
+    cell = "%d %s" % (x["rating"], RATINGS[x["rating"]].split("-")[0].strip())
+    # Time reasons are left out because the min column already shows time used against the timebox.
+    reasons = [r for r in x.get("rating_reasons", []) if "time" not in r]
+    if x.get("pattern_ok") is False:
+        reasons.insert(0, "used %s" % x.get("pattern_used", "another pattern"))
+    return cell + (": " + ", ".join(reasons) if reasons else "")
+
+
+def all_sessions():
+    """Completed drill sessions and logged attempts, oldest first, each kept separate."""
+    out = []
+    for x in completed_sessions():
+        score = (x["correct"] / x["answered"]) if x["answered"] else None
+        result = "%d/%d %s" % (x["correct"], x["answered"], fmt(score, "pct"))
+        if x["missed"]:
+            result += ", fixed %d/%d" % (x["fixed"], len(x["missed"]))
+        if x["hinted"]:
+            result += ", %d hint%s" % (x["hinted"], "" if x["hinted"] == 1 else "s")
+        missed = ", ".join(sorted(set(x["missed"]), key=x["missed"].index))
+        what = "%d problem%s%s" % (x["answered"], "" if x["answered"] == 1 else "s",
+                                   "" if x["focus"] == "all" else ", " + x["focus"])
+        out.append({"start": x["start"], "type": "drill", "what": what, "result": result,
+                    "min": str(x["minutes"]) + ("" if x["timed"] else "*"),
+                    "details": "missed " + missed if missed else ""})
+    byid = problems_by_id()
+    for x in read_jsonl(ATTEMPTS_LOG):
+        p = byid.get(x["id"], {"title": x["id"]})
+        out.append({"start": dt.datetime.fromisoformat(x["started"]), "type": attempt_via(x), "what": p["title"],
+                    "result": attempt_result(x), "min": "%d/%d" % (x["minutes"], x["timebox"]),
+                    "details": x.get("notes") or ""})
+    out.sort(key=lambda r: r["start"])
+    return out
 
 
 def session_rows():
-    rows = []
-    for i, x in enumerate(completed_sessions(), 1):
-        score = (x["correct"] / x["answered"]) if x["answered"] else None
-        missed = ", ".join(sorted(set(x["missed"]), key=x["missed"].index)) or "-"
-        rows.append([str(i), x["start"].strftime("%a %d %b"), x["start"].strftime("%H:%M"), x["source"],
-                     x["focus"], "%d/%d" % (x["answered"], x["planned"]),
-                     "%d/%d %s" % (x["correct"], x["answered"], fmt(score, "pct")),
-                     "%d/%d" % (x["fixed"], len(x["missed"])) if x["missed"] else "-",
-                     str(x["hinted"]) if x["hinted"] else "-", str(x["minutes"]) + ("" if x["timed"] else "*"), missed])
-    return rows
+    return [[str(i), r["start"].strftime("%a %d %b"), r["start"].strftime("%H:%M"), r["type"], r["what"],
+             r["result"], r["min"], r["details"] or "-"] for i, r in enumerate(all_sessions(), 1)]
 
 
 def session_markdown(rows):
     out = ["| " + " | ".join(SESSION_HEAD) + " |", "|" + "---|" * len(SESSION_HEAD)]
-    return out + ["| " + " | ".join(r) + " |" for r in rows]
+    return out + ["| " + " | ".join(c.replace("|", "/") for c in r) + " |" for r in rows]
 
 
 def cmd_sessions(a):
@@ -719,13 +757,13 @@ def cmd_sessions(a):
     if a.last:
         rows = rows[-a.last:]
     if not rows:
-        print("No completed drill sessions yet.")
+        print("No completed sessions yet.")
         return
     if a.markdown:
         print("\n".join(session_markdown(rows)))
         print("\n" + SESSION_LEGEND.replace("\n", " "))
         return
-    # The missed patterns go on their own line under each row, so the table fits a narrow pane.
+    # Details go on their own line under each row, so the table fits a narrow pane.
     head = SESSION_HEAD[:-1]
     widths = [max(len(r[i]) for r in rows + [head]) for i in range(len(head))]
     line = lambda r: "  ".join(c.ljust(widths[i]) for i, c in enumerate(r)).rstrip()
@@ -735,10 +773,10 @@ def cmd_sessions(a):
     for r in rows:
         print(line(r[:-1]))
         if r[-1] != "-":
-            print(" " * (widths[0] + 2) + "missed: " + r[-1])
+            print(wrap(r[-1], " " * (widths[0] + 2)))
     legacy = sum(1 for d in read_jsonl(DRILLS_LOG) if not d.get("session"))
     print("\n" + SESSION_LEGEND)
-    print("Completed drill sessions only, one row each (stopped or unfinished sessions are left out).")
+    print("Stopped drills and abandoned attempts are left out.")
     if legacy:
         print("%d older drill answers predate session tracking and aren't shown here." % legacy)
 
@@ -909,7 +947,7 @@ def cmd_report(a):
     out += ["| " + " | ".join(r) + " |" for r in rows]
     srows = session_rows()
     if srows:
-        out += ["", "## Drill sessions (completed)", ""] + session_markdown(srows) + ["", SESSION_LEGEND.replace("\n", " ")]
+        out += ["", "## Sessions", ""] + session_markdown(srows) + ["", SESSION_LEGEND.replace("\n", " ")]
     att = read_jsonl(ATTEMPTS_LOG)
     byid = problems_by_id()
     out += ["", "## Attempts", "", "| date | problem | rating | min | pattern ok | notes |", "|---|---|---|---|---|---|"]
@@ -952,11 +990,24 @@ def cmd_plan(a):
 def cmd_list(a):
     sched = schedule()
     pat = resolve_pattern(a.pattern) if a.pattern else None
-    for p in sorted(problems(), key=lambda p: (p["patterns"][0], p["lc"])):
-        if pat and pat not in p["patterns"]:
-            continue
-        if a.core and not p["common"]:
-            continue
+    chosen = [p for p in sorted(problems(), key=lambda p: (p["patterns"][0], p["lc"]))
+              if (not pat or pat in p["patterns"]) and (not a.core or p["common"])]
+    if a.markdown:
+        out = ["| pattern | # | problem | level | asked | state |", "|---|--:|---|---|---|---|"]
+        prev = None
+        for p in chosen:
+            s = sched.get(p["id"])
+            state = ("rated %d, review %s" % (s["last"]["rating"], s["due"].strftime("%a %d %b"))) if s else "new"
+            tags = ", ".join(t for t, on in (("common", p["common"]), ("premium", p["premium"])) if on) or "-"
+            # The pattern is named once per group so the table reads as sections.
+            name = "**%s**" % p["patterns"][0] if p["patterns"][0] != prev else ""
+            prev = p["patterns"][0]
+            out.append("| %s | %d | [%s](%s) | %s | %s | %s |" % (name, p["lc"], p["title"], p["url"],
+                                                                p["difficulty"], tags, state))
+        print("\n".join(out))
+        print("\n%d problems. common = commonly asked, premium = needs LeetCode premium." % len(chosen))
+        return
+    for p in chosen:
         s = sched.get(p["id"])
         state = ("r%d due %s" % (s["last"]["rating"], s["due"].isoformat())) if s else "new"
         print("%-26s %4d %-52s %-6s %s%s  %s" % (p["patterns"][0], p["lc"], p["title"][:52], p["difficulty"],
@@ -977,6 +1028,16 @@ def cmd_template(a):
 
 
 def cmd_patterns(a):
+    if a.markdown:
+        st = pattern_stats()
+        out = ["| # | pattern | weight | mastery | when to use it |", "|--:|---|---|--:|---|"]
+        for i, p in enumerate(patterns(), 1):
+            out.append("| %d | %s | %s | %s | %s |" % (i, p["name"], "★" * p["weight"],
+                                                     fmt(st[p["name"]]["mastery"], "pct"), p["signals"].replace("|", "/")))
+        print("\n".join(out))
+        print("\nweight = how often it comes up in interviews (1-5, from the active weight profile); "
+              "mastery = your current level, used with weight to choose problems.")
+        return
     for i, p in enumerate(patterns(), 1):
         print("%2d %-26s %s" % (i, p["name"], "*" * p["weight"]))
         print(wrap(p["signals"], "      "))
@@ -1069,6 +1130,7 @@ def main(argv=None):
     s.add_argument("problem")
     s.add_argument("-t", "--timebox", type=int, default=DEFAULT_TIMEBOX)
     s.add_argument("--no-open", action="store_true")
+    s.add_argument("--via", choices=["solo", "coach"], default="solo", help="how the attempt is run (shown in sessions)")
     s.set_defaults(func=cmd_start)
 
     s = sub.add_parser("status", help="time elapsed on the current attempt")
@@ -1118,7 +1180,7 @@ def main(argv=None):
     s.add_argument("--stopped", action="store_true", help="ended before the last problem")
     s.set_defaults(func=cmd_drill_end)
 
-    s = sub.add_parser("sessions", help="one row per completed drill session")
+    s = sub.add_parser("sessions", help="one row per completed drill session or logged attempt")
     s.add_argument("--last", type=int, help="only the most recent N")
     s.add_argument("--markdown", action="store_true", help="output a markdown table")
     s.set_defaults(func=cmd_sessions)
@@ -1145,9 +1207,11 @@ def main(argv=None):
     s = sub.add_parser("list", help="list the problem bank")
     s.add_argument("-p", "--pattern")
     s.add_argument("--core", action="store_true", help="commonly asked only")
+    s.add_argument("--markdown", action="store_true", help="output a markdown table")
     s.set_defaults(func=cmd_list)
 
     s = sub.add_parser("patterns", help="list patterns with weights and signals")
+    s.add_argument("--markdown", action="store_true", help="output a markdown table")
     s.set_defaults(func=cmd_patterns)
 
     s = sub.add_parser("mock", help="print a mock-interviewer prompt for Claude and start the timer")

@@ -5,4 +5,5 @@ allowed-tools: Bash(./coding list:*)
 ---
 
 Equivalent of `./coding list`. Arguments: `$ARGUMENTS`. A bare pattern name or number becomes
-`-p "<pattern>"`; pass `--core` through. Run it and show the output as printed in a ```text block.
+`-p "<pattern>"`; pass `--core` through. Run it with `--markdown` and show the table exactly as
+printed, as a rendered markdown table (not in a code block), with the line under it.
