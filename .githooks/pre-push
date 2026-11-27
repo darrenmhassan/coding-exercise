@@ -1,0 +1,20 @@
+#!/bin/sh
+# Refuses to push commits not authored and committed under the personal identity, so work
+# identities can't leak into this personal repo. Enabled per clone with:
+#   git config core.hooksPath .githooks
+ALLOWED="darren.m.hassan@gmail.com"
+zero=0000000000000000000000000000000000000000
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue                      # deleting a branch
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha"     # new branch: check all its commits
+  else range="$remote_sha..$local_sha"; fi
+  bad=$(git log --format='%h %ae %ce' "$range" | awk -v ok="$ALLOWED" '$2 != ok || $3 != ok')
+  if [ -n "$bad" ]; then
+    echo "pre-push: refusing to push commits not authored and committed as $ALLOWED:" >&2
+    echo "$bad" | sed 's/^/  /' >&2
+    echo "Fix with: git commit --amend --reset-author (or rebase), after checking git config user.email" >&2
+    exit 1
+  fi
+done
+exit 0
