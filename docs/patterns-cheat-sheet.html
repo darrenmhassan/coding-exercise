@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Coding Patterns Cheat Sheet</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  * { box-sizing: border-box; }
+  body { font: 8.4pt/1.32 -apple-system, "Helvetica Neue", Arial, sans-serif; color: #111; margin: 0; }
+  h1 { font-size: 14pt; margin: 0 0 1mm; }
+  .sub { color: #555; margin: 0 0 3mm; }
+  h2 { font-size: 9.5pt; margin: 3mm 0 1mm; padding: 0.6mm 1.5mm; background: #e9eef5; border-left: 3px solid #3a5a85; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { border-bottom: 0.4pt solid #ccc; padding: 0.8mm 1.2mm; vertical-align: top; text-align: left; }
+  th { font-size: 7.6pt; color: #555; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 0.8pt solid #888; }
+  col.p { width: 17%; } col.s { width: 38%; } col.m { width: 29%; } col.x { width: 16%; }
+  td.name { font-weight: 700; }
+  code { font: 7.8pt Menlo, monospace; background: #f3f3f3; padding: 0 0.6mm; }
+  tr { break-inside: avoid; }
+  .pairs td:first-child { font-weight: 700; width: 24%; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  ul { margin: 0.5mm 0 0; padding-left: 4mm; }
+  li { margin: 0.3mm 0; }
+  .page2 { break-before: page; }
+</style>
+</head>
+<body>
+
+<h1>Coding Interview Patterns: Cheat Sheet</h1>
+<p class="sub">Read the problem, find the signal phrase, name the pattern, state the core move. Java.</p>
+
+<h2>Arrays and strings</h2>
+<table>
+<colgroup><col class="p"><col class="s"><col class="m"><col class="x"></colgroup>
+<tr><th>Pattern</th><th>Spot it when</th><th>Core move</th><th>Not to confuse with</th></tr>
+<tr><td class="name">Two Pointers</td><td>Linear input, often <b>sorted</b>; pair or triple with a target sum; partition or compact in place; palindrome check.</td><td>Indices at both ends moving inward, or read/write pointers. O(n).</td><td>Sliding Window</td></tr>
+<tr><td class="name">Fast and Slow Pointers</td><td>Cycle detection; middle of a list; a repeated process that either ends or loops (happy number).</td><td>Slow moves 1, fast moves 2; they meet if there is a cycle.</td><td>Hash set of seen states (O(n) space)</td></tr>
+<tr><td class="name">Sliding Window</td><td><b>Contiguous</b> subarray or substring; <b>longest/shortest</b> with a constraint; "at most k".</td><td>Grow right; shrink left while invalid; track counts in the window. O(n).</td><td>Two Pointers, prefix sums</td></tr>
+<tr><td class="name">Cyclic Sort</td><td>Integers in a known range <code>1..n</code>; find missing or duplicate in place.</td><td>Swap each value to index <code>v-1</code> until it is there.</td><td>Hash set (extra space)</td></tr>
+<tr><td class="name">Modified Binary Search</td><td>Sorted or <b>rotated</b> data; first/last occurrence; "minimum X such that ..." (search the answer space).</td><td><code>lo/hi/mid</code>; decide which half keeps the answer. O(log n).</td><td>Sort and Search</td></tr>
+<tr><td class="name">Sort and Search</td><td>Ordering makes pairwise relations easy; ranges, thresholds, queries.</td><td>Sort first, then binary search or two pointers. O(n log n).</td><td>Greedy</td></tr>
+<tr><td class="name">Matrices</td><td>2D array manipulation: rotate, spiral, transpose, in-place marking.</td><td>Index arithmetic; use first row/col as markers for O(1) space.</td><td>Graphs (grid traversal)</td></tr>
+<tr><td class="name">Knowing What to Track</td><td>Frequency counts then use them; fixed alphabet; anagram/permutation checks; prefix sum + map.</td><td>Count phase, then use phase. <code>int[26]</code> or <code>Map</code>.</td><td>Hash Maps</td></tr>
+<tr><td class="name">Hash Maps</td><td>Repeated O(1) lookups; complement lookups (two-sum); group by key.</td><td><code>map.getOrDefault</code>, <code>computeIfAbsent</code>.</td><td>Knowing What to Track</td></tr>
+<tr><td class="name">Bitwise Manipulation</td><td>Single number among pairs; masks; powers of two; count bits.</td><td><code>a ^ a = 0</code>; <code>n &amp; (n-1)</code> drops lowest set bit.</td><td></td></tr>
+<tr><td class="name">Math and Geometry</td><td>Number theory, digits, primes, GCD; points and distances.</td><td>Find the formula; watch overflow (use <code>long</code>).</td><td></td></tr>
+</table>
+
+<h2>Intervals, heaps and ordering</h2>
+<table>
+<colgroup><col class="p"><col class="s"><col class="m"><col class="x"></colgroup>
+<tr><th>Pattern</th><th>Spot it when</th><th>Core move</th><th>Not to confuse with</th></tr>
+<tr><td class="name">Merge Intervals</td><td>Input is <b>intervals</b> (meetings, bookings); overlaps, gaps, conflicts, merging.</td><td>Sort by start; compare each with the last merged. O(n log n).</td><td>Heaps (when counting concurrent)</td></tr>
+<tr><td class="name">Heaps</td><td>Repeated min/max as data changes; stream; running median; "which frees up earliest" (meeting rooms).</td><td><code>PriorityQueue</code>; two heaps for median. O(log n) per op.</td><td>Top K, K-way Merge</td></tr>
+<tr><td class="name">Top K Elements</td><td>K largest / smallest / most frequent from <b>unsorted</b> data.</td><td>Heap of size K (min-heap for largest K). O(n log k).</td><td>Heaps, Quickselect</td></tr>
+<tr><td class="name">K-way Merge</td><td>K <b>sorted</b> lists/arrays/rows to merge; Kth smallest across them.</td><td>Min-heap of each list's head with its list index. O(n log k).</td><td>Top K</td></tr>
+<tr><td class="name">Greedy</td><td>Optimisation where the locally best choice is provably safe; usually after sorting (by end time, ratio).</td><td>Sort, then take/skip in one pass. Prove with an exchange argument.</td><td>Dynamic Programming</td></tr>
+<tr><td class="name">Stacks</td><td>Brackets and nesting; undo; expression evaluation; <b>next greater/smaller</b> element.</td><td>Monotonic stack of indices; pop while the new value beats the top.</td><td>Queue / BFS</td></tr>
+<tr><td class="name">Custom Data Structures</td><td>"Design a class" with O(1) ops: LRU cache, min stack, time-based store.</td><td>Combine structures: <code>HashMap</code> + doubly linked list, stack of pairs.</td><td></td></tr>
+<tr><td class="name">In-place LL Manipulation</td><td>Reverse / reorder / partition a linked list in O(1) space.</td><td><code>prev, curr, next</code>; dummy head node.</td><td>Fast and Slow Pointers</td></tr>
+</table>
+
+<div class="page2"></div>
+<h2>Trees, graphs and search</h2>
+<table>
+<colgroup><col class="p"><col class="s"><col class="m"><col class="x"></colgroup>
+<tr><th>Pattern</th><th>Spot it when</th><th>Core move</th><th>Not to confuse with</th></tr>
+<tr><td class="name">Tree DFS</td><td>Binary tree; answer built from children (post-order); path sums; LCA; height/diameter; validate BST (in-order).</td><td>Recursive helper returns one value up and updates a global best.</td><td>Tree BFS</td></tr>
+<tr><td class="name">Tree BFS</td><td>Level by level; per-level output; right-side view; <b>nearest</b> to the root; min depth.</td><td>Queue; <code>for (size = q.size(); ...)</code> processes one level.</td><td>Tree DFS</td></tr>
+<tr><td class="name">Graphs</td><td>Network of related objects or a <b>grid</b>; connectivity, islands, flood fill, <b>shortest path</b> (BFS unweighted, Dijkstra weighted), spreading per minute.</td><td>Adjacency list + visited; BFS level = one step; multi-source BFS.</td><td>Union Find, Tree DFS</td></tr>
+<tr><td class="name">Topological Sort</td><td>Dependencies / prerequisites; "what has to happen before what"; valid order or cycle detection in a directed graph.</td><td>Kahn: in-degree map, queue of zero in-degree nodes.</td><td>Graphs (plain DFS)</td></tr>
+<tr><td class="name">Union Find</td><td>Merge groups as edges arrive; "are these connected"; cycle in an <b>undirected</b> edge list; accounts merge.</td><td><code>find</code> with path compression, <code>union</code> by rank. ~O(1).</td><td>Graphs (BFS/DFS)</td></tr>
+<tr><td class="name">Trie</td><td>Prefix matching, autocomplete, many words searched together (word search II).</td><td>Node with <code>children[26]</code> and <code>isWord</code>. O(word length).</td><td>Hash set of words</td></tr>
+<tr><td class="name">Subsets</td><td>Generate all combinations, permutations or the power set.</td><td>Start with <code>[[]]</code>; for each element copy and extend. O(2<sup>n</sup>).</td><td>Backtracking</td></tr>
+<tr><td class="name">Backtracking</td><td><b>Enumerate</b> all (or any) valid configurations; N-queens, sudoku, word search; output can be exponential.</td><td>choose, recurse, un-choose; prune dead ends early.</td><td>Dynamic Programming</td></tr>
+<tr><td class="name">Dynamic Programming</td><td>Count ways / min / max / feasible; choices constrain later choices; <b>same subproblem reached by different paths</b>.</td><td>Define state, recurrence, base case; memoise or fill a table; roll to O(1) space.</td><td>Greedy, Backtracking</td></tr>
+</table>
+
+<h2>How to tell them apart</h2>
+<table class="pairs">
+<tr><td>Sliding Window vs Two Pointers</td><td>Window: a <b>contiguous</b> range whose contents must satisfy a constraint; left moves only to restore it. Two Pointers: a <b>pair</b> condition on two positions, often on sorted input, pointers moving toward each other.</td></tr>
+<tr><td>DP vs Backtracking</td><td>Need one answer (count, max, yes/no) and the same sub-question repeats: DP. Need to <b>list</b> every solution: Backtracking. Backtracking + memo of a sub-question = top-down DP.</td></tr>
+<tr><td>DP vs Greedy</td><td>Find a counter-example where the locally best choice loses (2,7,9: taking 7 first gives 10, not 12). If one exists, it's DP.</td></tr>
+<tr><td>Heaps vs Top K vs K-way Merge</td><td>Top K: unsorted input, keep a size-K heap. K-way: inputs <b>already sorted</b>, heap of heads. Heaps: priority changes over time (scheduling, median, stream).</td></tr>
+<tr><td>Tree DFS vs Tree BFS</td><td>Answer from subtrees or along a path: DFS. Per level, or nearest to the root: BFS.</td></tr>
+<tr><td>Graphs vs Union Find</td><td>Static graph, need distances or traversal order: BFS/DFS. Edges arrive over time, only need "same group?": Union Find.</td></tr>
+<tr><td>Graphs vs Topological Sort</td><td>Directed edges meaning "before", and you need an order or a cycle check: Topological Sort.</td></tr>
+<tr><td>Hash Maps vs Knowing What to Track</td><td>Map as a lookup (complement, index): Hash Maps. Count first, then decide from the counts: Knowing What to Track.</td></tr>
+</table>
+
+<div class="two">
+<div>
+<h2>Input size hints the complexity</h2>
+<ul>
+<li><code>n ≤ 20</code>: O(2<sup>n</sup>) or O(n!): Subsets, Backtracking</li>
+<li><code>n ≤ 500</code>: O(n<sup>3</sup>): interval DP</li>
+<li><code>n ≤ 5,000</code>: O(n<sup>2</sup>): 2D DP, nested loops</li>
+<li><code>n ≤ 10<sup>5</sup>-10<sup>6</sup></code>: O(n log n) or O(n): sort, heap, window, two pointers, BFS</li>
+<li>Values up to 10<sup>9</sup>, sorted or monotonic: binary search the answer</li>
+</ul>
+</div>
+<div>
+<h2>Interview checklist</h2>
+<ul>
+<li>Restate the problem; confirm input range, empties, duplicates, negatives</li>
+<li>Name the signal phrase and the pattern out loud</li>
+<li>Give brute force and its complexity, then the better approach</li>
+<li>Code; then trace the example by hand</li>
+<li>Edge cases: length 0/1, all equal, all negative, overflow</li>
+<li>State time and space; mention one follow-up</li>
+</ul>
+</div>
+</div>
+
+</body>
+</html>
